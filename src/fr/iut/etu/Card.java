@@ -20,8 +20,8 @@ public class Card {
         this.cardType = cardType;
         this.value = value;
 
-        if(value < 1 || value > 14) //entre as et roi
-            throw new IllegalStateException("La valeur doit être entre 1 et 14");
+        if(cardType != Type.TRUMP && (value < 1 || value > 14)) //between ace and king
+            throw new IllegalStateException("The value must be between 1 and 14");
     }
 
     @Override
