@@ -21,7 +21,7 @@ public class Card {
         this.cardType = cardType;
         this.value = value;
 
-        if(cardType != Type.TRUMP && (value < 1 || value > 14)) //between ace and king
+        if(cardType != Type.TRUMP && cardType != Type.TILE.FOOL && (value < 1 || value > 14)) //between ace and king
             throw new IllegalArgumentException("The value must be between 1 and 14");
     }
 
