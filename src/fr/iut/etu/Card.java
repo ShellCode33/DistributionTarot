@@ -5,17 +5,49 @@ package fr.iut.etu;
  */
 public class Card {
 
-    String name; //hearts, tiles, clovers, pikes
+    public enum Type {
+        HEART,
+        TILE,
+        CLOVER,
+        PIKE,
+        TRUMP
+    }
+
+    Type cardType;
     int value;
 
-    public Card(String name, int value) {
-        this.name = name;
+    public Card(Type cardType, int value) {
+        this.cardType = cardType;
         this.value = value;
     }
 
 
     @Override
     public String toString() {
+
+        String name;
+
+        switch(cardType) {
+            case HEART:
+                name = "HEART";
+                break;
+            case TILE:
+                name = "TILE";
+                break;
+            case CLOVER:
+                name = "CLOVER";
+                break;
+            case PIKE:
+                name = "PIKE";
+                break;
+            case TRUMP:
+                name = "TRUMP";
+                break;
+            default:
+                name = "Unknown";
+                break;
+        }
+
         return name + ": " + value;
     }
 }

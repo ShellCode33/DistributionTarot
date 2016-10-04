@@ -6,7 +6,7 @@ package fr.iut.etu;
 public class Trump extends Card {
 
     public Trump(int value) {
-        super("trump", value);
+        super(Type.TRUMP, value);
     }
 
 }
