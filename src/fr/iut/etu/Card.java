@@ -19,35 +19,21 @@ public class Card {
     public Card(Type cardType, int value) {
         this.cardType = cardType;
         this.value = value;
-    }
 
+        if(value < 1 || value > 14) //entre as et roi
+            throw new IllegalStateException("La valeur doit être entre 1 et 14");
+    }
 
     @Override
     public String toString() {
+        return cardType.toString() + ": " + value;
+    }
 
-        String name;
+    public Type getType() {
+        return cardType;
+    }
 
-        switch(cardType) {
-            case HEART:
-                name = "HEART";
-                break;
-            case TILE:
-                name = "TILE";
-                break;
-            case CLOVER:
-                name = "CLOVER";
-                break;
-            case PIKE:
-                name = "PIKE";
-                break;
-            case TRUMP:
-                name = "TRUMP";
-                break;
-            default:
-                name = "Unknown";
-                break;
-        }
-
-        return name + ": " + value;
+    public int  getValue() {
+        return value;
     }
 }

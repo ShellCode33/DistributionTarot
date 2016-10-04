@@ -5,7 +5,7 @@ package fr.iut.etu;
  */
 public class BoardController {
 
-
+    private Board boardModel;
 
     public BoardController() {
 
