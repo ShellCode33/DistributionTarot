@@ -10,33 +10,32 @@ import java.util.Random;
  */
 public class Deck {
 
-    private int size = 0;
     private List<Card> cards = new ArrayList<Card>();
 
     public int getSize() {
-        return size;
+        return cards.size();
     }
+    public List<Card> getCards() { return cards; }
 
     public void refill() {
         for(int i = 1; i <= 14;i++){
-            addCard(new Card(Card.Type.TILE, i));
-            addCard(new Card(Card.Type.CLOVER, i));
-            addCard(new Card(Card.Type.HEART, i));
-            addCard(new Card(Card.Type.PIKE, i));
+            cards.add(new Card(Card.Type.TILE, i));
+            cards.add(new Card(Card.Type.CLOVER, i));
+            cards.add(new Card(Card.Type.HEART, i));
+            cards.add(new Card(Card.Type.PIKE, i));
         }
 
         for(int i = 1; i <= 21; i++)
-            addCard(new Trump(i));
+            cards.add(new Trump(i));
 
-        addCard(new Fool());
-    }
-
-    private void addCard(Card card){
-        cards.add(card);
-        size++;
+        cards.add(new Fool());
     }
 
     public void shuffle() {
         Collections.shuffle(cards, new Random(System.nanoTime()));
+    }
+
+    public boolean contains(Card card){
+        return cards.contains(card);
     }
 }

@@ -9,8 +9,10 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Collection;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by sdupouy002 on 04/10/16.
@@ -77,14 +79,26 @@ public class TarotTests {
     }
 
     @Test
+    public void doesDeckContains() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+    }
+
+    @Test
     public void canShuffleDeck() throws Exception {
 
-        Deck unshuffled = new Deck();
-        assertNotEquals("Deck not created !", unshuffled, null);
-        assertEquals("Wrong deck size !", unshuffled.getSize(), 0);
+        Deck notshuffled = new Deck();
+        assertNotEquals("Deck not created !", notshuffled, null);
+        assertEquals("Wrong deck size !", notshuffled.getSize(), 0);
 
-        unshuffled.refill();
-        assertEquals("Wrong deck size !", unshuffled.getSize(), 78);
+        notshuffled.refill();
+        assertEquals("Wrong deck size !", notshuffled.getSize(), 78);
 
         Deck shuffled = new Deck();
         assertNotEquals("Deck not created !", shuffled, null);
@@ -94,5 +108,22 @@ public class TarotTests {
         assertEquals("Wrong deck size !", shuffled.getSize(), 78);
 
         shuffled.shuffle();
+
+        boolean isShuffled = false;
+        int i = 0;
+
+        while(i < shuffled.getCards().size()
+                && i < notshuffled.getCards().size()
+                && !isShuffled) {
+
+            if(shuffled.getCards().get(i) != notshuffled.getCards().get(i))
+                isShuffled = true;
+
+            i++;
+        }
+
+        assertTrue("Deck not shuffled !", isShuffled);
     }
+
+
 }
