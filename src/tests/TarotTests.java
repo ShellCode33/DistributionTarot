@@ -1,6 +1,7 @@
 package tests;
 
 import fr.iut.etu.Card;
+import fr.iut.etu.Player;
 import fr.iut.etu.Trump;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,5 +50,13 @@ public class TarotTests {
 
         exception.expect(IllegalStateException.class);
         Trump trump1 = new Trump(0);
+    }
+
+
+    @Test
+    public void isPlayerCreated() throws Exception {
+        Player player = new Player();
+
+        assertNotEquals("Player not created !", null, player);
     }
 }
