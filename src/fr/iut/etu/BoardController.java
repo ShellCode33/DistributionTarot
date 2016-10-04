@@ -5,9 +5,9 @@ package fr.iut.etu;
  */
 public class BoardController {
 
-    private Board boardModel;
+    private Board model;
 
-    public BoardController() {
-
+    public BoardController(Board model) {
+        this.model = model;
     }
 }

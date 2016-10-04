@@ -9,7 +9,7 @@ public class Trump extends Card {
         super(Type.TRUMP, value);
 
         if(value < 1 || value > 21)
-            throw new IllegalStateException("Value must be between 1 and 21");
+            throw new IllegalArgumentException("Value must be between 1 and 21");
 
     }
 

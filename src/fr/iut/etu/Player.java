@@ -11,6 +11,17 @@ public class Player {
     private ArrayList<Card> cards;
 
     public Player() {
+        this("Unknown");
+    }
+
+    public Player(String name) {
+        this.name = name;
         cards = new ArrayList<>(15); //min 15 cards in this game
     }
+
+    void addCard(Card card) {
+        cards.add(card);
+    }
+
+
 }

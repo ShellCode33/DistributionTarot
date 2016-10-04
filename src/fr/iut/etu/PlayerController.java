@@ -6,9 +6,10 @@ import java.util.ArrayList;
  * Created by shellcode on 10/4/16.
  */
 public class PlayerController {
-    private Player playerModel;
+    private Player model;
+    //view is boards.fxml
 
-    public PlayerController() {
-
+    public PlayerController(Player model) {
+        this.model = model;
     }
 }
