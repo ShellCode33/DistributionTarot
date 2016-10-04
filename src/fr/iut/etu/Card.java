@@ -26,7 +26,7 @@ public class Card {
     public String toString() {
 
         String name;
-
+        
         switch(cardType) {
             case HEART:
                 name = "HEART";
