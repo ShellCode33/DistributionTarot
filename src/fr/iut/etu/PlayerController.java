@@ -7,7 +7,6 @@ import java.util.ArrayList;
  */
 public class PlayerController {
     private Player model;
-    //view is boards.fxml
 
     public PlayerController(Player model) {
         this.model = model;
