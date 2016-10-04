@@ -7,6 +7,8 @@ import fr.iut.etu.Trump;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collection;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -19,7 +21,7 @@ public class TarotTests {
 
 
     @Test
-    public void isCardCreated() throws Exception {
+    public void canCreateCard() throws Exception {
         Card card = new Card(Card.Type.CLOVER, 2);
         assertNotEquals("Card not created !", null, card);
         assertEquals("Wrong card type !", Card.Type.CLOVER, card.getType());
@@ -27,7 +29,7 @@ public class TarotTests {
     }
 
     @Test
-    public void isTrumpCreated() throws Exception {
+    public void canCreatetrump() throws Exception {
         Trump trump = new Trump(19);
 
         assertNotEquals("Trump not created !", null, trump);
@@ -49,14 +51,14 @@ public class TarotTests {
 
 
     @Test
-    public void isPlayerCreated() throws Exception {
+    public void canCreatePlayer() throws Exception {
         Player player = new Player();
 
         assertNotEquals("Player not created !", null, player);
     }
 
     @Test
-    public void isDeckCreated() throws Exception {
+    public void canCreateDeck() throws Exception {
         Deck deck = new Deck();
 
         assertNotEquals("Deck not created !", deck, null);
@@ -72,5 +74,25 @@ public class TarotTests {
 
         deck.refill();
         assertEquals("Wrong deck size !", deck.getSize(), 78);
+    }
+
+    @Test
+    public void canShuffleDeck() throws Exception {
+
+        Deck unshuffled = new Deck();
+        assertNotEquals("Deck not created !", unshuffled, null);
+        assertEquals("Wrong deck size !", unshuffled.getSize(), 0);
+
+        unshuffled.refill();
+        assertEquals("Wrong deck size !", unshuffled.getSize(), 78);
+
+        Deck shuffled = new Deck();
+        assertNotEquals("Deck not created !", shuffled, null);
+        assertEquals("Wrong deck size !", shuffled.getSize(), 0);
+
+        shuffled.refill();
+        assertEquals("Wrong deck size !", shuffled.getSize(), 78);
+
+        shuffled.shuffle();
     }
 }
