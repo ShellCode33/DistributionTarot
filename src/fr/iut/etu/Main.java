@@ -8,8 +8,15 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    //Board boardModel;
+    //BoardController boardController;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        //boardModel = new Board();
+        //boardController = new BoardController(boardModel);
+
         Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));
         primaryStage.setTitle("Tarot");
         primaryStage.setFullScreen(true);

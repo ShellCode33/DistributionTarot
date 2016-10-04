@@ -10,7 +10,8 @@ public class Card {
         TILE,
         CLOVER,
         PIKE,
-        TRUMP
+        TRUMP,
+        FOOL
     }
 
     Type cardType;
