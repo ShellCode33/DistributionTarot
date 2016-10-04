@@ -1,11 +1,13 @@
 package tests;
 
 import fr.iut.etu.Card;
+import fr.iut.etu.Deck;
 import fr.iut.etu.Player;
 import fr.iut.etu.Trump;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
@@ -20,36 +22,29 @@ public class TarotTests {
     public void isCardCreated() throws Exception {
         Card card = new Card(Card.Type.CLOVER, 2);
         assertNotEquals("Card not created !", null, card);
-        assertNotEquals("Wrong card type !", Card.Type.CLOVER, card.getType());
-        assertNotEquals("Wrong card value !", 2, card.getValue());
+        assertEquals("Wrong card type !", Card.Type.CLOVER, card.getType());
+        assertEquals("Wrong card value !", 2, card.getValue());
     }
 
     @Test
     public void isTrumpCreated() throws Exception {
-        Trump trump = new Trump(21);
+        Trump trump = new Trump(19);
 
         assertNotEquals("Trump not created !", null, trump);
-        assertNotEquals("Wrong trump type !", Card.Type.TRUMP, trump.getType());
-        assertNotEquals("Wrong trump value !", 2, trump.getValue());
+        assertEquals("Wrong trump type !", Card.Type.TRUMP, trump.getType());
+        assertEquals("Wrong trump value !", 19, trump.getValue());
     }
 
-    @Test
+    @Test(expected =  IllegalArgumentException.class)
     public void exceptionCardCreation() throws Exception {
-
-        exception.expect(IllegalStateException.class);
-        Card card = new Card(Card.Type.TILE, 15);
-
-        exception.expect(IllegalStateException.class);
-        Card card1 = new Card(Card.Type.HEART, 0);
+        new Card(Card.Type.TILE, 15);
+        new Card(Card.Type.HEART, 0);
     }
 
-    @Test
+    @Test(expected =  IllegalArgumentException.class)
     public void exceptionTrumpCreation() throws Exception {
-        exception.expect(IllegalStateException.class);
-        Trump trump = new Trump(22);
-
-        exception.expect(IllegalStateException.class);
-        Trump trump1 = new Trump(0);
+        new Trump(22);
+        new Trump(0);
     }
 
 
@@ -58,5 +53,24 @@ public class TarotTests {
         Player player = new Player();
 
         assertNotEquals("Player not created !", null, player);
+    }
+
+    @Test
+    public void isDeckCreated() throws Exception {
+        Deck deck = new Deck();
+
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+    }
+
+    @Test
+    public void canRefillDeck() throws Exception {
+        Deck deck = new Deck();
+
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
     }
 }
