@@ -37,4 +37,9 @@ public class Card {
     public int  getValue() {
         return value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return cardType == ((Card)o).getType() && value == ((Card)o).getValue();
+    }
 }
