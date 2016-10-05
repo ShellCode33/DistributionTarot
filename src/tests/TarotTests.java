@@ -1,9 +1,6 @@
 package tests;
 
-import fr.iut.etu.Card;
-import fr.iut.etu.Deck;
-import fr.iut.etu.Player;
-import fr.iut.etu.Trump;
+import fr.iut.etu.*;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
@@ -116,7 +113,7 @@ public class TarotTests {
                 && i < notshuffled.getCards().size()
                 && !isShuffled) {
 
-            if(shuffled.getCards().get(i) != notshuffled.getCards().get(i))
+            if(!shuffled.getCard(i).equals(notshuffled.getCard(i)))
                 isShuffled = true;
 
             i++;
@@ -126,4 +123,53 @@ public class TarotTests {
     }
 
 
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void exceptionGetACardFromDeck() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+
+        deck.getCard(-1);
+        deck.getCard(78);
+    }
+
+    @Test
+    public void canCutDeck() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+
+        Card cardAtCut = deck.getCard(24);
+        Card cardAtBottom = deck.getCard(0);
+
+        deck.cut(24);
+
+        assertTrue("Deck not cuted !", deck.getCard(78 - 24).equals(cardAtBottom));
+        assertTrue("Deck not cuted !", deck.getCard(0).equals(cardAtCut));
+    }
+
+    @Test
+    public void canDealACard() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+
+        assertTrue("Deck didn't deal !", deck.deal().equals(new Fool()));
+        assertEquals("Deck size not reduced !", deck.getSize(), 77);
+    }
 }

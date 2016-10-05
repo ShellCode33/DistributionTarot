@@ -16,6 +16,13 @@ public class Deck {
         return cards.size();
     }
     public List<Card> getCards() { return cards; }
+    public Card getCard(int i){
+
+        if(i < 0 || i > cards.size() - 1)
+            throw new IndexOutOfBoundsException("Card index doesn't exist !");
+
+        return cards.get(i);
+    }
 
     public void refill() {
         for(int i = 1; i <= 14;i++){
@@ -35,7 +42,26 @@ public class Deck {
         Collections.shuffle(cards, new Random(System.nanoTime()));
     }
 
-    public boolean contains(Card card){
-        return cards.contains(card);
+    public boolean contains(Card card){ return cards.contains(card); }
+
+    public Card deal() {
+        Card card = cards.get(cards.size() - 1);
+        cards.remove(card);
+        return card;
     }
+
+    public void cut(int i) {
+        List<Card> end = new ArrayList<Card>();
+        List<Card> start = new ArrayList<Card>();
+
+        end.addAll(cards.subList(i, this.cards.size()));
+        start.addAll(cards.subList(0, i));
+
+        cards.clear();
+
+        cards.addAll(end);
+        cards.addAll(start);
+    }
+
+
 }
