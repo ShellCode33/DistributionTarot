@@ -49,7 +49,7 @@ public class Deck {
         cards.remove(card);
         return card;
     }
-
+    
     public void cut(int i) {
         List<Card> end = new ArrayList<Card>();
         List<Card> start = new ArrayList<Card>();
