@@ -49,7 +49,7 @@ public class Deck {
         cards.remove(card);
         return card;
     }
-
+    
     public void cut(int i) {
 
         if(cards.size() < 8 || i < 4 || i > cards.size()-4)
