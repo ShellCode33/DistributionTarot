@@ -8,6 +8,6 @@ public class Board {
     private Player player;
 
     public Board() {
-        player = new Player();
+
     }
 }

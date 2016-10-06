@@ -51,6 +51,10 @@ public class Deck {
     }
 
     public void cut(int i) {
+
+        if(cards.size() < 8 || i < 4 || i > cards.size()-4)
+            throw new IllegalArgumentException("You can't cut here !");
+
         List<Card> end = new ArrayList<Card>();
         List<Card> start = new ArrayList<Card>();
 

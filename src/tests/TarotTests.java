@@ -51,7 +51,7 @@ public class TarotTests {
 
     @Test
     public void canCreatePlayer() throws Exception {
-        Player player = new Player();
+        Player player = new Player("Patrick", null);
 
         assertNotEquals("Player not created !", null, player);
     }
@@ -171,5 +171,18 @@ public class TarotTests {
 
         assertTrue("Deck didn't deal !", deck.deal().equals(new Fool()));
         assertEquals("Deck size not reduced !", deck.getSize(), 77);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void exceptionDealIndex() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.cut(24);
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        deck.cut(2);
+        deck.cut(76);
     }
 }
