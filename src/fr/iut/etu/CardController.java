@@ -1,5 +1,7 @@
 package fr.iut.etu;
 
+import fr.iut.etu.model.Card;
+
 /**
  * Created by shellcode on 10/4/16.
  */

@@ -1,4 +1,4 @@
-package fr.iut.etu;
+package fr.iut.etu.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

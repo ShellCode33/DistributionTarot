@@ -1,6 +1,6 @@
 package fr.iut.etu;
 
-import java.util.ArrayList;
+import fr.iut.etu.model.Player;
 
 /**
  * Created by shellcode on 10/4/16.

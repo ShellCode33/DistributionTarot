@@ -1,5 +1,6 @@
 package fr.iut.etu;
 
+import fr.iut.etu.model.Board;
 import javafx.fxml.Initializable;
 
 import java.net.URL;

@@ -1,10 +1,8 @@
 package tests;
 
-import fr.iut.etu.*;
+import fr.iut.etu.model.*;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.Collection;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;

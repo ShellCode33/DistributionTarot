@@ -1,4 +1,4 @@
-package fr.iut.etu;
+package fr.iut.etu.model;
 
 /**
  * Created by shellcode on 10/4/16.

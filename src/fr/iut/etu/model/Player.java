@@ -1,4 +1,6 @@
-package fr.iut.etu;
+package fr.iut.etu.model;
+
+import fr.iut.etu.model.Card;
 
 import java.util.ArrayList;
 import java.util.List;
