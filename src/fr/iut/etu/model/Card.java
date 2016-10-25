@@ -1,9 +1,11 @@
 package fr.iut.etu.model;
 
+import java.util.Observable;
+
 /**
  * Created by shellcode on 9/27/16.
  */
-public class Card {
+public class Card extends Observable{
 
     public enum Type {
         HEART,
@@ -16,6 +18,7 @@ public class Card {
 
     Type cardType;
     int value;
+    boolean hidden = false;
 
     public Card(Type cardType, int value) {
         this.cardType = cardType;
@@ -31,6 +34,22 @@ public class Card {
 
     public int  getValue() {
         return value;
+    }
+
+    public void show(){
+        this.hidden = false;
+        setChanged();
+        notifyObservers();
+    }
+
+    public void hide(){
+        this.hidden = true;
+        setChanged();
+        notifyObservers();
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override

@@ -10,8 +10,11 @@ public class Board {
     private ArrayList<Player> players = new ArrayList<>();
     private Player dealer;
     private Deck deck;
+    private int playerCount;
 
     public Board(int playerCount){
+
+        this.playerCount = playerCount;
 
         if(playerCount < 1)
             throw new IllegalArgumentException("playerCount should be at least 1");
@@ -39,4 +42,9 @@ public class Board {
     public Deck getDeck(){
         return deck;
     }
+
+    public int getPlayerCount() {
+        return playerCount;
+    }
+
 }
