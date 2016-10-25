@@ -1,27 +1,29 @@
 package fr.iut.etu.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by sdupouy002 on 04/10/16.
  */
-public class Deck {
+public class Deck extends Observable{
 
     private List<Card> cards = new ArrayList<Card>();
 
     public int getSize() {
         return cards.size();
     }
-    public List<Card> getCards() { return cards; }
+    public List<Card> getCards() {
+        return cards;
+    }
     public Card getCard(int i){
 
         if(i < 0 || i > cards.size() - 1)
             throw new IndexOutOfBoundsException("Card index doesn't exist !");
 
         return cards.get(i);
+    }
+    public boolean contains(Card card){
+        return cards.contains(card);
     }
 
     public void refill() {
@@ -36,17 +38,25 @@ public class Deck {
             cards.add(new Trump(i));
 
         cards.add(new Fool());
+
+        setChanged();
+        notifyObservers();
     }
 
     public void shuffle() {
         Collections.shuffle(cards, new Random(System.nanoTime()));
-    }
 
-    public boolean contains(Card card){ return cards.contains(card); }
+        setChanged();
+        notifyObservers();
+    }
 
     public Card deal() {
         Card card = cards.get(cards.size() - 1);
         cards.remove(card);
+
+        setChanged();
+        notifyObservers();
+
         return card;
     }
     
@@ -65,6 +75,9 @@ public class Deck {
 
         cards.addAll(end);
         cards.addAll(start);
+
+        setChanged();
+        notifyObservers();
     }
 
 

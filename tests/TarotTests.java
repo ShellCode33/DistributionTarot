@@ -1,13 +1,8 @@
-package tests;
-
 import fr.iut.etu.model.*;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by sdupouy002 on 04/10/16.
@@ -16,13 +11,18 @@ public class TarotTests {
 
     public ExpectedException exception = ExpectedException.none();
 
-
     @Test
     public void canCreateCard() throws Exception {
         Card card = new Card(Card.Type.CLUB, 2);
         assertNotEquals("Card not created !", null, card);
         assertEquals("Wrong card type !", Card.Type.CLUB, card.getType());
         assertEquals("Wrong card value !", 2, card.getValue());
+    }
+
+    @Test(expected =  IllegalArgumentException.class)
+    public void exceptionCardCreation() throws Exception {
+        new Card(Card.Type.DIAMOND, 15);
+        new Card(Card.Type.HEART, 0);
     }
 
     @Test
@@ -35,12 +35,6 @@ public class TarotTests {
     }
 
     @Test(expected =  IllegalArgumentException.class)
-    public void exceptionCardCreation() throws Exception {
-        new Card(Card.Type.DIAMOND, 15);
-        new Card(Card.Type.HEART, 0);
-    }
-
-    @Test(expected =  IllegalArgumentException.class)
     public void exceptionTrumpCreation() throws Exception {
         new Trump(22);
         new Trump(0);
@@ -49,17 +43,19 @@ public class TarotTests {
 
     @Test
     public void canCreatePlayer() throws Exception {
-        Player player = new Player("Patrick", null);
-
+        Player player = new Player();
         assertNotEquals("Player not created !", null, player);
+
+        Player player2 = new Player("Patrick");
+        assertNotEquals("Player not created !", null, player2);
     }
 
     @Test
     public void canCreateDeck() throws Exception {
         Deck deck = new Deck();
 
-        assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertNotEquals("Deck not created !", null, deck);
+        assertEquals("Wrong deck size !", 0, deck.getSize());
     }
 
     @Test

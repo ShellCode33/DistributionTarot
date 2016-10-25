@@ -1,31 +1,40 @@
 package fr.iut.etu.model;
 
-import fr.iut.etu.model.Card;
-
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Observable;
 
 /**
  * Created by shellcode on 10/4/16.
  */
-public class Player {
+public class Player extends Observable{
 
     private String name;
-    private int points;
-    private List<Card> cards;
+    private ArrayList<Card> cards = new ArrayList<>();
 
+    public Player(){
+        this.name = "";
+    }
 
-
-    public Player(String name, ArrayList<Card> cards) {
+    public Player(String name) {
         this.name = name;
-        this.cards = cards;
-
-        points = 0;
     }
 
-    void addCard(Card card) {
+    public void addCard(Card card) {
         cards.add(card);
+
+        setChanged();
+        notifyObservers();
     }
 
+    public int getCardCount(){
+        return cards.size();
+    }
 
+    public ArrayList<Card> getCards(){
+        return cards;
+    }
+
+    public String getName(){
+        return name;
+    }
 }

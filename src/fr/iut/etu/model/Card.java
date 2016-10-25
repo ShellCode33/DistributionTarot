@@ -25,17 +25,17 @@ public class Card {
             throw new IllegalArgumentException("The value must be between 1 and 14");
     }
 
-    @Override
-    public String toString() {
-        return cardType.toString() + ": " + value;
-    }
-
     public Type getType() {
         return cardType;
     }
 
     public int  getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return cardType.toString() + ": " + value;
     }
 
     @Override
