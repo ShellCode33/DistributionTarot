@@ -19,9 +19,9 @@ public class TarotTests {
 
     @Test
     public void canCreateCard() throws Exception {
-        Card card = new Card(Card.Type.CLOVER, 2);
+        Card card = new Card(Card.Type.CLUB, 2);
         assertNotEquals("Card not created !", null, card);
-        assertEquals("Wrong card type !", Card.Type.CLOVER, card.getType());
+        assertEquals("Wrong card type !", Card.Type.CLUB, card.getType());
         assertEquals("Wrong card value !", 2, card.getValue());
     }
 
@@ -36,7 +36,7 @@ public class TarotTests {
 
     @Test(expected =  IllegalArgumentException.class)
     public void exceptionCardCreation() throws Exception {
-        new Card(Card.Type.TILE, 15);
+        new Card(Card.Type.DIAMOND, 15);
         new Card(Card.Type.HEART, 0);
     }
 
@@ -82,7 +82,7 @@ public class TarotTests {
         deck.refill();
         assertEquals("Wrong deck size !", deck.getSize(), 78);
 
-        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class TarotTests {
         deck.refill();
         assertEquals("Wrong deck size !", deck.getSize(), 78);
 
-        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
         deck.getCard(-1);
         deck.getCard(78);
@@ -145,7 +145,7 @@ public class TarotTests {
         deck.refill();
         assertEquals("Wrong deck size !", deck.getSize(), 78);
 
-        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
         Card cardAtCut = deck.getCard(24);
         Card cardAtBottom = deck.getCard(0);
@@ -165,7 +165,7 @@ public class TarotTests {
         deck.refill();
         assertEquals("Wrong deck size !", deck.getSize(), 78);
 
-        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLOVER, 9)));
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
         assertTrue("Deck didn't deal !", deck.deal().equals(new Fool()));
         assertEquals("Deck size not reduced !", deck.getSize(), 77);

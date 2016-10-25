@@ -26,10 +26,10 @@ public class Deck {
 
     public void refill() {
         for(int i = 1; i <= 14;i++){
-            cards.add(new Card(Card.Type.TILE, i));
-            cards.add(new Card(Card.Type.CLOVER, i));
+            cards.add(new Card(Card.Type.DIAMOND, i));
+            cards.add(new Card(Card.Type.CLUB, i));
             cards.add(new Card(Card.Type.HEART, i));
-            cards.add(new Card(Card.Type.PIKE, i));
+            cards.add(new Card(Card.Type.SPADE, i));
         }
 
         for(int i = 1; i <= 21; i++)
