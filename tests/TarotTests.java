@@ -5,7 +5,7 @@ import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 
 /**
- * Created by sdupouy002 on 04/10/16.
+ * Created by Sylvain DUPOUY on 04/10/16.
  */
 public class TarotTests {
 
