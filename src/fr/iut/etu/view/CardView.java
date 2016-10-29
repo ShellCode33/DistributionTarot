@@ -1,7 +1,6 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Card;
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -11,10 +10,8 @@ import java.util.Observer;
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
  */
-public class CardView extends Group implements Observer {
+public class CardView extends ImageView implements Observer {
     private Card card;
-
-    private ImageView cardImage = new ImageView();
 
     public CardView(Card card) {
         this.card = card;
@@ -46,23 +43,12 @@ public class CardView extends Group implements Observer {
             }
         }
 
-        cardImage.setImage(image);
-    }
-
-    public void setX(double x){
-        cardImage.setX(x);
-    }
-
-    public void setY(double y) {
-        cardImage.setY(y);
-    }
-
-    public Card getCard() {
-        return card;
+        setImage(image);
     }
 
     @Override
     public void update(Observable observable, Object o) {
+
 
     }
 }

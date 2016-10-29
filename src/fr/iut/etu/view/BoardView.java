@@ -19,6 +19,9 @@ public class BoardView extends Group {
             getChildren().add(new PlayerView(this.board.getPlayer(i)));
         }
 
-        getChildren().add(new DeckView(this.board.getDeck()));
+        DeckView deckView = new DeckView(this.board.getDeck());
+        deckView.setRotate(90);
+
+        getChildren().add(deckView);
     }
 }

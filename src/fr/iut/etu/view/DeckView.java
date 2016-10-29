@@ -1,9 +1,10 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Deck;
-import javafx.scene.Group;
-import javafx.scene.Node;
+import javafx.event.EventHandler;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -11,7 +12,8 @@ import java.util.Observer;
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
  */
-public class DeckView extends Group implements Observer {
+public class DeckView extends ImageView implements Observer {
+
     private Deck deck;
 
     public DeckView(Deck deck) {
@@ -20,26 +22,17 @@ public class DeckView extends Group implements Observer {
         this.deck = deck;
         deck.addObserver(this);
 
-        for (Card card : deck.getCards()) {
-            getChildren().add(new CardView(card));
-        }
+        Image image = new Image("file:./res/deck.jpg");
+        setImage(image);
 
-    }
-
-    public void setX(double x){
-        for (Node node : getChildren()) {
-            if(node instanceof CardView){
-                ((CardView) node).setX(x);
+        setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println(deck.getSize() + " cards !");
             }
-        }
-    }
+        });
 
-    public void setY(double y){
-        for (Node node : getChildren()) {
-            if(node instanceof CardView){
-                ((CardView) node).setY(y);
-            }
-        }
+
     }
 
     @Override
