@@ -28,19 +28,16 @@ public class Deck extends Observable{
 
     public void refill() {
         for(int i = 1; i <= 14;i++){
-            cards.add(new Card(Card.Type.DIAMOND, i));
-            cards.add(new Card(Card.Type.CLUB, i));
-            cards.add(new Card(Card.Type.HEART, i));
-            cards.add(new Card(Card.Type.SPADE, i));
+            add(new Card(Card.Type.DIAMOND, i));
+            add(new Card(Card.Type.CLUB, i));
+            add(new Card(Card.Type.HEART, i));
+            add(new Card(Card.Type.SPADE, i));
         }
 
         for(int i = 1; i <= 21; i++)
-            cards.add(new Trump(i));
+            add(new Trump(i));
 
-        cards.add(new Fool());
-
-        setChanged();
-        notifyObservers();
+        add(new Fool());
     }
 
     public void shuffle() {
@@ -59,7 +56,14 @@ public class Deck extends Observable{
 
         return card;
     }
-    
+
+    public void add(Card card){
+        cards.add(card);
+
+        setChanged();
+        notifyObservers();
+    }
+
     public void cut(int i) {
 
         if(cards.size() < 8 || i < 4 || i > cards.size()-4)

@@ -14,6 +14,8 @@ public class PlayerView extends Group implements Observer {
     private Player player;
 
     public PlayerView(Player player) {
+        super();
+
         this.player = player;
         this.player.addObserver(this);
     }

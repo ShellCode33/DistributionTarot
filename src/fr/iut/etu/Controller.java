@@ -16,6 +16,8 @@ public class Controller extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+        board.getDeck().refill();
+
         Scene scene = new Scene(boardView, 1280, 720);
 
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");

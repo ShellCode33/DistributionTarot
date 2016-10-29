@@ -11,6 +11,8 @@ public class BoardView extends Group {
     private Board board;
 
     public BoardView(Board board) {
+        super();
+
         this.board = board;
 
         for (int i = 0; i < this.board.getPlayerCount(); i++) {
