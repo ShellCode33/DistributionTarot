@@ -11,17 +11,19 @@ public class Controller extends Application {
     private static final int PLAYER_COUNT = 4;
 
     private Board board = new Board(PLAYER_COUNT);
-    private BoardView boardView = new BoardView(board);
+    private BoardView boardView;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Scene scene = new Scene(boardView, 1280, 720);
 
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-        //primaryStage.setFullScreen(true);
+        primaryStage.setFullScreen(true);
+
+        boardView = new BoardView(board, primaryStage.getWidth(), primaryStage.getHeight());
+        Scene scene = new Scene(boardView, primaryStage.getWidth(), primaryStage.getHeight());
+
         primaryStage.setScene(scene);
-        primaryStage.sizeToScene();
         primaryStage.show();
     }
 

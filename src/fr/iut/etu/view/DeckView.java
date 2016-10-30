@@ -1,10 +1,9 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Deck;
-import javafx.event.EventHandler;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -23,16 +22,13 @@ public class DeckView extends ImageView implements Observer {
         deck.addObserver(this);
 
         Image image = new Image("file:./res/deck.jpg");
+
         setImage(image);
 
-        setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println(deck.getSize() + " cards !");
-            }
-        });
+        setFitWidth(120);
+        setFitHeight(200);
 
-
+        Tooltip.install(this, new Tooltip(this.deck.getSize() + " cards !"));
     }
 
     @Override
