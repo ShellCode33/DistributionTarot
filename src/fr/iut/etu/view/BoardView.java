@@ -1,8 +1,13 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Board;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
@@ -28,15 +33,15 @@ public class BoardView extends Group {
 
         Bounds deckViewLocalBounds = deckView.getBoundsInLocal();
 
-//        Rotate rotate = new Rotate(0,deckViewLocalBounds.getWidth()/2,deckViewLocalBounds.getHeight()/2);
-//        deckView.getTransforms().add(rotate);
-//
-//        Timeline timeline = new Timeline(
-//                new KeyFrame(Duration.ZERO, new KeyValue(rotate.angleProperty(), 0)), // initial rotate
-//                new KeyFrame(Duration.seconds(6), new KeyValue(rotate.angleProperty(), 450)) // end value of rotate
-//        );
-//
-//        timeline.play();
+        Rotate rotate = new Rotate(0,deckViewLocalBounds.getWidth()/2,deckViewLocalBounds.getHeight()/2);
+        deckView.getTransforms().add(rotate);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(rotate.angleProperty(), 0)), // initial rotate
+                new KeyFrame(Duration.seconds(6), new KeyValue(rotate.angleProperty(), 450)) // end value of rotate
+        );
+
+        timeline.play();
 //
 //        Point2D centerPoint = deckView.localToParent(deckViewLocalBounds.getWidth() / 2, deckViewLocalBounds.getHeight() / 2);
 //        double x = centerPoint.getX();
