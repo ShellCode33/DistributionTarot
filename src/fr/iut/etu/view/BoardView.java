@@ -5,7 +5,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -30,6 +32,10 @@ public class BoardView extends Group {
 
 
         DeckView deckView = new DeckView(this.board.getDeck());
+        deckView.setTranslateX(200);
+        deckView.setTranslateY(200);
+        deckView.setRotationAxis(new Point3D(1, 1, 0));
+        deckView.setRotate(15);
 
         Bounds deckViewLocalBounds = deckView.getBoundsInLocal();
 
@@ -42,6 +48,7 @@ public class BoardView extends Group {
         );
 
         timeline.play();
+
 //
 //        Point2D centerPoint = deckView.localToParent(deckViewLocalBounds.getWidth() / 2, deckViewLocalBounds.getHeight() / 2);
 //        double x = centerPoint.getX();
