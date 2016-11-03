@@ -57,6 +57,16 @@ public class Deck extends Observable{
         return card;
     }
 
+    public void deal(Hand hand){
+        Card card = cards.get(cards.size() - 1);
+        cards.remove(card);
+
+        hand.addCard(card);
+
+        setChanged();
+        notifyObservers();
+    }
+
     public void add(Card card){
         cards.add(card);
 

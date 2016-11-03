@@ -167,6 +167,28 @@ public class TarotTests {
         assertEquals("Deck size not reduced !", deck.getSize(), 77);
     }
 
+    @Test
+    public void canDealACardToAHand() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.getSize(), 0);
+
+        deck.refill();
+        assertEquals("Wrong deck size !", deck.getSize(), 78);
+
+        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
+
+        Card cardOnTop = deck.getCards().get(deck.getSize() - 1);
+
+        Player player = new Player();
+        deck.deal(player);
+
+        assertFalse("Deck didn't deal !", deck.contains(cardOnTop));
+        assertEquals("Deck size not reduced !", deck.getSize(), 77);
+
+        assertTrue("Player didn't receive the card", player.getCards().contains(cardOnTop));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void exceptionDealIndex() throws Exception {
         Deck deck = new Deck();
