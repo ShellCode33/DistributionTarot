@@ -29,6 +29,6 @@ public class DeckView extends Box implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-
+        setDepth(deck.getSize());
     }
 }
