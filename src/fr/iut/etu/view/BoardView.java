@@ -4,10 +4,8 @@ import fr.iut.etu.model.Board;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -18,10 +16,8 @@ public class BoardView extends Group {
 
     private Board board;
 
-    public BoardView(Board board, double boardWidth, double boardHeight) {
+    public BoardView(Board board) {
         super();
-
-
 
 
         this.board = board;
@@ -31,22 +27,23 @@ public class BoardView extends Group {
         }
 
 
-        DeckView deckView = new DeckView(this.board.getDeck());
+        DeckView deckView = new DeckView(board.getDeck());
+        getChildren().add(deckView);
+
         deckView.setTranslateX(200);
         deckView.setTranslateY(200);
-        deckView.setRotationAxis(new Point3D(1, 1, 0));
-        deckView.setRotate(15);
 
-        Bounds deckViewLocalBounds = deckView.getBoundsInLocal();
+        deckView.setRotationAxis(new Point3D(0, 0, 1));
 
-        Rotate rotate = new Rotate(0,deckViewLocalBounds.getWidth()/2,deckViewLocalBounds.getHeight()/2);
+        Rotate rotate = new Rotate(0,0,0,0);
         deckView.getTransforms().add(rotate);
 
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(rotate.angleProperty(), 0)), // initial rotate
-                new KeyFrame(Duration.seconds(6), new KeyValue(rotate.angleProperty(), 450)) // end value of rotate
+                new KeyFrame(Duration.seconds(4), new KeyValue(rotate.angleProperty(), 360)) // end value of rotate
         );
 
+        timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
 //
@@ -66,6 +63,5 @@ public class BoardView extends Group {
 //
 //        timeline2.play();
 
-        getChildren().add(deckView);
     }
 }

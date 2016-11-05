@@ -17,6 +17,10 @@ public class Controller extends Application {
     public static final int WIDTH_SCENE = 1280;
     public static final int HEIGHT_SCENE = 720;
 
+    public void deal(){
+
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -24,9 +28,13 @@ public class Controller extends Application {
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
         primaryStage.setFullScreen(true);
 
-        boardView = new BoardView(board, WIDTH_SCENE, HEIGHT_SCENE);
+        boardView = new BoardView(board);
         Scene scene = new Scene(boardView, WIDTH_SCENE, HEIGHT_SCENE);
-        scene.setCamera(new PerspectiveCamera()); //3D
+
+        PerspectiveCamera camera = new PerspectiveCamera(false);
+        scene.setCamera(camera); //3D
+
+
 
         primaryStage.setScene(scene);
         primaryStage.show();
