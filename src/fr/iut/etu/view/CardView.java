@@ -2,7 +2,7 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.model.Card;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.shape.Box;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -10,40 +10,46 @@ import java.util.Observer;
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
  */
-public class CardView extends ImageView implements Observer {
+public class CardView extends Box implements Observer {
     private Card card;
 
     public CardView(Card card) {
+
+        super(100,200,1);
+
+
         this.card = card;
         this.card.addObserver(this);
 
-        Image image;
+
+        Image imageBottom = new Image("file:./res/back.jpg");
+
+        Image imageFace;
 
         if(card.getType() == Card.Type.FOOL){
-            image = new Image("file:./res/FOOL.jpg");
+            imageFace = new Image("file:./res/cards/FOOL.jpg");
         }
         else{
             switch(card.getValue()){
                 case 11:
-                    image = new Image("file:./res/"+card.getType()+"_Jack.jpg");
+                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Jack.jpg");
                     break;
                 case 12:
-                    image = new Image("file:./res/"+card.getType()+"_Knight.jpg");
+                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Knight.jpg");
                     break;
                 case 13:
-                    image = new Image("file:./res/"+card.getType()+"_Queen.jpg");
+                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Queen.jpg");
                     break;
                 case 14:
-                    image = new Image("file:./res/"+card.getType()+"_King.jpg");
+                    imageFace = new Image("file:./res/cards/"+card.getType()+"_King.jpg");
                     break;
 
                 default:
-                    image = new Image("file:./res/"+card.getType()+"_"+card.getValue()+".jpg");
+                    imageFace = new Image("file:./res/cards/"+card.getType()+"_"+card.getValue()+".jpg");
                     break;
             }
         }
 
-        setImage(image);
     }
 
     @Override
