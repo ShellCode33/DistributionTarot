@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Board {
 
     private ArrayList<Player> players = new ArrayList<>();
-    private Player dealer;
-    private Deck deck;
+    private Dog dog = new Dog();
+    private Deck deck = new Deck();
     private int playerCount;
 
     public Board(int playerCount){
@@ -22,10 +22,6 @@ public class Board {
         for (int i = 0; i < playerCount; i++) {
             players.add(new Player());
         }
-
-        dealer = players.get(0);
-        deck = new Deck();
-        deck.refill();
     }
 
     public Player getPlayer(int i){
@@ -35,8 +31,12 @@ public class Board {
         return players.get(i);
     }
 
-    public Player getDealer(){
-        return dealer;
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public Dog getDog() {
+        return dog;
     }
 
     public Deck getDeck(){

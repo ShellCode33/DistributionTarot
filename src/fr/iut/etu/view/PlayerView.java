@@ -3,6 +3,7 @@ package fr.iut.etu.view;
 import fr.iut.etu.model.Player;
 import javafx.scene.Group;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -12,6 +13,8 @@ import java.util.Observer;
 public class PlayerView extends Group implements Observer {
 
     private Player player;
+
+    private ArrayList<CardView> cardViews = new ArrayList<>();
 
     public PlayerView(Player player) {
         super();

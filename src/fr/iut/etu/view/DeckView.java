@@ -23,7 +23,6 @@ public class DeckView extends Box implements Observer {
 
         Image image = new Image("file:./res/deck.jpg");
 
-
         Tooltip.install(this, new Tooltip(this.deck.getSize() + " cards !"));
     }
 
