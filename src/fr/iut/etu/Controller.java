@@ -19,8 +19,8 @@ public class Controller extends Application {
     private Board board = new Board(PLAYER_COUNT);
     private BoardView boardView = new BoardView(board);
 
-    public static final int WIDTH_SCENE = 1280;
-    public static final int HEIGHT_SCENE = 720;
+    private static final int WIDTH_SCENE = 1280;
+    private static final int HEIGHT_SCENE = 720;
 
     private void reset(){
         board = new Board(PLAYER_COUNT);

@@ -16,18 +16,18 @@ public class DeckView extends Box implements Observer {
     private Deck deck;
 
     public DeckView(Deck deck) {
-        super(100,200,deck.getSize());
+        super(100,200,deck.size());
 
         this.deck = deck;
         deck.addObserver(this);
 
         Image image = new Image("file:./res/deck.jpg");
 
-        Tooltip.install(this, new Tooltip(this.deck.getSize() + " cards !"));
+        Tooltip.install(this, new Tooltip(this.deck.size() + " cards !"));
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        setDepth(deck.getSize());
+        setDepth(deck.size());
     }
 }

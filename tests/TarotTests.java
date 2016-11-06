@@ -2,6 +2,8 @@ import fr.iut.etu.model.*;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -55,7 +57,7 @@ public class TarotTests {
         Deck deck = new Deck();
 
         assertNotEquals("Deck not created !", null, deck);
-        assertEquals("Wrong deck size !", 0, deck.getSize());
+        assertEquals("Wrong deck size !", 0, deck.size());
     }
 
     @Test
@@ -63,20 +65,20 @@ public class TarotTests {
         Deck deck = new Deck();
 
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
     }
 
     @Test
     public void doesDeckContains() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
 
         assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
     }
@@ -86,17 +88,17 @@ public class TarotTests {
 
         Deck notshuffled = new Deck();
         assertNotEquals("Deck not created !", notshuffled, null);
-        assertEquals("Wrong deck size !", notshuffled.getSize(), 0);
+        assertEquals("Wrong deck size !", notshuffled.size(), 0);
 
         notshuffled.refill();
-        assertEquals("Wrong deck size !", notshuffled.getSize(), 78);
+        assertEquals("Wrong deck size !", notshuffled.size(), 78);
 
         Deck shuffled = new Deck();
         assertNotEquals("Deck not created !", shuffled, null);
-        assertEquals("Wrong deck size !", shuffled.getSize(), 0);
+        assertEquals("Wrong deck size !", shuffled.size(), 0);
 
         shuffled.refill();
-        assertEquals("Wrong deck size !", shuffled.getSize(), 78);
+        assertEquals("Wrong deck size !", shuffled.size(), 78);
 
         shuffled.shuffle();
 
@@ -121,10 +123,10 @@ public class TarotTests {
     public void exceptionGetACardFromDeck() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
 
         assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
@@ -136,10 +138,10 @@ public class TarotTests {
     public void canCutDeck() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
 
         assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
@@ -156,35 +158,44 @@ public class TarotTests {
     public void canDealACard() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
 
         assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
         assertTrue("Deck didn't deal !", deck.deal().equals(new Fool()));
-        assertEquals("Deck size not reduced !", deck.getSize(), 77);
+        assertEquals("Deck size not reduced !", deck.size(), 77);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void exceptionDealACard() throws Exception {
+        Deck deck = new Deck();
+        assertNotEquals("Deck not created !", deck, null);
+        assertEquals("Wrong deck size !", deck.size(), 0);
+
+        deck.deal();
     }
 
     @Test
     public void canDealACardToAHand() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
 
         assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
 
-        Card cardOnTop = deck.getCards().get(deck.getSize() - 1);
+        Card cardOnTop = deck.getCards().get(deck.size() - 1);
 
         Player player = new Player();
         deck.deal(player);
 
         assertFalse("Deck didn't deal !", deck.contains(cardOnTop));
-        assertEquals("Deck size not reduced !", deck.getSize(), 77);
+        assertEquals("Deck size not reduced !", deck.size(), 77);
 
         assertTrue("Player didn't receive the card", player.getCards().contains(cardOnTop));
     }
@@ -193,11 +204,11 @@ public class TarotTests {
     public void exceptionDealIndex() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.getSize(), 0);
+        assertEquals("Wrong deck size !", deck.size(), 0);
 
         deck.cut(24);
         deck.refill();
-        assertEquals("Wrong deck size !", deck.getSize(), 78);
+        assertEquals("Wrong deck size !", deck.size(), 78);
         deck.cut(2);
         deck.cut(76);
     }

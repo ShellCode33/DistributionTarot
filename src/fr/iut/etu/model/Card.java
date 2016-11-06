@@ -16,15 +16,15 @@ public class Card extends Observable{
         FOOL
     }
 
-    Type cardType;
-    int value;
-    boolean hidden = false;
+    private Type cardType;
+    private int value;
+    private boolean hidden = false;
 
     public Card(Type cardType, int value) {
         this.cardType = cardType;
         this.value = value;
 
-        if(cardType != Type.TRUMP && cardType != Type.DIAMOND.FOOL && (value < 1 || value > 14)) //between ace and king
+        if(cardType != Type.TRUMP && cardType != Type.FOOL && (value < 1 || value > 14)) //between ace and king
             throw new IllegalArgumentException("The value must be between 1 and 14");
     }
 

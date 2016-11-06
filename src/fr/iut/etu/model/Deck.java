@@ -9,8 +9,11 @@ public class Deck extends Observable{
 
     private List<Card> cards = new ArrayList<Card>();
 
-    public int getSize() {
+    public int size() {
         return cards.size();
+    }
+    public boolean contains(Card card){
+        return cards.contains(card);
     }
     public List<Card> getCards() {
         return cards;
@@ -22,8 +25,12 @@ public class Deck extends Observable{
 
         return cards.get(i);
     }
-    public boolean contains(Card card){
-        return cards.contains(card);
+
+    private void add(Card card){
+        cards.add(card);
+
+        setChanged();
+        notifyObservers();
     }
 
     public void refill() {
@@ -44,34 +51,25 @@ public class Deck extends Observable{
         Collections.shuffle(cards, new Random(System.nanoTime()));
 
         setChanged();
-        notifyObservers();
+        notifyObservers(Notifications.SHUFFLED);
     }
 
     public Card deal() {
+
+        if(cards.isEmpty())
+            throw new NoSuchElementException("Deck is empty, can't deal !");
+
         Card card = cards.get(cards.size() - 1);
         cards.remove(card);
 
         setChanged();
-        notifyObservers();
+        notifyObservers(Notifications.CARD_DEALED);
 
         return card;
     }
 
     public void deal(Hand hand){
-        Card card = cards.get(cards.size() - 1);
-        cards.remove(card);
-
-        hand.addCard(card);
-
-        setChanged();
-        notifyObservers();
-    }
-
-    public void add(Card card){
-        cards.add(card);
-
-        setChanged();
-        notifyObservers();
+        hand.pickACard(this);
     }
 
     public void cut(int i) {
@@ -91,7 +89,7 @@ public class Deck extends Observable{
         cards.addAll(start);
 
         setChanged();
-        notifyObservers();
+        notifyObservers(Notifications.CUT);
     }
 
 
