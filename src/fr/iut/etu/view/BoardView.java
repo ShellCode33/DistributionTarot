@@ -59,8 +59,8 @@ public class BoardView extends Group {
         Point2D point2D = deckView.localToParent(new Point2D(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
-        translate.setToX(Controller.SCENE_WIDTH/2 - point2D.getX());
-        translate.setToY(Controller.SCENE_HEIGHT/2 - point2D.getY());
+        translate.setToX(Controller.SCREEN_WIDTH/2 - point2D.getX());
+        translate.setToY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
 
         translate.setCycleCount(1);
         translate.play();
