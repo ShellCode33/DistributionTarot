@@ -1,11 +1,9 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Deck;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -31,9 +29,9 @@ public class DeckView extends Group implements Observer {
 
         for(int i = 0; i < nb_cards_to_draw; i++) {
             ImageView view = new ImageView(image);
-            view.setTranslateZ(i);
-            view.setFitWidth(image.getWidth()/5);
-            view.setFitHeight(image.getHeight()/5);
+            view.setTranslateZ(i*Controller.CARD_DEPTH);
+            view.setFitWidth(Controller.CARD_WIDTH);
+            view.setFitHeight(Controller.CARD_HEIGHT);
             getChildren().add(view);
         }
 
