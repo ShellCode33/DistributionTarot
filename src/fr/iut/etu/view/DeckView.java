@@ -18,6 +18,7 @@ import java.util.Observer;
 public class DeckView extends Group implements Observer {
 
     private Deck deck;
+    private Image image;
 
     public DeckView(Deck deck) {
         super();
@@ -25,11 +26,9 @@ public class DeckView extends Group implements Observer {
         this.deck = deck;
         deck.addObserver(this);
 
-        Image image = new Image("file:./res/deck.jpg");
+        image = new Image("file:./res/deck.jpg");
 
-        int nb_cards_to_draw = this.deck.size();
-
-        for(int i = 0; i < nb_cards_to_draw; i++) {
+        for(int i = 0; i < this.deck.size(); i++) {
             ImageView view = new ImageView(image);
             view.setTranslateZ(i);
             view.setFitWidth(image.getWidth()/5);
@@ -42,6 +41,15 @@ public class DeckView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
+        getChildren().clear();
+
+        for(int i = 0; i < this.deck.size(); i++) {
+            ImageView view = new ImageView(image);
+            view.setTranslateZ(i);
+            view.setFitWidth(image.getWidth()/5);
+            view.setFitHeight(image.getHeight()/5);
+            getChildren().add(view);
+        }
 
     }
 }

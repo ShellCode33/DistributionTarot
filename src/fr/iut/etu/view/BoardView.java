@@ -27,9 +27,6 @@ public class BoardView extends Group {
         DeckView deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
 
-        deckView.setTranslateX(200);
-        deckView.setTranslateY(200);
-
         deckView.setRotationAxis(new Point3D(0, 0, 1));
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
