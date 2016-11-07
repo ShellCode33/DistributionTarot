@@ -6,12 +6,16 @@ import fr.iut.etu.model.Player;
 import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
 
 public class Controller extends Application {
@@ -28,10 +32,10 @@ public class Controller extends Application {
     private Board board;
     private BoardView boardView;
 
-    private void reset(){
-        board = new Board(PLAYER_COUNT);
-        boardView = new BoardView(board);
-    }
+    private Menu menu;
+
+    public Stage stage;
+    private Scene sceneGame;
 
     private boolean deal(){
         board.getDeck().refill();
@@ -70,29 +74,52 @@ public class Controller extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+        stage = primaryStage;
+
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
         SCREEN_WIDTH = bounds.getWidth();
         SCREEN_HEIGHT = bounds.getHeight();
 
+        primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
+
+        menu = new Menu(this);
+
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //Disable Esc to exit fullscreen
+        primaryStage.setFullScreen(true);
+        primaryStage.setScene(menu);
+        primaryStage.show();
+    }
+
+    public void startGame() {
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
 
-        primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-
-        Scene scene = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT);
+        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
-        scene.setCamera(camera); //3D
+        sceneGame.setCamera(camera); //3D
 
-        primaryStage.setScene(scene);
-        primaryStage.setFullScreen(true);
-        primaryStage.show();
+        stage.setScene(sceneGame);
+        stage.setFullScreen(true);
+
+        sceneGame.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
+                case ESCAPE:
+                    stage.setScene(menu);
+                    stage.setFullScreen(true);
+                    break;
+            }
+        });
 
         while (!deal());
     }
 
+    private void reset() {
+        board = new Board(PLAYER_COUNT);
+        boardView = new BoardView(board);
+    }
 
     public static void main(String[] args) {
         launch(args);

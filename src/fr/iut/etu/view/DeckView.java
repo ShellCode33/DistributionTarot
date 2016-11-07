@@ -24,7 +24,7 @@ public class DeckView extends Group implements Observer {
         this.deck = deck;
         deck.addObserver(this);
 
-        image = new Image("file:./res/deck.jpg");
+        image = new Image("file:res/deck.jpg");
 
         for(int i = 0; i < this.deck.size(); i++) {
             ImageView view = new ImageView(image);

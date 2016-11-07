@@ -8,6 +8,8 @@ import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -33,6 +35,11 @@ public class BoardView extends Group {
             playerViews.add(playerView);
             getChildren().add(playerView);
         }
+
+        ImageView backgroundView = new ImageView(new Image("file:res/background_board.jpg"));
+        backgroundView.setFitWidth(Controller.SCREEN_WIDTH);
+        backgroundView.setFitHeight(Controller.SCREEN_HEIGHT);
+        getChildren().add(backgroundView);
 
         this.deckView = new DeckView(board.getDeck());
         getChildren().add(this.deckView);
