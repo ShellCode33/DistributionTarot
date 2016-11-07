@@ -2,6 +2,8 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.model.Card;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 
 import java.util.Observable;
@@ -49,6 +51,15 @@ public class CardView extends Box implements Observer {
                     break;
             }
         }
+
+        //Create the Material
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseMap(imageBottom);
+        mat.setSpecularColor(Color.BLACK);
+
+        //Apply Material to the Box
+        setMaterial(mat);
+
 
     }
 

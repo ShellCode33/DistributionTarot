@@ -1,9 +1,7 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Board;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
@@ -26,7 +24,6 @@ public class BoardView extends Group {
             getChildren().add(new PlayerView(this.board.getPlayer(i)));
         }
 
-
         DeckView deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
 
@@ -35,16 +32,14 @@ public class BoardView extends Group {
 
         deckView.setRotationAxis(new Point3D(0, 0, 1));
 
-        Rotate rotate = new Rotate(0,0,0,0);
-        deckView.getTransforms().add(rotate);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
 
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(rotate.angleProperty(), 0)), // initial rotate
-                new KeyFrame(Duration.seconds(4), new KeyValue(rotate.angleProperty(), 360)) // end value of rotate
-        );
-
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        rotate.setAxis(Rotate.Y_AXIS);
+        rotate.setFromAngle(360);
+        rotate.setToAngle(0);
+        rotate.setInterpolator(Interpolator.LINEAR);
+        rotate.setCycleCount(RotateTransition.INDEFINITE);
+        rotate.play();
 
 //
 //        Point2D centerPoint = deckView.localToParent(deckViewLocalBounds.getWidth() / 2, deckViewLocalBounds.getHeight() / 2);

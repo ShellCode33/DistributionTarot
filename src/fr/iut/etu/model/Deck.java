@@ -9,6 +9,10 @@ public class Deck extends Observable{
 
     private List<Card> cards = new ArrayList<Card>();
 
+    public Deck() {
+        refill();
+    }
+
     public int size() {
         return cards.size();
     }
