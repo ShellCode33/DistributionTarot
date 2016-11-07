@@ -42,7 +42,7 @@ public class BoardView extends Group {
 
     private void init(){
         centerDeckView();
-
+        placePlayerViews();
     }
 
     private void centerDeckView(){
@@ -50,13 +50,13 @@ public class BoardView extends Group {
 
         rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(0);
-        rotate.setToAngle(90);
+        rotate.setToAngle(450);
         rotate.setInterpolator(Interpolator.LINEAR);
         rotate.setCycleCount(1);
         rotate.play();
 
         Bounds boundsInLocal = deckView.getBoundsInLocal();
-        Point2D point2D = deckView.localToParent(new Point2D(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+        Point2D point2D = deckView.localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
         translate.setToX(Controller.SCREEN_WIDTH/2 - point2D.getX());
@@ -66,4 +66,33 @@ public class BoardView extends Group {
         translate.play();
     }
 
+    private void placePlayerViews() {
+
+        Bounds boundsInLocal = playerViews.get(0).getBoundsInLocal();
+        Point2D point2D = playerViews.get(0).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+
+        playerViews.get(0).setTranslateX(Controller.SCREEN_WIDTH/2 - point2D.getX());
+        playerViews.get(0).setTranslateY(Controller.SCREEN_HEIGHT - point2D.getY());
+
+        boundsInLocal = playerViews.get(1).getBoundsInLocal();
+        point2D = playerViews.get(1).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+
+        playerViews.get(1).setTranslateX(- point2D.getX());
+        playerViews.get(1).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
+        playerViews.get(1).getTransforms().add(new Rotate(90, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+
+        boundsInLocal = playerViews.get(2).getBoundsInLocal();
+        point2D = playerViews.get(2).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+
+        playerViews.get(2).setTranslateX(Controller.SCREEN_WIDTH/2 - point2D.getX());
+        playerViews.get(2).setTranslateY(- point2D.getY());
+        playerViews.get(2).getTransforms().add(new Rotate(180, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+
+        boundsInLocal = playerViews.get(3).getBoundsInLocal();
+        point2D = playerViews.get(3).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+
+        playerViews.get(3).setTranslateX(Controller.SCREEN_WIDTH - point2D.getX());
+        playerViews.get(3).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
+        playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+    }
 }

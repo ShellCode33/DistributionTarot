@@ -1,5 +1,6 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
 import javafx.scene.Group;
 
@@ -25,6 +26,10 @@ public class PlayerView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
+        if(o != null){
+            if(o == Notifications.CARD_PICKED){
 
+            }
+        }
     }
 }
