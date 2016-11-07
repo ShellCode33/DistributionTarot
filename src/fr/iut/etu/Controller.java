@@ -16,8 +16,8 @@ public class Controller extends Application {
 
     private static final int PLAYER_COUNT = 4;
 
-    private static final int WIDTH_SCENE = 1280;
-    private static final int HEIGHT_SCENE = 720;
+    public static final int SCENE_WIDTH = 1280;
+    public static final int SCENE_HEIGHT = 720;
 
     public static final int CARD_WIDTH = 120;
     public static final int CARD_HEIGHT = 212;
@@ -70,17 +70,21 @@ public class Controller extends Application {
 
 
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-        primaryStage.setFullScreen(true);
 
-        Scene scene = new Scene(boardView, WIDTH_SCENE, HEIGHT_SCENE);
+        Scene scene = new Scene(boardView, SCENE_WIDTH, SCENE_HEIGHT);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
+        camera.setFieldOfView(45);
+
+
+        primaryStage.setFullScreen(true);
         scene.setCamera(camera); //3D
 
-        while (!deal());
 
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        while (!deal());
     }
 
 
