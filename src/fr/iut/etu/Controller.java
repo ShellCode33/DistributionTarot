@@ -6,8 +6,10 @@ import fr.iut.etu.model.Player;
 import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -16,15 +18,15 @@ public class Controller extends Application {
 
     private static final int PLAYER_COUNT = 4;
 
-    private static final int WIDTH_SCENE = 1280;
-    private static final int HEIGHT_SCENE = 720;
+    public static double SCREEN_WIDTH;
+    public static double SCREEN_HEIGHT;
 
     public static final int CARD_WIDTH = 120;
     public static final int CARD_HEIGHT = 212;
     public static final int CARD_DEPTH = 1;
 
-    private Board board = new Board(PLAYER_COUNT);
-    private BoardView boardView = new BoardView(board);
+    private Board board;
+    private BoardView boardView;
 
     private void reset(){
         board = new Board(PLAYER_COUNT);
@@ -68,19 +70,27 @@ public class Controller extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+
+        SCREEN_WIDTH = bounds.getWidth();
+        SCREEN_HEIGHT = bounds.getHeight();
+
+        board = new Board(PLAYER_COUNT);
+        boardView = new BoardView(board);
 
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-        primaryStage.setFullScreen(true);
 
-        Scene scene = new Scene(boardView, WIDTH_SCENE, HEIGHT_SCENE);
+        Scene scene = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         scene.setCamera(camera); //3D
 
-        while (!deal());
-
         primaryStage.setScene(scene);
+        primaryStage.setFullScreen(true);
         primaryStage.show();
+
+        while (!deal());
     }
 
 

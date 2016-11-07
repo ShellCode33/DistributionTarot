@@ -1,5 +1,6 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -25,10 +26,12 @@ public class BoardView extends Group {
         }
 
         DeckView deckView = new DeckView(board.getDeck());
-        getChildren().add(deckView);
 
-        deckView.setTranslateX(200);
-        deckView.setTranslateY(200);
+
+        deckView.setTranslateX((Controller.SCREEN_WIDTH - Controller.CARD_WIDTH) / 2);
+        deckView.setTranslateY(Controller.SCREEN_HEIGHT / 2);
+
+        getChildren().add(deckView);
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
 
