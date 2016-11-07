@@ -1,8 +1,8 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Board;
-import javafx.animation.*;
-import javafx.geometry.Point3D;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
@@ -27,11 +27,12 @@ public class BoardView extends Group {
         DeckView deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
 
-        deckView.setRotationAxis(new Point3D(0, 0, 1));
+        deckView.setTranslateX(200);
+        deckView.setTranslateY(200);
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
 
-        rotate.setAxis(Rotate.Y_AXIS);
+        rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(360);
         rotate.setToAngle(0);
         rotate.setInterpolator(Interpolator.LINEAR);

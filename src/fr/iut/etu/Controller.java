@@ -16,11 +16,15 @@ public class Controller extends Application {
 
     private static final int PLAYER_COUNT = 4;
 
-    private Board board = new Board(PLAYER_COUNT);
-    private BoardView boardView = new BoardView(board);
-
     private static final int WIDTH_SCENE = 1280;
     private static final int HEIGHT_SCENE = 720;
+
+    public static final int CARD_WIDTH = 120;
+    public static final int CARD_HEIGHT = 212;
+    public static final int CARD_DEPTH = 1;
+
+    private Board board = new Board(PLAYER_COUNT);
+    private BoardView boardView = new BoardView(board);
 
     private void reset(){
         board = new Board(PLAYER_COUNT);
@@ -73,7 +77,7 @@ public class Controller extends Application {
         PerspectiveCamera camera = new PerspectiveCamera(false);
         scene.setCamera(camera); //3D
 
-        while(!deal());
+        while (!deal());
 
         primaryStage.setScene(scene);
         primaryStage.show();
