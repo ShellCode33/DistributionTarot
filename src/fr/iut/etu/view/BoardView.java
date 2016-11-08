@@ -3,7 +3,6 @@ package fr.iut.etu.view;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Card;
-import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;

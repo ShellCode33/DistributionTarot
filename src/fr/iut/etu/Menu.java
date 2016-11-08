@@ -46,9 +46,9 @@ public class Menu extends Scene {
         settingsButton.setTranslateX((Controller.SCREEN_WIDTH - buttonWidth) / 2);
         exitButton.setTranslateX((Controller.SCREEN_WIDTH - buttonWidth) / 2);
 
-        playButton.setTranslateY((Controller.SCREEN_HEIGHT - buttonHeight) / 2 - 150);
-        settingsButton.setTranslateY((Controller.SCREEN_HEIGHT - buttonHeight) / 2);
-        exitButton.setTranslateY((Controller.SCREEN_HEIGHT - buttonHeight) / 2 + 150);
+        playButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2 - 150);
+        settingsButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2);
+        exitButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2 + 150);
 
         playButton.setOnAction(e -> buttonClicked(e));
         settingsButton.setOnAction(e -> buttonClicked(e));

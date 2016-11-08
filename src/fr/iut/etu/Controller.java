@@ -7,13 +7,14 @@ import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point3D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.RotateEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -29,6 +30,9 @@ public class Controller extends Application {
     public static final int CARD_WIDTH = 120;
     public static final int CARD_HEIGHT = 212;
     public static final int CARD_THICK = 1;
+
+    public static double SCALE_COEFF = 1;
+    public static int Y_SCREEN_START = 0;
 
     private Board board;
     private BoardView boardView;
@@ -80,9 +84,22 @@ public class Controller extends Application {
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
-        SCREEN_WIDTH = bounds.getWidth();
-        SCREEN_HEIGHT = bounds.getHeight();
+        SCREEN_WIDTH = (int)bounds.getWidth();
+        SCREEN_HEIGHT = (int)bounds.getHeight();
 
+        //In order to fit all type of screens
+        if(SCREEN_WIDTH / SCREEN_HEIGHT != 16.0/9.0) {
+            System.out.println("Your display is not 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
+            SCREEN_HEIGHT = (int)(SCREEN_WIDTH * 9.0 / 16.0);
+            Y_SCREEN_START = (int)((bounds.getHeight()-SCREEN_HEIGHT)/2);
+            System.out.println("New screen height : " + SCREEN_HEIGHT);
+            System.out.println("New Y start : " + Y_SCREEN_START);
+        }
+
+        else
+            System.out.println("Your display is 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
+
+        SCALE_COEFF = SCREEN_WIDTH / 1920;
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
 
         menu = new Menu(this);
@@ -91,20 +108,23 @@ public class Controller extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.setScene(menu);
         primaryStage.show();
+        primaryStage.setY(Y_SCREEN_START);
+        primaryStage.setHeight(SCREEN_HEIGHT);
+        primaryStage.setWidth(SCREEN_WIDTH);
     }
 
     public void startGame() {
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
 
-        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true);
-
         PerspectiveCamera camera = new PerspectiveCamera(false);
-        sceneGame.setCamera(camera); //3D
-
         camera.setRotationAxis(Rotate.X_AXIS);
         camera.setRotate(30);
 
+        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true);
+        sceneGame.setCamera(camera);
+        boardView.setTranslateY(Y_SCREEN_START);
+        sceneGame.setFill(Color.BLACK);
 
         stage.setScene(sceneGame);
         stage.setFullScreen(true);

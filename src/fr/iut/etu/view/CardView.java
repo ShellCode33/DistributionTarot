@@ -60,7 +60,6 @@ public class CardView extends Group implements Observer {
                     break;
 
                 default:
-                    System.out.println("loading file:./res/cards/"+card.getType().toString()+"_"+card.getValue()+".jpg");
                     imageFace = new Image("file:./res/cards/"+card.getType().toString()+"_"+card.getValue()+".jpg");
                     break;
             }
@@ -68,6 +67,10 @@ public class CardView extends Group implements Observer {
 
         front = new ImageView(imageFace);
         back = new ImageView(imageBottom);
+        front.setScaleX(Controller.SCALE_COEFF);
+        back.setScaleX(Controller.SCALE_COEFF);
+        front.setScaleY(Controller.SCALE_COEFF);
+        back.setScaleY(Controller.SCALE_COEFF);
         front.setFitHeight(Controller.CARD_HEIGHT);
         front.setFitWidth(Controller.CARD_WIDTH);
         back.setFitHeight(Controller.CARD_HEIGHT);
