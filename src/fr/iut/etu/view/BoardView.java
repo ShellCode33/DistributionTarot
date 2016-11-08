@@ -2,6 +2,7 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Card;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
@@ -25,6 +26,8 @@ public class BoardView extends Group {
     private ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
 
+    Card test;
+
     public BoardView(Board board) {
         super();
 
@@ -45,6 +48,13 @@ public class BoardView extends Group {
         getChildren().add(this.deckView);
 
         init();
+
+        test = new Card(Card.Type.HEART, 7);
+        CardView img = new CardView(test);
+        img.setTranslateX(200);
+        img.setTranslateY(200);
+
+        getChildren().add(img);
     }
 
     private void init(){
@@ -101,5 +111,9 @@ public class BoardView extends Group {
         playerViews.get(3).setTranslateX(Controller.SCREEN_WIDTH - point2D.getX());
         playerViews.get(3).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
         playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+    }
+
+    public void lolz() {
+        test.show();
     }
 }

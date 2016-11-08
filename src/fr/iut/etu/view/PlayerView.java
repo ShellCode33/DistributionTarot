@@ -26,10 +26,8 @@ public class PlayerView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        if(o != null){
-            if(o == Notifications.CARD_PICKED){
+        if(o != null && o == Notifications.CARD_PICKED){
 
-            }
         }
     }
 }

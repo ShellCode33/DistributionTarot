@@ -39,15 +39,9 @@ public class DeckView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        getChildren().clear();
+        int nb_cards_to_remove = getChildren().size() - deck.size();
 
-        for(int i = 0; i < this.deck.size(); i++) {
-            ImageView view = new ImageView(image);
-            view.setTranslateZ(i);
-            view.setFitWidth(image.getWidth()/5);
-            view.setFitHeight(image.getHeight()/5);
-            getChildren().add(view);
-        }
-
+        for(int i = 0; i < nb_cards_to_remove; i++)
+            getChildren().remove(0);
     }
 }

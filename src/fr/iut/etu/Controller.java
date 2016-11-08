@@ -110,8 +110,14 @@ public class Controller extends Application {
                     stage.setScene(menu);
                     stage.setFullScreen(true);
                     break;
+
+                case A:
+                    boardView.lolz();
+                    break;
             }
         });
+
+
 
         while (!deal());
     }
