@@ -50,10 +50,16 @@ public class BoardView extends Group {
     private void init(){
         centerDeckView();
         placePlayerViews();
+
+        //TEST DEALING ANIMATION
+        board.getDeck().deal(board.getPlayer(0));
+        board.getDeck().deal(board.getPlayer(1));
+        board.getDeck().deal(board.getPlayer(2));
+        board.getDeck().deal(board.getPlayer(3));
     }
 
     private void centerDeckView(){
-        RotateTransition rotate = new RotateTransition(Duration.seconds(2), deckView);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
 
         rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(0);
@@ -62,17 +68,16 @@ public class BoardView extends Group {
         rotate.setCycleCount(1);
         rotate.play();
 
-        Bounds boundsInLocal = deckView.getBoundsInLocal();
-        Point2D point2D = deckView.localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+        Bounds deckViewBoundsInLocal = deckView.getBoundsInLocal();
+        Point2D deckViewCenter = deckView.localToParent(deckViewBoundsInLocal.getWidth() / 2, deckViewBoundsInLocal.getHeight() / 2);
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
-        translate.setToX(Controller.SCREEN_WIDTH/2 - point2D.getX());
-        translate.setToY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
+        translate.setToX(Controller.SCREEN_WIDTH/2 - deckViewCenter.getX());
+        translate.setToY(Controller.SCREEN_HEIGHT/2 - deckViewCenter.getY());
 
         translate.setCycleCount(1);
         translate.play();
     }
-
     private void placePlayerViews() {
 
         Bounds boundsInLocal = playerViews.get(0).getBoundsInLocal();
@@ -101,5 +106,10 @@ public class BoardView extends Group {
         playerViews.get(3).setTranslateX(Controller.SCREEN_WIDTH - point2D.getX());
         playerViews.get(3).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
         playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
+    }
+
+
+    public DeckView getDeckView() {
+        return deckView;
     }
 }

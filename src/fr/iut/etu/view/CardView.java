@@ -1,10 +1,8 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.model.Card;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.DrawMode;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -19,53 +17,12 @@ public class CardView extends Box implements Observer {
 
         super(100,200,1);
 
-
-        this.card = card;
-        this.card.addObserver(this);
-
-
-        Image imageBottom = new Image("file:./res/back.jpg");
-
-        Image imageFace;
-
-        if(card.getType() == Card.Type.FOOL){
-            imageFace = new Image("file:./res/cards/FOOL.jpg");
-        }
-        else{
-            switch(card.getValue()){
-                case 11:
-                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Jack.jpg");
-                    break;
-                case 12:
-                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Knight.jpg");
-                    break;
-                case 13:
-                    imageFace = new Image("file:./res/cards/"+card.getType()+"_Queen.jpg");
-                    break;
-                case 14:
-                    imageFace = new Image("file:./res/cards/"+card.getType()+"_King.jpg");
-                    break;
-
-                default:
-                    imageFace = new Image("file:./res/cards/"+card.getType()+"_"+card.getValue()+".jpg");
-                    break;
-            }
-        }
-
-        //Create the Material
-        PhongMaterial mat = new PhongMaterial();
-        mat.setDiffuseMap(imageBottom);
-        mat.setSpecularColor(Color.BLACK);
-
-        //Apply Material to the Box
-        setMaterial(mat);
-
+        setDrawMode(DrawMode.LINE);
 
     }
 
     @Override
     public void update(Observable observable, Object o) {
-
 
     }
 }

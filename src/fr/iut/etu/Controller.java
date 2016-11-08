@@ -6,16 +6,13 @@ import fr.iut.etu.model.Player;
 import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 
 public class Controller extends Application {
@@ -37,7 +34,7 @@ public class Controller extends Application {
     public Stage stage;
     private Scene sceneGame;
 
-    private boolean deal(){
+    private boolean deal() throws InterruptedException {
         board.getDeck().refill();
         board.getDeck().shuffle();
 
@@ -113,7 +110,8 @@ public class Controller extends Application {
             }
         });
 
-        while (!deal());
+        //    while (!deal());
+
     }
 
     private void reset() {
