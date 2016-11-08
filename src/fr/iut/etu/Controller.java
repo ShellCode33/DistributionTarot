@@ -14,6 +14,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class Controller extends Application {
 
     public static final int CARD_WIDTH = 120;
     public static final int CARD_HEIGHT = 212;
-    public static final int CARD_DEPTH = 1;
+    public static final int CARD_THICK = 1;
 
     private Board board;
     private BoardView boardView;
@@ -96,10 +97,14 @@ public class Controller extends Application {
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
 
-        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT);
+        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         sceneGame.setCamera(camera); //3D
+
+        camera.setRotationAxis(Rotate.X_AXIS);
+        camera.setRotate(30);
+
 
         stage.setScene(sceneGame);
         stage.setFullScreen(true);

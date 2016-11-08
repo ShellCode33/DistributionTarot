@@ -26,9 +26,9 @@ public class DeckView extends Group implements Observer {
 
         image = new Image("file:res/deck.jpg");
 
-        for(int i = 0; i < this.deck.size(); i++) {
+        for(int i = 1; i <= this.deck.size(); i++) {
             ImageView view = new ImageView(image);
-            view.setTranslateZ(i*Controller.CARD_DEPTH);
+            view.setTranslateZ(-Controller.CARD_THICK*deck.size()-i*Controller.CARD_THICK);
             view.setFitWidth(Controller.CARD_WIDTH);
             view.setFitHeight(Controller.CARD_HEIGHT);
             getChildren().add(view);

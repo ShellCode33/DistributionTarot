@@ -1,8 +1,13 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +28,9 @@ import java.util.Observer;
  */
 public class CardView extends Group implements Observer {
     private Card card;
+    private ImageView front, back;
+
+    private int count = 0;
 
     public CardView(Card card) {
 
@@ -58,12 +66,21 @@ public class CardView extends Group implements Observer {
             }
         }
 
-        ImageView front = new ImageView(imageFace);
-        ImageView back = new ImageView(imageBottom);
-        front.setTranslateZ(0);
-        back.setTranslateZ(1);
+        front = new ImageView(imageFace);
+        back = new ImageView(imageBottom);
+        front.setFitHeight(Controller.CARD_HEIGHT);
+        front.setFitWidth(Controller.CARD_WIDTH);
+        back.setFitHeight(Controller.CARD_HEIGHT);
+        back.setFitWidth(Controller.CARD_WIDTH);
 
-        getChildren().addAll(front);
+        front.setTranslateZ(-Controller.CARD_WIDTH/2-1);
+        back.setTranslateZ(-Controller.CARD_WIDTH/2-1.01);
+
+        front.setRotationAxis(Rotate.Y_AXIS);
+        front.setRotate(180);
+
+        getChildren().add(front);
+        getChildren().add(back);
     }
 
     @Override
@@ -72,9 +89,9 @@ public class CardView extends Group implements Observer {
 
         rotate.setAxis(Rotate.Y_AXIS);
         rotate.setFromAngle(0);
-        rotate.setToAngle(180);
+        rotate.setToAngle(360);
         rotate.setInterpolator(Interpolator.LINEAR);
-        rotate.setCycleCount(1);
+        rotate.setCycleCount(Animation.INDEFINITE);
         rotate.play();
     }
 }

@@ -3,6 +3,8 @@ package fr.iut.etu.view;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Card;
+import fr.iut.etu.model.Fool;
+import fr.iut.etu.model.Trump;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
@@ -49,7 +51,7 @@ public class BoardView extends Group {
 
         init();
 
-        test = new Card(Card.Type.HEART, 7);
+        test = new Trump(21);
         CardView img = new CardView(test);
         img.setTranslateX(200);
         img.setTranslateY(200);
