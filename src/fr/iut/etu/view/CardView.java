@@ -2,21 +2,11 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
-import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -57,26 +47,9 @@ public class CardView extends Group implements Observer {
             Image imageFace;
 
             if (card.getType() == Card.Type.FOOL) {
-                imageFace = new Image("file:./res/cards/FOOL.jpg");
+                imageFace = new Image("file:./res/FOOL.png");
             } else {
-                switch (card.getValue()) {
-                    case 11:
-                        imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_Jack.jpg");
-                        break;
-                    case 12:
-                        imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_Knight.jpg");
-                        break;
-                    case 13:
-                        imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_Queen.jpg");
-                        break;
-                    case 14:
-                        imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_King.jpg");
-                        break;
-
-                    default:
-                        imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_" + card.getValue() + ".jpg");
-                        break;
-                }
+                imageFace = new Image("file:./res/" + card.getType().toString() + "_" + card.getValue() + ".png");
             }
 
             front = new ImageView(imageFace);
