@@ -1,19 +1,13 @@
 package fr.iut.etu;
 
-import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
-import fr.iut.etu.model.Player;
-import fr.iut.etu.model.Trump;
+import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
+import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.geometry.Point3D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.RotateEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
@@ -43,19 +37,23 @@ public class Controller extends Application {
     private Scene sceneGame;
 
     private boolean deal(){
-        board.getDeck().refill();
-        board.getDeck().shuffle();
+        Deck deck = board.getDeck();
+        DeckView deckView = boardView.getDeckView();
+
+        deck.refill();
+        deck.shuffle();
+        deckView.cutAnimation();
 
         for(int i = 0; i < 6; i++){
             for(Player p : board.getPlayers()){
 
-                board.getDeck().deal(p);
-                board.getDeck().deal(p);
-                board.getDeck().deal(p);
+                deck.deal(p);
+                deck.deal(p);
+                deck.deal(p);
 
             }
 
-            board.getDeck().deal(board.getDog());
+            deck.deal(board.getDog());
         }
 
         for(Player p : board.getPlayers()){
@@ -134,15 +132,11 @@ public class Controller extends Application {
                 case ESCAPE:
                     stage.setScene(menu);
                     stage.setFullScreen(true);
-                    break;
-
-                case A:
-                    boardView.lolz();
+                    board = null;
+                    boardView = null;
                     break;
             }
         });
-
-
 
         while (!deal());
     }

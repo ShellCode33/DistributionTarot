@@ -7,6 +7,8 @@ import fr.iut.etu.model.Trump;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -26,8 +28,6 @@ public class BoardView extends Group {
 
     private ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
-
-    Card test;
 
     public BoardView(Board board) {
         super();
@@ -49,22 +49,11 @@ public class BoardView extends Group {
         getChildren().add(this.deckView);
 
         init();
-
-        test = new Trump(21);
-        CardView img = new CardView(test);
-        img.setTranslateX(200);
-        img.setTranslateY(200);
-
-        getChildren().add(img);
     }
 
     private void init(){
-        centerDeckView();
-        placePlayerViews();
-    }
 
-    private void centerDeckView(){
-        RotateTransition rotate = new RotateTransition(Duration.seconds(2), deckView);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(2.5), deckView);
 
         rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(0);
@@ -73,15 +62,14 @@ public class BoardView extends Group {
         rotate.setCycleCount(1);
         rotate.play();
 
-        Bounds boundsInLocal = deckView.getBoundsInLocal();
-        Point2D point2D = deckView.localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
-
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
-        translate.setToX(Controller.SCREEN_WIDTH/2 - point2D.getX());
-        translate.setToY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
+        translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH*Controller.SCALE_COEFF)/2);
+        translate.setToY((Controller.SCREEN_HEIGHT)/2);
 
         translate.setCycleCount(1);
         translate.play();
+
+        translate.setOnFinished(actionEvent1 -> placePlayerViews());
     }
 
     private void placePlayerViews() {
@@ -114,7 +102,7 @@ public class BoardView extends Group {
         playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
     }
 
-    public void lolz() {
-        test.show();
+    public DeckView getDeckView() {
+        return deckView;
     }
 }

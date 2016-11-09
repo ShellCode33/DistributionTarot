@@ -46,4 +46,8 @@ public class DeckView extends Group implements Observer {
         for(int i = 0; i < nb_cards_to_remove; i++)
             getChildren().remove(0);
     }
+
+    public void cutAnimation() {
+
+    }
 }
