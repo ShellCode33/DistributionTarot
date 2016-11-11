@@ -1,6 +1,9 @@
 package fr.iut.etu;
 
-import fr.iut.etu.model.*;
+import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Card;
+import fr.iut.etu.model.Deck;
+import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
@@ -135,14 +138,14 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayers().get(0).getCards().get(test++).show();
+                    board.getPlayers().get(0).getCards().get(test).show();
                     break;
             }
         });
 
         boardView.bringDeckOnTableAnimation();
 
-        while (!deal());
+        //while (!deal());
     }
 
     private void reset() {

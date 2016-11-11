@@ -26,28 +26,31 @@ public class DeckView extends Group implements Observer {
 
         image = new Image("file:res/deck.jpg");
 
-        for(int i = 1; i <= 78; i++) {
-            ImageView view = new ImageView(image);
-            view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*78-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
-            view.setScaleX(Controller.SCALE_COEFF);
-            view.setScaleY(Controller.SCALE_COEFF);
-            view.setFitWidth(Controller.CARD_WIDTH);
-            view.setFitHeight(Controller.CARD_HEIGHT);
-            getChildren().add(view);
-        }
+        update(deck, null);
 
         Tooltip.install(this, new Tooltip(this.deck.size() + " cards!"));
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        int nb_cards_to_remove = getChildren().size() - deck.size();
-        System.out.println("nb_cards_to_remove: " + nb_cards_to_remove);
+        int cardsCountDifference = getChildren().size() - deck.size();
+        System.out.println("cardsCountDiffenrence: " + cardsCountDifference);
 
-        for(int i = 0; i < nb_cards_to_remove; i++)
-            getChildren().remove(0);
-
-        Tooltip.install(this, new Tooltip(getChildren().size() + " cards !"));
+        if(cardsCountDifference < 0){
+            for(int i = 0; i < -cardsCountDifference; i++) {
+                ImageView view = new ImageView(image);
+                view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*78-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
+                view.setScaleX(Controller.SCALE_COEFF);
+                view.setScaleY(Controller.SCALE_COEFF);
+                view.setFitWidth(Controller.CARD_WIDTH);
+                view.setFitHeight(Controller.CARD_HEIGHT);
+                getChildren().add(view);
+            }
+        }
+        else {
+            for (int i = 0; i < cardsCountDifference; i++)
+                getChildren().remove(0);
+        }
     }
 
     public void cutAnimation() {
