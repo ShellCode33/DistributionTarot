@@ -28,6 +28,8 @@ public class Controller extends Application {
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
+    int test = 0;
+
     private Board board;
     private BoardView boardView;
 
@@ -47,13 +49,13 @@ public class Controller extends Application {
         for(int i = 0; i < 6; i++){
             for(Player p : board.getPlayers()){
 
-                deck.deal(p);
-                deck.deal(p);
-                deck.deal(p);
+                //deck.deal(p);
+                //deck.deal(p);
+                //deck.deal(p);
 
             }
 
-            deck.deal(board.getDog());
+            //deck.deal(board.getDog());
         }
 
         for(Player p : board.getPlayers()){
@@ -64,7 +66,7 @@ public class Controller extends Application {
                     trumps.add(card);
             }
 
-            if(trumps.size() == 1 && trumps.get(0) == new Trump(1)){
+            if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
                 reset();
                 return false;
             }
@@ -135,8 +137,14 @@ public class Controller extends Application {
                     board = null;
                     boardView = null;
                     break;
+
+                case A:
+                    board.getPlayers().get(0).getCards().get(test++).show();
+                    break;
             }
         });
+
+        boardView.bringDeckOnTableAnimation();
 
         while (!deal());
     }

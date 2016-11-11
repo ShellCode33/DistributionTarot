@@ -26,9 +26,9 @@ public class DeckView extends Group implements Observer {
 
         image = new Image("file:res/deck.jpg");
 
-        for(int i = 1; i <= this.deck.size(); i++) {
+        for(int i = 1; i <= 78; i++) {
             ImageView view = new ImageView(image);
-            view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*deck.size()-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
+            view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*78-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
             view.setScaleX(Controller.SCALE_COEFF);
             view.setScaleY(Controller.SCALE_COEFF);
             view.setFitWidth(Controller.CARD_WIDTH);
@@ -42,9 +42,12 @@ public class DeckView extends Group implements Observer {
     @Override
     public void update(Observable observable, Object o) {
         int nb_cards_to_remove = getChildren().size() - deck.size();
+        System.out.println("nb_cards_to_remove: " + nb_cards_to_remove);
 
         for(int i = 0; i < nb_cards_to_remove; i++)
             getChildren().remove(0);
+
+        Tooltip.install(this, new Tooltip(getChildren().size() + " cards !"));
     }
 
     public void cutAnimation() {

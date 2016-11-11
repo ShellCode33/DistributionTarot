@@ -30,6 +30,10 @@ public class PlayerView extends Group implements Observer {
         if(o != null && o == Notifications.CARD_PICKED){
             ArrayList<Card> cards = player.getCards();
             CardView cardView = new CardView(cards.get(cards.size()-1));
+
+            cardView.setTranslateX(cards.size()*30);
+            cardView.setTranslateZ(-cards.size()*0.1-1);
+
             cardViews.add(cardView);
             getChildren().add(cardView);
         }
