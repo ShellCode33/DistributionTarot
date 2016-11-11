@@ -105,24 +105,16 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayers().get(0).getCards().get(test).show();
+                    board.getPlayers().get(0).getCards().get(test++).show();
                     break;
             }
         });
 
-        toTest();
-        //while(!deal());
+        while(!deal());
     }
 
     private void toTest(){
-        Deck deck = board.getDeck();
-        DeckView deckView = boardView.getDeckView();
 
-        boardView.bringDeckOnTableAnimation();
-
-        deck.refill();
-        deck.shuffle();
-        deckView.cutAnimation();
     }
 
     private boolean deal(){
@@ -130,19 +122,20 @@ public class Controller extends Application {
         DeckView deckView = boardView.getDeckView();
 
         deck.refill();
+        boardView.bringDeckOnTableAnimation();
         deck.shuffle();
         deckView.cutAnimation();
 
         for(int i = 0; i < 6; i++){
             for(Player p : board.getPlayers()){
 
-                //deck.deal(p);
-                //deck.deal(p);
-                //deck.deal(p);
+                deck.deal(p);
+                deck.deal(p);
+                deck.deal(p);
 
             }
 
-            //deck.deal(board.getDog());
+            deck.deal(board.getDog());
         }
 
         for(Player p : board.getPlayers()){

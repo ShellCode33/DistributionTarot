@@ -39,6 +39,7 @@ public class BoardView extends Group {
             playerViews.add(playerView);
             getChildren().add(playerView);
         }
+        placePlayerViews();
 
         ImageView backgroundView = new ImageView(new Image("file:res/background_board.jpg"));
         backgroundView.setFitWidth(Controller.SCREEN_WIDTH);
@@ -47,6 +48,7 @@ public class BoardView extends Group {
 
         this.deckView = new DeckView(board.getDeck());
         getChildren().add(this.deckView);
+
     }
 
     public void bringDeckOnTableAnimation(){
@@ -66,8 +68,6 @@ public class BoardView extends Group {
 
         translate.setCycleCount(1);
         translate.play();
-
-        translate.setOnFinished(actionEvent1 -> placePlayerViews());
 
     }
 

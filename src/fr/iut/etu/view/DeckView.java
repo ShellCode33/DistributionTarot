@@ -35,9 +35,6 @@ public class DeckView extends Group implements Observer {
         int childrenCount = getChildren().size();
         int deckSize = deck.size();
 
-        System.out.println("childrenCount: " + childrenCount);
-        System.out.println("deckSize: " + deckSize);
-
         if(childrenCount < deckSize){
             for(int i = childrenCount; i < deckSize; i++) {
                 ImageView view = new ImageView(image);
