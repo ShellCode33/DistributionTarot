@@ -42,39 +42,6 @@ public class Controller extends Application {
     public Stage stage;
     private Scene sceneGame;
 
-    private boolean deal(){
-        Deck deck = board.getDeck();
-        DeckView deckView = boardView.getDeckView();
-
-        deck.refill();
-        deck.shuffle();
-        deckView.cutAnimation();
-
-        for(int i = 0; i < 6; i++){
-            for(Player p : board.getPlayers()){
-
-                //deck.deal(p);
-                //deck.deal(p);
-                //deck.deal(p);
-
-            }
-
-            //deck.deal(board.getDog());
-        }
-
-        for(Player p : board.getPlayers()){
-            ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
-
-            if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
-                reset();
-                return false;
-            }
-        }
-
-        return true;
-
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -143,9 +110,52 @@ public class Controller extends Application {
             }
         });
 
+        toTest();
+        //while(!deal());
+    }
+
+    private void toTest(){
+        Deck deck = board.getDeck();
+        DeckView deckView = boardView.getDeckView();
+
         boardView.bringDeckOnTableAnimation();
 
-        //while (!deal());
+        deck.refill();
+        deck.shuffle();
+        deckView.cutAnimation();
+    }
+
+    private boolean deal(){
+        Deck deck = board.getDeck();
+        DeckView deckView = boardView.getDeckView();
+
+        deck.refill();
+        deck.shuffle();
+        deckView.cutAnimation();
+
+        for(int i = 0; i < 6; i++){
+            for(Player p : board.getPlayers()){
+
+                //deck.deal(p);
+                //deck.deal(p);
+                //deck.deal(p);
+
+            }
+
+            //deck.deal(board.getDog());
+        }
+
+        for(Player p : board.getPlayers()){
+            ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
+
+            if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
+                reset();
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     private void reset() {

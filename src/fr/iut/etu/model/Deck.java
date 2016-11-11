@@ -34,6 +34,8 @@ public class Deck extends Observable{
     }
 
     public void refill() {
+
+
         for(int i = 1; i <= 14;i++){
             add(new Card(Card.Type.DIAMOND, i));
             add(new Card(Card.Type.CLUB, i));

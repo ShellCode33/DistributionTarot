@@ -27,17 +27,19 @@ public class DeckView extends Group implements Observer {
         image = new Image("file:res/deck.jpg");
 
         update(deck, null);
-
-        Tooltip.install(this, new Tooltip(this.deck.size() + " cards!"));
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        int cardsCountDifference = getChildren().size() - deck.size();
-        System.out.println("cardsCountDiffenrence: " + cardsCountDifference);
 
-        if(cardsCountDifference < 0){
-            for(int i = 0; i < -cardsCountDifference; i++) {
+        int childrenCount = getChildren().size();
+        int deckSize = deck.size();
+
+        System.out.println("childrenCount: " + childrenCount);
+        System.out.println("deckSize: " + deckSize);
+
+        if(childrenCount < deckSize){
+            for(int i = childrenCount; i < deckSize; i++) {
                 ImageView view = new ImageView(image);
                 view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*78-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
                 view.setScaleX(Controller.SCALE_COEFF);
@@ -48,9 +50,11 @@ public class DeckView extends Group implements Observer {
             }
         }
         else {
-            for (int i = 0; i < cardsCountDifference; i++)
+            for (int i = childrenCount; i > deckSize; i--)
                 getChildren().remove(0);
         }
+
+        Tooltip.install(this, new Tooltip(this.deck.size() + " cards!"));
     }
 
     public void cutAnimation() {
