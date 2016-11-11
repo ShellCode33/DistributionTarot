@@ -36,7 +36,7 @@ public class DeckView extends Group implements Observer {
             getChildren().add(view);
         }
 
-        Tooltip.install(this, new Tooltip(this.deck.size() + " cards !"));
+        Tooltip.install(this, new Tooltip(this.deck.size() + " cards!"));
     }
 
     @Override

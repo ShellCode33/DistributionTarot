@@ -13,6 +13,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Controller extends Application {
 
@@ -59,12 +60,7 @@ public class Controller extends Application {
         }
 
         for(Player p : board.getPlayers()){
-            ArrayList<Card> trumps = new ArrayList<Card>();
-
-            for (Card card : p.getCards()) {
-                if(card.getType() == Card.Type.TRUMP)
-                    trumps.add(card);
-            }
+            ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
 
             if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
                 reset();

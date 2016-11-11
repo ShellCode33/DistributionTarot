@@ -68,6 +68,7 @@ public class BoardView extends Group {
         translate.play();
 
         translate.setOnFinished(actionEvent1 -> placePlayerViews());
+
     }
 
     private void placePlayerViews() {
