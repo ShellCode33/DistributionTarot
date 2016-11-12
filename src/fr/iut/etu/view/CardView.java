@@ -2,15 +2,10 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
-import javafx.animation.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
-import javafx.util.Duration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -30,10 +25,11 @@ public class CardView extends Group implements Observer {
         Image imageBottom = new Image("file:res/back.jpg");
 
         back = new ImageView(imageBottom);
-        back.setScaleX(Controller.SCALE_COEFF);
-        back.setScaleY(Controller.SCALE_COEFF);
+        back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);
+        back.setScaleX(Controller.SCALE_COEFF);
+        back.setScaleY(Controller.SCALE_COEFF);
         back.setTranslateZ(-Controller.CARD_WIDTH/2-1.01);
 
         getChildren().add(back);
@@ -74,40 +70,29 @@ public class CardView extends Group implements Observer {
             front = null;
         }
 
-//        RotateTransition rotate = new RotateTransition(Duration.seconds(2), this);
+        setTranslateY(-Controller.CARD_HEIGHT);
+
+//        RotateTransition rotation1 = new RotateTransition(Duration.seconds(1), this);
+//        rotation1.setByAngle(90);
+//        rotation1.setAxis(Rotate.X_AXIS);
+//        rotation1.setCycleCount(1);
 //
-//        rotate.setAxis(Rotate.Y_AXIS);
-//        rotate.setFromAngle(0);
-//        rotate.setToAngle(180);
-//        rotate.setInterpolator(Interpolator.LINEAR);
-//        rotate.setCycleCount(1);
-//        rotate.play();
-
-
-        Bounds boundsInLocal = getBoundsInLocal();
-
-        Rotate rotate1 = new Rotate(0, boundsInLocal.getWidth()/2, boundsInLocal.getHeight()/2, -Controller.CARD_HEIGHT/2);
-        rotate1.setAxis(Rotate.X_AXIS);
-        getTransforms().add(rotate1);
-
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().addAll(
-                new KeyFrame(Duration.ZERO, new KeyValue(rotate1.angleProperty(), 0)),
-                new KeyFrame(Duration.seconds(1), new KeyValue(rotate1.angleProperty(), 90))
-        );
-        timeline.play();
-
-        timeline.setOnFinished(actionEvent -> {
-            Rotate rotate2 = new Rotate(0, boundsInLocal.getWidth()/2, boundsInLocal.getHeight()/2, boundsInLocal.getDepth()/2);
-            rotate2.setAxis(Rotate.X_AXIS);
-            getTransforms().add(rotate2);
-
-            Timeline timeline2 = new Timeline();
-            timeline2.getKeyFrames().addAll(
-                    new KeyFrame(Duration.ZERO, new KeyValue(rotate2.angleProperty(), 0)),
-                    new KeyFrame(Duration.seconds(2), new KeyValue(rotate2.angleProperty(), 180))
-            );
-            timeline2.play();
-        });
+//        RotateTransition rotation2 = new RotateTransition(Duration.seconds(1), this);
+//        rotation2.setByAngle(180);
+//        rotation2.setAxis(Rotate.X_AXIS);
+//        rotation2.setCycleCount(1);
+//
+//        RotateTransition rotation3 = new RotateTransition(Duration.seconds(1), this);
+//        rotation3.setByAngle(-90);
+//        rotation3.setAxis(Rotate.X_AXIS);
+//        rotation3.setCycleCount(1);
+//
+//        rotation1.play();
+//        rotation1.setOnFinished(event1 -> {
+//            rotation2.play();
+//            rotation2.setOnFinished(event2 -> {
+//                rotation3.play();
+//            } );
+//        });
     }
 }
