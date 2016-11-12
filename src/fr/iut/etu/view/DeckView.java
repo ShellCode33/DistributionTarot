@@ -2,10 +2,18 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Deck;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -56,5 +64,27 @@ public class DeckView extends Group implements Observer {
 
     public void cutAnimation() {
 
+        RotateTransition rotate = new RotateTransition(Duration.seconds(1), this);
+
+        rotate.setAxis(Rotate.Z_AXIS);
+        rotate.setFromAngle(450);
+        rotate.setToAngle(360);
+        rotate.setInterpolator(Interpolator.LINEAR);
+        rotate.setCycleCount(1);
+        rotate.play();
+
+        rotate.setOnFinished(actionEvent -> {
+
+            //CUT ANIMATION
+
+            //cut.setOnFinished(actionEvent2 -> {
+            rotate.setAxis(Rotate.Z_AXIS);
+            rotate.setFromAngle(360);
+            rotate.setToAngle(450);
+            rotate.setInterpolator(Interpolator.LINEAR);
+            rotate.setCycleCount(1);
+            rotate.play();
+            //}
+        });
     }
 }

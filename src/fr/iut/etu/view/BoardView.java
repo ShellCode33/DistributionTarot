@@ -39,7 +39,6 @@ public class BoardView extends Group {
             playerViews.add(playerView);
             getChildren().add(playerView);
         }
-        placePlayerViews();
 
         ImageView backgroundView = new ImageView(new Image("file:res/background_board.jpg"));
         backgroundView.setFitWidth(Controller.SCREEN_WIDTH);
@@ -51,7 +50,7 @@ public class BoardView extends Group {
 
     }
 
-    public void bringDeckOnTableAnimation(){
+    public void bringDeckOnBoardAnimation(){
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(2.5), deckView);
 
@@ -71,7 +70,9 @@ public class BoardView extends Group {
 
     }
 
-    private void placePlayerViews() {
+    public void placePlayerViews() {
+
+        System.out.println("place playerViews");
 
         Bounds boundsInLocal = playerViews.get(0).getBoundsInLocal();
         Point2D point2D = playerViews.get(0).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);

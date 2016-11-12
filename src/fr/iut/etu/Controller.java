@@ -7,6 +7,9 @@ import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -118,36 +121,66 @@ public class Controller extends Application {
     }
 
     private boolean deal(){
+        final boolean[] isWellDealt = {true};
         Deck deck = board.getDeck();
         DeckView deckView = boardView.getDeckView();
 
         deck.refill();
-        boardView.bringDeckOnTableAnimation();
-        deck.shuffle();
-        deckView.cutAnimation();
 
-        for(int i = 0; i < 6; i++){
-            for(Player p : board.getPlayers()){
-
-                deck.deal(p);
-                deck.deal(p);
-                deck.deal(p);
-
+        Task<Void> waitBringDeckAnimation = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                boardView.bringDeckOnBoardAnimation();
+                Thread.sleep(2600);
+                return null;
             }
+        };
 
-            deck.deal(board.getDog());
-        }
+        waitBringDeckAnimation.setOnSucceeded(event -> {
 
-        for(Player p : board.getPlayers()){
-            ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
+            System.out.println("bring deck animation is over");
 
-            if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
-                reset();
-                return false;
-            }
-        }
+            Task<Void> waitCutAnimation = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    deckView.cutAnimation();
+                    Thread.sleep(2000);
+                    return null;
+                }
+            };
 
-        return true;
+            waitCutAnimation.setOnSucceeded(workerStateEvent -> {
+                System.out.println("cut animation is over");
+                deck.shuffle();
+                for(int i = 0; i < 6; i++){
+                    for(Player p : board.getPlayers()){
+
+                        deck.deal(p);
+                        deck.deal(p);
+                        deck.deal(p);
+
+                    }
+
+                    deck.deal(board.getDog());
+                }
+
+                for(Player p : board.getPlayers()){
+                    ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
+
+                    if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
+                        reset();
+                        isWellDealt[0] = false;
+                    }
+                }
+
+                boardView.placePlayerViews();
+            });
+
+            new Thread(waitCutAnimation).start();
+        });
+        new Thread(waitBringDeckAnimation).start();
+
+        return isWellDealt[0];
 
     }
 
