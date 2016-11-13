@@ -143,7 +143,7 @@ public class Controller extends Application {
                 @Override
                 protected Void call() throws Exception {
                     deckView.cutAnimation();
-                    Thread.sleep(2000);
+                    Thread.sleep(5000);
                     return null;
                 }
             };

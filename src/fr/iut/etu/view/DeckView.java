@@ -2,9 +2,7 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Deck;
-import javafx.animation.Interpolator;
-import javafx.animation.RotateTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -15,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,6 +24,7 @@ public class DeckView extends Group implements Observer {
 
     private Deck deck;
     private Image image;
+    private ArrayList<ImageView> images = new ArrayList<>();
 
     public DeckView(Deck deck) {
         super();
@@ -46,11 +46,12 @@ public class DeckView extends Group implements Observer {
         if(childrenCount < deckSize){
             for(int i = childrenCount; i < deckSize; i++) {
                 ImageView view = new ImageView(image);
-                view.setTranslateZ(-Controller.CARD_THICK*Controller.SCALE_COEFF*78-i*Controller.CARD_THICK*Controller.SCALE_COEFF);
+                view.setTranslateZ(-Controller.CARD_THICK*78-i*Controller.CARD_THICK);
                 view.setScaleX(Controller.SCALE_COEFF);
                 view.setScaleY(Controller.SCALE_COEFF);
                 view.setFitWidth(Controller.CARD_WIDTH);
                 view.setFitHeight(Controller.CARD_HEIGHT);
+                images.add(view);
                 getChildren().add(view);
             }
         }
@@ -64,10 +65,10 @@ public class DeckView extends Group implements Observer {
 
     public void cutAnimation() {
 
-        RotateTransition rotate = new RotateTransition(Duration.seconds(1), this);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
 
         rotate.setAxis(Rotate.Z_AXIS);
-        rotate.setFromAngle(450);
+        rotate.setFromAngle(270);
         rotate.setToAngle(360);
         rotate.setInterpolator(Interpolator.LINEAR);
         rotate.setCycleCount(1);
@@ -75,16 +76,61 @@ public class DeckView extends Group implements Observer {
 
         rotate.setOnFinished(actionEvent -> {
 
-            //CUT ANIMATION
+            Timeline timeline = null;
 
-            //cut.setOnFinished(actionEvent2 -> {
-            rotate.setAxis(Rotate.Z_AXIS);
-            rotate.setFromAngle(360);
-            rotate.setToAngle(450);
-            rotate.setInterpolator(Interpolator.LINEAR);
-            rotate.setCycleCount(1);
-            rotate.play();
-            //}
+            for(int i = 0; i < deck.size()/2; i++) {
+                timeline = new Timeline();
+
+                KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
+                        new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), Controller.CARD_WIDTH*Controller.SCALE_COEFF+10));
+
+                timeline.getKeyFrames().add(cut);
+                timeline.setAutoReverse(true);
+                timeline.play();
+            }
+
+            timeline.setOnFinished(actionEvent1 -> {
+
+                Timeline timeline2 = null;
+
+                for(int i = 0; i < deck.size()/2; i++) {
+                    timeline2 = new Timeline();
+
+                    KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
+                            new KeyValue(getChildren().get(i).translateZProperty(), -Controller.CARD_THICK*deck.size()*2-i*Controller.CARD_THICK));
+
+                    timeline2.getKeyFrames().add(cut);
+                    timeline2.play();
+                }
+
+                timeline2.setOnFinished(actionEvent2 -> {
+
+                    Timeline timeline3 = null;
+
+                    for(int i = 0; i < deck.size()/2; i++) {
+                        timeline3 = new Timeline();
+
+                        KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
+                                new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), 0));
+
+                        timeline3.getKeyFrames().add(cut);
+                        timeline3.play();
+                    }
+
+
+                    timeline3.setOnFinished(actionEvent3 -> {
+                        RotateTransition rotate2 = new RotateTransition(Duration.seconds(0.5), this);
+                        rotate2.setAxis(Rotate.Z_AXIS);
+                        rotate2.setFromAngle(360);
+                        rotate2.setToAngle(270);
+                        rotate2.setInterpolator(Interpolator.LINEAR);
+                        rotate2.setCycleCount(1);
+                        rotate2.play();
+                    });
+
+                });
+            });
+
         });
     }
 }
