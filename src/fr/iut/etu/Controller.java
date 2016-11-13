@@ -8,8 +8,6 @@ import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -18,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -131,7 +130,7 @@ public class Controller extends Application {
             @Override
             protected Void call() throws Exception {
                 boardView.bringDeckOnBoardAnimation();
-                Thread.sleep(2600);
+                Thread.sleep(3000);
                 return null;
             }
         };

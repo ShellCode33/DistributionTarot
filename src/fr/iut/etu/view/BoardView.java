@@ -2,13 +2,8 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
-import fr.iut.etu.model.Trump;
-import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -52,18 +47,17 @@ public class BoardView extends Group {
 
     public void bringDeckOnBoardAnimation(){
 
-        RotateTransition rotate = new RotateTransition(Duration.seconds(2.5), deckView);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
 
         rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(0);
-        rotate.setToAngle(450);
-        rotate.setInterpolator(Interpolator.LINEAR);
+        rotate.setToAngle(270);
         rotate.setCycleCount(1);
         rotate.play();
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
         translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH*Controller.SCALE_COEFF)/2);
-        translate.setToY((Controller.SCREEN_HEIGHT)/2);
+        translate.setToY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT*Controller.SCALE_COEFF)/2);
 
         translate.setCycleCount(1);
         translate.play();

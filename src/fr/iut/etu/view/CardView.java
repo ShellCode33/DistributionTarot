@@ -2,10 +2,13 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -70,29 +73,49 @@ public class CardView extends Group implements Observer {
             front = null;
         }
 
-        setTranslateY(-Controller.CARD_HEIGHT);
+        double width = Controller.CARD_WIDTH*Controller.SCALE_COEFF;
+        double height = Controller.CARD_HEIGHT*Controller.SCALE_COEFF;
+        double depth = Controller.CARD_THICK*Controller.SCALE_COEFF;
 
-//        RotateTransition rotation1 = new RotateTransition(Duration.seconds(1), this);
-//        rotation1.setByAngle(90);
-//        rotation1.setAxis(Rotate.X_AXIS);
-//        rotation1.setCycleCount(1);
-//
-//        RotateTransition rotation2 = new RotateTransition(Duration.seconds(1), this);
-//        rotation2.setByAngle(180);
-//        rotation2.setAxis(Rotate.X_AXIS);
-//        rotation2.setCycleCount(1);
-//
-//        RotateTransition rotation3 = new RotateTransition(Duration.seconds(1), this);
-//        rotation3.setByAngle(-90);
-//        rotation3.setAxis(Rotate.X_AXIS);
-//        rotation3.setCycleCount(1);
-//
-//        rotation1.play();
-//        rotation1.setOnFinished(event1 -> {
-//            rotation2.play();
-//            rotation2.setOnFinished(event2 -> {
-//                rotation3.play();
-//            } );
-//        });
+        TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
+        translate1.setByY(-height);
+        translate1.setCycleCount(1);
+
+        TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.5), this);
+        translate2.setByZ(-height/2);
+        translate2.setCycleCount(1);
+
+        RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
+        rotate.setByAngle(180);
+        rotate.setAxis(Rotate.X_AXIS);
+        rotate.setCycleCount(1);
+
+        TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.3), this);
+        translate3.setByZ(height/2);
+        translate3.setCycleCount(1);
+
+        TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
+        translate4.setByY(height);
+        translate4.setCycleCount(1);
+
+        translate1.play();
+
+        translate1.setOnFinished(event1 -> {
+
+            translate2.play();
+            rotate.play();
+
+            translate2.setOnFinished(event2 -> {
+
+                translate3.play();
+
+                translate3.setOnFinished(event3 -> {
+
+                    translate4.play();
+
+                });
+            });
+
+        });
     }
 }
