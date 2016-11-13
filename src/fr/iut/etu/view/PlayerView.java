@@ -7,6 +7,8 @@ import fr.iut.etu.model.Player;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.Observer;
  */
 public class PlayerView extends Group implements Observer {
 
-    public static int GAP_BETWEEN_CARDS = 30;
+    public static int GAP_BETWEEN_CARDS = 40;
 
     private Player player;
 
@@ -29,6 +31,12 @@ public class PlayerView extends Group implements Observer {
 
         this.player = player;
         this.player.addObserver(this);
+        Label usernameLabel = new Label();
+        usernameLabel.setText(player.getName());
+        usernameLabel.setTranslateY(-50);
+        usernameLabel.setTranslateZ(-10);
+        usernameLabel.setTextFill(Color.WHITE);
+        getChildren().add(usernameLabel);
     }
 
     @Override

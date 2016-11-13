@@ -17,6 +17,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -81,9 +82,17 @@ public class Controller extends Application {
         primaryStage.setWidth(SCREEN_WIDTH);
     }
 
-    public void startGame() {
+    public void startGame(String myPlayerUsername) {
         board = new Board(PLAYER_COUNT);
+
+        board.addPlayer(new Player(myPlayerUsername));
+
+        for(int i = 0; i < PLAYER_COUNT-1; i++)
+            board.addPlayer(new Player());
+
+
         boardView = new BoardView(board);
+
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
@@ -143,7 +152,7 @@ public class Controller extends Application {
                 @Override
                 protected Void call() throws Exception {
                     deckView.cutAnimation();
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     return null;
                 }
             };
@@ -190,5 +199,15 @@ public class Controller extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void askUsername() {
+
+        try {
+            stage.setScene(new UserInput(this));
+            stage.setFullScreen(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

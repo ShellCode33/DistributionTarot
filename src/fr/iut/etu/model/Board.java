@@ -16,12 +16,16 @@ public class Board {
 
         this.playerCount = playerCount;
 
-        if(playerCount < 1)
-            throw new IllegalArgumentException("playerCount should be at least 1");
+        if(playerCount < 3 || playerCount > 5)
+            throw new IllegalArgumentException("playerCount should be between 3 and 5");
+    }
 
-        for (int i = 0; i < playerCount; i++) {
-            players.add(new Player());
-        }
+    public void addPlayer(Player player) {
+
+        if(players.size() == 5)
+            throw new IllegalArgumentException("playerCount should be between 3 and 5");
+
+        players.add(player);
     }
 
     public Player getPlayer(int i){

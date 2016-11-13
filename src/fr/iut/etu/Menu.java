@@ -60,7 +60,7 @@ public class Menu extends Scene {
         Button button = (Button)e.getSource();
 
         if(button == playButton)
-            controller.startGame();
+            controller.askUsername();
 
         else if(button == settingsButton)
             settingsButton.setText("Not yet implemented");
