@@ -19,6 +19,7 @@ import java.util.Observer;
 public class CardView extends Group implements Observer {
     private Card card;
     private ImageView front = null, back;
+    private boolean animVertical = true;
 
     public CardView(Card card) {
 
@@ -40,8 +41,6 @@ public class CardView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-
-        boolean vertical = (boolean)o; //type d'animation
 
         if(front == null) {
 
@@ -81,7 +80,7 @@ public class CardView extends Group implements Observer {
 
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
 
-        if(vertical)
+        if(animVertical)
             translate1.setByY(-height);
         else
             translate1.setByX(-width);
@@ -95,7 +94,7 @@ public class CardView extends Group implements Observer {
         RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
         rotate.setByAngle(180);
 
-        rotate.setAxis(vertical ? Rotate.X_AXIS : Rotate.Y_AXIS);
+        rotate.setAxis(animVertical ? Rotate.X_AXIS : Rotate.Y_AXIS);
         rotate.setCycleCount(1);
 
         TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.3), this);
@@ -103,7 +102,7 @@ public class CardView extends Group implements Observer {
         translate3.setCycleCount(1);
 
         TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
-        if(vertical)
+        if(animVertical)
             translate4.setByY(height);
         else
             translate4.setByX(width);
@@ -129,5 +128,9 @@ public class CardView extends Group implements Observer {
             });
 
         });
+    }
+
+    public void setVertical(boolean vertical) {
+        animVertical = vertical;
     }
 }

@@ -36,16 +36,16 @@ public class Card extends Observable{
         return value;
     }
 
-    public void show(boolean vertical){
+    public void show(){
         this.hidden = false;
         setChanged();
-        notifyObservers(vertical);
+        notifyObservers();
     }
 
-    public void hide(boolean vertical){
+    public void hide(){
         this.hidden = true;
         setChanged();
-        notifyObservers(vertical);
+        notifyObservers();
     }
 
     public boolean isHidden() {

@@ -2,6 +2,7 @@ package fr.iut.etu;
 
 import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
+import fr.iut.etu.view.CardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -117,7 +118,7 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayers().get(0).getCards().get(test++).show(true);
+                    board.getPlayers().get(0).getCards().get(test++).show();
                     break;
             }
         });
@@ -167,6 +168,7 @@ public class Controller extends Application {
                     }
 
                     deck.deal(board.getDog());
+                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
                 }
 
                 for(Player p : board.getPlayers()){
@@ -192,7 +194,7 @@ public class Controller extends Application {
 
                 waitDispatchAnimation.setOnSucceeded(workerStateEvent1 -> {
                     for(Card card : board.getDog().getCards()) {
-                        card.show(false);
+                        card.show();
                     }
                 });
 
