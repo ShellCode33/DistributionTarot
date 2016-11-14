@@ -32,7 +32,7 @@ public class DeckView extends Group implements Observer {
         this.deck = deck;
         deck.addObserver(this);
 
-        image = new Image("file:res/deck.jpg");
+        image = new Image("file:res/back.jpg");
 
         update(deck, null);
     }
