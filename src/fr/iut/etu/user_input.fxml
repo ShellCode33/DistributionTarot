@@ -10,17 +10,20 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="+Infinity" prefWidth="+Infinity" styleClass="background-menu" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <VBox id="vbox-userinput" alignment="TOP_CENTER" spacing="50">
-            <Label styleClass="textMenu" text="Pick an avatar :" />
+        <VBox id="vbox-userinput" alignment="TOP_CENTER" spacing="50" styleClass="vboxStyle" stylesheets="@style.css">
+            <Label fx:id="label1" styleClass="textMenu" text="Pick an avatar :" />
             <GridPane id="gridLayout" fx:id="gridLayout" hgap="10.0" styleClass="gridLayoutStyle" stylesheets="@style.css" vgap="10.0">
                 <padding>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
             </GridPane>
 
-            <Label styleClass="textMenu" text="Choose a username :" />
+            <Label fx:id="label2" styleClass="textMenu" text="Choose a username :" />
             <TextField id="userInput" fx:id="userInput" styleClass="textField" stylesheets="@style.css" />
             <Button id="submitButton" fx:id="submitButton" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Valider" />
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
         </VBox>
     </children>
 </Pane>

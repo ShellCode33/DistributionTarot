@@ -82,9 +82,12 @@ public class DeckView extends Group implements Observer {
                 timeline = new Timeline();
 
                 KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                        new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), Controller.CARD_WIDTH*Controller.SCALE_COEFF+10));
+                        new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), Controller.CARD_WIDTH/2*Controller.SCALE_COEFF+5));
 
-                timeline.getKeyFrames().add(cut);
+                KeyFrame cut2 = new KeyFrame(Duration.seconds(0.5),
+                        new KeyValue(getChildren().get(i).translateXProperty(), -Controller.CARD_WIDTH/2*Controller.SCALE_COEFF-5));
+
+                timeline.getKeyFrames().addAll(cut, cut2);
                 timeline.setAutoReverse(true);
                 timeline.play();
             }
@@ -107,7 +110,7 @@ public class DeckView extends Group implements Observer {
 
                     Timeline timeline3 = null;
 
-                    for(int i = 0; i < deck.size()/2; i++) {
+                    for(int i = 0; i < deck.size(); i++) {
                         timeline3 = new Timeline();
 
                         KeyFrame cut = new KeyFrame(Duration.seconds(0.5),

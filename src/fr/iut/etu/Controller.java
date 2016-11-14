@@ -1,13 +1,12 @@
 package fr.iut.etu;
 
-import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
-import fr.iut.etu.model.Deck;
-import fr.iut.etu.model.Player;
+import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -98,7 +97,7 @@ public class Controller extends Application {
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
-        camera.setRotate(30);
+        camera.setRotate(15);
 
         sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true);
         sceneGame.setCamera(camera);
@@ -118,7 +117,7 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayers().get(0).getCards().get(test++).show();
+                    board.getPlayers().get(0).getCards().get(test++).show(true);
                     break;
             }
         });
@@ -172,14 +171,32 @@ public class Controller extends Application {
 
                 for(Player p : board.getPlayers()){
                     ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
+                    boolean gotFool = p.getCards().contains(new Fool());
 
-                    if(trumps.size() == 1 && trumps.get(0).getValue() == 1){
+                    if(trumps.size() == 1 && trumps.get(0).getValue() == 1 && !gotFool){
                         reset();
                         isWellDealt[0] = false;
                     }
                 }
 
                 boardView.dealCardAnimation();
+
+                Task<Void> waitDispatchAnimation = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        boardView.getDogView().dispatch();
+                        Thread.sleep(1200);
+                        return null;
+                    }
+                };
+
+                waitDispatchAnimation.setOnSucceeded(workerStateEvent1 -> {
+                    for(Card card : board.getDog().getCards()) {
+                        card.show(false);
+                    }
+                });
+
+                new Thread(waitDispatchAnimation).start();
             });
 
             new Thread(waitCutAnimation).start();

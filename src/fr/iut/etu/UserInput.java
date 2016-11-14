@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
@@ -42,6 +43,8 @@ public class UserInput extends Scene {
         gridLayout = (GridPane) lookup("#gridLayout");
         userInput = (TextField)lookup("#userInput");
         submitButton = (Button)lookup("#submitButton");
+        Label label1 = (Label)lookup("#label1");
+        Label label2 = (Label)lookup("#label2");
 
         DropShadow border = new DropShadow( 30, Color.BLACK );
 
@@ -92,6 +95,9 @@ public class UserInput extends Scene {
         vbox.setScaleX(Controller.SCALE_COEFF);
         vbox.setScaleY(Controller.SCALE_COEFF);
         vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2)/2);
+
+        double vbox_height = 5 * Controller.SCREEN_HEIGHT / 6;
+        vbox.setTranslateY((Controller.SCREEN_HEIGHT-vbox_height)/2);
     }
 
     public void buttonClicked(ActionEvent e)

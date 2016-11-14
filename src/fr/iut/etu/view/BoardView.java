@@ -23,6 +23,7 @@ public class BoardView extends Group {
 
     private ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
+    private DogView dogView;
 
     public BoardView(Board board) {
         super();
@@ -44,7 +45,7 @@ public class BoardView extends Group {
         Point2D point2D = playerViews.get(0).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
         playerViews.get(0).setTranslateX(Controller.SCREEN_WIDTH/2 - point2D.getX());
-        playerViews.get(0).setTranslateY(Controller.SCREEN_HEIGHT - point2D.getY());
+        playerViews.get(0).setTranslateY(Controller.SCREEN_HEIGHT - playerViews.get(0).getLayoutBounds().getHeight()*2);
 
         boundsInLocal = playerViews.get(1).getBoundsInLocal();
         point2D = playerViews.get(1).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
@@ -67,8 +68,12 @@ public class BoardView extends Group {
         playerViews.get(3).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
         playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
 
-        this.deckView = new DeckView(board.getDeck());
-        getChildren().add(this.deckView);
+        deckView = new DeckView(board.getDeck());
+        getChildren().add(deckView);
+        dogView = new DogView(board.getDog());
+        dogView.setTranslateX(4*Controller.SCREEN_WIDTH/6);
+        dogView.setTranslateY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT*Controller.SCALE_COEFF)/2);
+        getChildren().add(dogView);
 
     }
 
@@ -97,5 +102,9 @@ public class BoardView extends Group {
 
     public DeckView getDeckView() {
         return deckView;
+    }
+
+    public DogView getDogView() {
+        return dogView;
     }
 }

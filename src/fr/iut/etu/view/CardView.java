@@ -41,6 +41,8 @@ public class CardView extends Group implements Observer {
     @Override
     public void update(Observable observable, Object o) {
 
+        boolean vertical = (boolean)o; //type d'animation
+
         if(front == null) {
 
             //La carte se montre
@@ -78,7 +80,12 @@ public class CardView extends Group implements Observer {
         double depth = Controller.CARD_THICK*Controller.SCALE_COEFF;
 
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
-        translate1.setByY(-height);
+
+        if(vertical)
+            translate1.setByY(-height);
+        else
+            translate1.setByX(-width);
+
         translate1.setCycleCount(1);
 
         TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.5), this);
@@ -87,7 +94,8 @@ public class CardView extends Group implements Observer {
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
         rotate.setByAngle(180);
-        rotate.setAxis(Rotate.X_AXIS);
+
+        rotate.setAxis(vertical ? Rotate.X_AXIS : Rotate.Y_AXIS);
         rotate.setCycleCount(1);
 
         TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.3), this);
@@ -95,7 +103,11 @@ public class CardView extends Group implements Observer {
         translate3.setCycleCount(1);
 
         TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
-        translate4.setByY(height);
+        if(vertical)
+            translate4.setByY(height);
+        else
+            translate4.setByX(width);
+
         translate4.setCycleCount(1);
 
         translate1.play();

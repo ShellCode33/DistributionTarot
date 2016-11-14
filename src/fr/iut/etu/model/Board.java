@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Board {
 
     private ArrayList<Player> players = new ArrayList<>();
-    private Dog dog = new Dog();
+    private Hand dog = new Hand();
     private Deck deck = new Deck();
     private int playerCount;
 
@@ -18,6 +18,8 @@ public class Board {
 
         if(playerCount < 3 || playerCount > 5)
             throw new IllegalArgumentException("playerCount should be between 3 and 5");
+
+
     }
 
     public void addPlayer(Player player) {
@@ -39,7 +41,7 @@ public class Board {
         return players;
     }
 
-    public Dog getDog() {
+    public Hand getDog() {
         return dog;
     }
 

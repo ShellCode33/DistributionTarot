@@ -40,3 +40,8 @@
     -fx-background-image: url("file:res/background_menu.jpeg");
     -fx-background-repeat: stretch;
 }
+
+.vboxStyle {
+    -fx-background-image: url("file:res/background_board.jpg");
+    -fx-background-repeat: stretch;
+}
