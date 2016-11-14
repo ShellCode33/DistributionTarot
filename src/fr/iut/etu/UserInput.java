@@ -29,7 +29,7 @@ public class UserInput extends Scene {
     private GridPane gridLayout;
     private TextField userInput;
     private Button submitButton;
-    private Image selectedImage;
+    private Image selectedImage = null;
 
     private Controller controller;
 
@@ -49,6 +49,10 @@ public class UserInput extends Scene {
         for(int i = 0; i < 4;i++) {
             for(int j = 0; j < 5; j++) {
                 Image img = new Image("file:res/avatar" + num_avatar++ + ".png");
+
+                if(selectedImage == null)
+                    selectedImage = img;
+
                 ImageView imgView = new ImageView(img);
                 imgView.setFitWidth(100);
                 imgView.setFitHeight(100);
@@ -85,6 +89,8 @@ public class UserInput extends Scene {
         userInput.setPrefHeight(buttonHeight/1.5);
         userInput.setMaxHeight(buttonHeight/1.5);
 
+        vbox.setScaleX(Controller.SCALE_COEFF);
+        vbox.setScaleY(Controller.SCALE_COEFF);
         vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2)/2);
     }
 

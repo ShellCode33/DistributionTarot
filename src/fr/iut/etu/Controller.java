@@ -93,7 +93,8 @@ public class Controller extends Application {
 
 
         boardView = new BoardView(board);
-
+        boardView.setScaleX(SCALE_COEFF);
+        boardView.setScaleY(SCALE_COEFF);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
@@ -123,10 +124,6 @@ public class Controller extends Application {
         });
 
         while(!deal());
-    }
-
-    private void toTest(){
-
     }
 
     private boolean deal(){
@@ -194,6 +191,7 @@ public class Controller extends Application {
     }
 
     private void reset() {
+        //TODO : repenser l'usage de cette fonction
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
     }

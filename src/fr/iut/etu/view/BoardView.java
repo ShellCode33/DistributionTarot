@@ -83,8 +83,8 @@ public class BoardView extends Group {
         rotate.play();
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
-        translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH*Controller.SCALE_COEFF)/2);
-        translate.setToY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT*Controller.SCALE_COEFF)/2);
+        translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH)/2);
+        translate.setToY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
 
         translate.setCycleCount(1);
         translate.play();
