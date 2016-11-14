@@ -48,7 +48,7 @@ public class TarotTests {
         Player player = new Player();
         assertNotEquals("Player not created !", null, player);
 
-        Player player2 = new Player("Patrick");
+        Player player2 = new Player("Patrick", null);
         assertNotEquals("Player not created !", null, player2);
     }
 

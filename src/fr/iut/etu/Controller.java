@@ -11,6 +11,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
@@ -82,10 +83,10 @@ public class Controller extends Application {
         primaryStage.setWidth(SCREEN_WIDTH);
     }
 
-    public void startGame(String myPlayerUsername) {
+    public void startGame(String myPlayerUsername, Image selectedImage) {
         board = new Board(PLAYER_COUNT);
 
-        board.addPlayer(new Player(myPlayerUsername));
+        board.addPlayer(new Player(myPlayerUsername, selectedImage));
 
         for(int i = 0; i < PLAYER_COUNT-1; i++)
             board.addPlayer(new Player());
@@ -181,7 +182,7 @@ public class Controller extends Application {
                     }
                 }
 
-                boardView.placePlayerViews();
+                boardView.dealCardAnimation();
             });
 
             new Thread(waitCutAnimation).start();

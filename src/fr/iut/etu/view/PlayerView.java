@@ -8,7 +8,9 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Translate;
 
 import java.util.ArrayList;
@@ -31,11 +33,22 @@ public class PlayerView extends Group implements Observer {
 
         this.player = player;
         this.player.addObserver(this);
+
+        ImageView avatar = new ImageView(player.getAvatar());
+        avatar.setFitHeight(50);
+        avatar.setFitWidth(50);
+        avatar.setTranslateY(-75);
+        avatar.setTranslateZ(-1);
+
         Label usernameLabel = new Label();
         usernameLabel.setText(player.getName());
-        usernameLabel.setTranslateY(-50);
-        usernameLabel.setTranslateZ(-10);
+        usernameLabel.setTranslateY(-68);
+        usernameLabel.setTranslateX(55);
+        usernameLabel.setTranslateZ(-1);
         usernameLabel.setTextFill(Color.WHITE);
+        usernameLabel.setFont(new Font(30));
+
+        getChildren().add(avatar);
         getChildren().add(usernameLabel);
     }
 

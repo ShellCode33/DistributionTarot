@@ -26,7 +26,17 @@
     -fx-padding: 10 20 10 20;
 }
 
-#background-menu {
+.textMenu {
+    -fx-font-size: 2em;
+    -fx-text-fill: white;
+}
+
+.gridLayoutStyle {
+    -fx-background-color: black, white ;
+    -fx-background-insets: 0, 1 1 1 1 ;
+}
+
+.background-menu {
     -fx-background-image: url("file:res/background_menu.jpeg");
     -fx-background-repeat: stretch;
 }
