@@ -35,8 +35,8 @@ public class PlayerView extends Group implements Observer {
         this.player.addObserver(this);
 
         ImageView avatar = new ImageView(player.getAvatar());
-        avatar.setFitHeight(50);
-        avatar.setFitWidth(50);
+        avatar.setFitHeight(50*Controller.SCALE_COEFF);
+        avatar.setFitWidth(50*Controller.SCALE_COEFF);
         avatar.setTranslateY(-75);
         avatar.setTranslateZ(-1);
 
@@ -46,7 +46,7 @@ public class PlayerView extends Group implements Observer {
         usernameLabel.setTranslateX(55);
         usernameLabel.setTranslateZ(-1);
         usernameLabel.setTextFill(Color.WHITE);
-        usernameLabel.setFont(new Font(30));
+        usernameLabel.setFont(new Font(30*Controller.SCALE_COEFF));
 
         getChildren().add(avatar);
         getChildren().add(usernameLabel);
@@ -59,7 +59,7 @@ public class PlayerView extends Group implements Observer {
 
             CardView cardView = new CardView(cards.get(cards.size()-1));
 
-            cardView.setTranslateX((cards.size() - 1)* GAP_BETWEEN_CARDS);
+            cardView.setTranslateX((cards.size() - 1)* GAP_BETWEEN_CARDS*Controller.SCALE_COEFF);
             cardView.setTranslateZ(-cards.size()*0.1-1);
 
             cardViews.add(cardView);

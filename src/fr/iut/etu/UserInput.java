@@ -94,10 +94,7 @@ public class UserInput extends Scene {
 
         vbox.setScaleX(Controller.SCALE_COEFF);
         vbox.setScaleY(Controller.SCALE_COEFF);
-        vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2)/2);
-
-        double vbox_height = 5 * Controller.SCREEN_HEIGHT / 6;
-        vbox.setTranslateY((Controller.SCREEN_HEIGHT-vbox_height)/2);
+        vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2-50*2)/2);
     }
 
     public void buttonClicked(ActionEvent e)

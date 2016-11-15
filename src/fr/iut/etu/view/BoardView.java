@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -27,7 +28,6 @@ public class BoardView extends Group {
 
     public BoardView(Board board) {
         super();
-
         this.board = board;
 
         ImageView backgroundView = new ImageView(new Image("file:res/background_board.jpg"));
@@ -50,7 +50,7 @@ public class BoardView extends Group {
         boundsInLocal = playerViews.get(1).getBoundsInLocal();
         point2D = playerViews.get(1).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
-        playerViews.get(1).setTranslateX(- point2D.getX() + Controller.CARD_HEIGHT);
+        playerViews.get(1).setTranslateX(- point2D.getX() + Controller.CARD_HEIGHT*Controller.SCALE_COEFF);
         playerViews.get(1).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
         playerViews.get(1).getTransforms().add(new Rotate(90, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
 
@@ -58,13 +58,13 @@ public class BoardView extends Group {
         point2D = playerViews.get(2).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
         playerViews.get(2).setTranslateX(Controller.SCREEN_WIDTH/2 - point2D.getX());
-        playerViews.get(2).setTranslateY(- point2D.getY()+Controller.CARD_HEIGHT/2);
+        playerViews.get(2).setTranslateY(- point2D.getY()+Controller.CARD_HEIGHT*Controller.SCALE_COEFF/2);
         playerViews.get(2).getTransforms().add(new Rotate(180, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
 
         boundsInLocal = playerViews.get(3).getBoundsInLocal();
         point2D = playerViews.get(3).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
-        playerViews.get(3).setTranslateX(Controller.SCREEN_WIDTH - point2D.getX() - Controller.CARD_HEIGHT);
+        playerViews.get(3).setTranslateX(Controller.SCREEN_WIDTH - point2D.getX() - Controller.CARD_HEIGHT*Controller.SCALE_COEFF);
         playerViews.get(3).setTranslateY(Controller.SCREEN_HEIGHT/2 - point2D.getY());
         playerViews.get(3).getTransforms().add(new Rotate(270, boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2));
 

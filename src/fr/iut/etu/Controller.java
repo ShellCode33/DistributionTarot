@@ -61,7 +61,7 @@ public class Controller extends Application {
         if(SCREEN_WIDTH / SCREEN_HEIGHT != 16.0/9.0) {
             System.out.println("Your display is not 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
             SCREEN_HEIGHT = (int)(SCREEN_WIDTH * 9.0 / 16.0);
-            Y_SCREEN_START = (int)((bounds.getHeight()-SCREEN_HEIGHT)/2);
+            Y_SCREEN_START = (int)Math.abs((bounds.getHeight()-SCREEN_HEIGHT)/4);
             System.out.println("New screen height : " + SCREEN_HEIGHT);
             System.out.println("New Y start : " + Y_SCREEN_START);
         }
@@ -93,8 +93,6 @@ public class Controller extends Application {
 
 
         boardView = new BoardView(board);
-        boardView.setScaleX(SCALE_COEFF);
-        boardView.setScaleY(SCALE_COEFF);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
