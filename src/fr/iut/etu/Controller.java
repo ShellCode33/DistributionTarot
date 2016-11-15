@@ -2,12 +2,9 @@ package fr.iut.etu;
 
 import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
-import fr.iut.etu.view.CardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -36,14 +33,14 @@ public class Controller extends Application {
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
-    int test = 0;
+    private int test = 0;
 
     private Board board;
     private BoardView boardView;
 
     private Menu menu;
 
-    public Stage stage;
+    private Stage stage;
     private Scene sceneGame;
 
     @Override
@@ -116,8 +113,13 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayers().get(0).getCards().get(test++).show();
+                    board.getPlayer(0).getCards().get(test++).show();
                     break;
+                case Z:
+                    board.getDeck().deal(board.getPlayer(0));
+                    board.getDeck().deal(board.getPlayer(1));
+                    board.getDeck().deal(board.getPlayer(2));
+                    board.getDeck().deal(board.getPlayer(3));
             }
         });
 
@@ -156,18 +158,18 @@ public class Controller extends Application {
             waitCutAnimation.setOnSucceeded(workerStateEvent -> {
                 System.out.println("cut animation is over");
                 deck.shuffle();
-                for(int i = 0; i < 6; i++){
-                    for(Player p : board.getPlayers()){
-
-                        deck.deal(p);
-                        deck.deal(p);
-                        deck.deal(p);
-
-                    }
-
-                    deck.deal(board.getDog());
-                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
-                }
+//                for(int i = 0; i < 6; i++){
+//                    for(Player p : board.getPlayers()){
+//
+//                        deck.deal(p);
+//                        deck.deal(p);
+//                        deck.deal(p);
+//
+//                    }
+//
+//                    deck.deal(board.getDog());
+//                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
+//                }
 
                 for(Player p : board.getPlayers()){
                     ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));

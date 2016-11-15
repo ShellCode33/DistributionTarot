@@ -4,14 +4,20 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.transform.Translate;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -22,7 +28,7 @@ import java.util.Observer;
  */
 public class PlayerView extends Group implements Observer {
 
-    public static int GAP_BETWEEN_CARDS = 40;
+    private static int GAP_BETWEEN_CARDS = 40;
 
     private Player player;
 
@@ -58,19 +64,59 @@ public class PlayerView extends Group implements Observer {
             ArrayList<Card> cards = player.getCards();
 
             CardView cardView = new CardView(cards.get(cards.size()-1));
-
-            cardView.setTranslateX((cards.size() - 1)* GAP_BETWEEN_CARDS*Controller.SCALE_COEFF);
-            cardView.setTranslateZ(-cards.size()*0.1-1);
-
             cardViews.add(cardView);
             getChildren().add(cardView);
 
-            //recenter
+            //On récupère la position du centre dessus du deckview dans le référentiel de la playerView
+            DeckView deckView = ((BoardView) getParent()).getDeckView();
+            Point3D deckViewCenterTopInParent = deckView.localToParent(deckView.getBoundsInLocal().getWidth() / 2, deckView.getBoundsInLocal().getHeight() / 2, -deckView.getBoundsInLocal().getDepth());
+            Point3D deckViewCenterTop = parentToLocal(deckViewCenterTopInParent);
 
-            if(cards.size() == 1)
-                getTransforms().add(new Translate(- Controller.CARD_WIDTH/2, 0));
+            //On récupère la position du centre de la carte dans le référentiel de la playerView
+            Bounds cardViewBoundsInLocal = cardView.getBoundsInLocal();
+            Point2D cardViewCenter = cardView.localToParent(cardViewBoundsInLocal.getWidth() / 2, cardViewBoundsInLocal.getHeight() / 2);
+
+            //Détermination de la position finale de la carte
+            double x = 0;
+            for(int i = 1; i < cards.size(); i++){
+
+                x += GAP_BETWEEN_CARDS*Controller.SCALE_COEFF;
+                if(i % 3 == 0)
+                    x += GAP_BETWEEN_CARDS*Controller.SCALE_COEFF;
+            }
+            Point3D destination = new Point3D(x, 0 , -Controller.CARD_THICK*Controller.SCALE_COEFF);
+
+            //Détermination de la rotation de la playerView actuelle
+            FilteredList<Transform> rotates = getTransforms().filtered(r -> r instanceof Rotate);
+            Rotate rotate;
+            if(rotates.size() > 0)
+                rotate = (Rotate) rotates.get(0);
             else
-                getTransforms().add(new Translate(- GAP_BETWEEN_CARDS/2, 0));
+                rotate = new Rotate(0);
+
+            //Animation
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(2), cardView);
+            translateTransition.setFromX(deckViewCenterTop.getX() - cardViewCenter.getX());
+            translateTransition.setFromY(deckViewCenterTop.getY() - cardViewCenter.getY());
+            translateTransition.setFromZ(deckViewCenterTop.getZ());
+            translateTransition.setToX(destination.getX());
+            translateTransition.setToY(destination.getY());
+            translateTransition.setToZ(destination.getZ());
+            translateTransition.setToZ(-10);
+            translateTransition.setCycleCount(1);
+
+            RotateTransition rotateTransition = new RotateTransition(Duration.seconds(2), cardView);
+            rotateTransition.setFromAngle(270 - rotate.getAngle());
+            rotateTransition.setByAngle(270 - rotate.getAngle());
+            rotateTransition.setCycleCount(1);
+
+            translateTransition.play();
+            rotateTransition.play();
+
+
+            //Recentre la playerView
+
+
         }
     }
 }
