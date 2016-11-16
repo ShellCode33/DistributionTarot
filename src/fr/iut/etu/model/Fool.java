@@ -5,6 +5,6 @@ package fr.iut.etu.model;
  */
 public class Fool extends Card {
     public Fool() {
-        super(Card.Type.FOOL, 42);
+        super(Card.Type.FOOL, 22);
     }
 }

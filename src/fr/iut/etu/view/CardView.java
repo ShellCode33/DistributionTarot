@@ -16,7 +16,7 @@ import java.util.Observer;
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
  */
-public class CardView extends Group implements Observer {
+public class CardView extends Group implements Observer, Comparable<CardView> {
     private Card card;
     private ImageView front = null, back;
     private boolean animVertical = true;
@@ -32,7 +32,7 @@ public class CardView extends Group implements Observer {
         back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);
-        back.setTranslateZ(-Controller.CARD_WIDTH/2-1.01);
+        back.setTranslateZ(-1.01);
 
         getChildren().add(back);
     }
@@ -56,7 +56,7 @@ public class CardView extends Group implements Observer {
             front.setFitHeight(Controller.CARD_HEIGHT);
             front.setFitWidth(Controller.CARD_WIDTH);
 
-            front.setTranslateZ(-Controller.CARD_WIDTH / 2 - 1);
+            front.setTranslateZ(-1);
 
             front.setRotationAxis(Rotate.Y_AXIS);
             front.setRotate(180);
@@ -72,7 +72,6 @@ public class CardView extends Group implements Observer {
 
         double width = Controller.CARD_WIDTH;
         double height = Controller.CARD_HEIGHT;
-        double depth = Controller.CARD_THICK;
 
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
 
@@ -128,5 +127,15 @@ public class CardView extends Group implements Observer {
 
     public void setVertical(boolean vertical) {
         animVertical = vertical;
+    }
+
+    @Override
+    public int compareTo(CardView cardView) {
+        return card.compareTo(cardView.card);
+    }
+
+    @Override
+    public String toString() {
+        return card.toString();
     }
 }

@@ -92,6 +92,8 @@ public class UserInput extends Scene {
         userInput.setPrefHeight(buttonHeight/1.5);
         userInput.setMaxHeight(buttonHeight/1.5);
 
+        userInput.setOnAction(e -> buttonClicked(e));
+
         vbox.setScaleX(Controller.SCALE_COEFF);
         vbox.setScaleY(Controller.SCALE_COEFF);
         vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2-50*2)/2);

@@ -5,7 +5,7 @@ import java.util.Observable;
 /**
  * Created by shellcode on 9/27/16.
  */
-public class Card extends Observable{
+public class Card extends Observable implements Comparable<Card> {
 
     public enum Type {
         HEART,
@@ -60,5 +60,40 @@ public class Card extends Observable{
     @Override
     public boolean equals(Object o) {
         return cardType == ((Card)o).getType() && value == ((Card)o).getValue();
+    }
+
+    @Override
+    public int compareTo(Card card) {
+        int value_other = card.getValue();
+        Type other_type = card.getType();
+
+        if(other_type == Type.HEART)
+            value_other += 14;
+
+        else if(other_type == Type.TRUMP || other_type == Type.FOOL)
+            value_other += 28;
+
+        else if(other_type == Type.DIAMOND)
+            value_other += 50;
+
+        else if(other_type == Type.CLUB)
+            value_other += 64;
+
+        int my_value = getValue();
+        Type my_type = getType();
+
+        if(my_type == Type.HEART)
+            my_value += 14;
+
+        else if(my_type == Type.TRUMP || my_type == Type.FOOL)
+            my_value += 28;
+
+        else if(my_type == Type.DIAMOND)
+            my_value += 50;
+
+        else if(my_type == Type.CLUB)
+            my_value += 64;
+
+        return my_value-value_other;
     }
 }

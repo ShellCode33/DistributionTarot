@@ -119,4 +119,10 @@ public class PlayerView extends Group implements Observer {
     public int getWidth() {
         return GAP_BETWEEN_CARDS*17 + Controller.CARD_WIDTH;
     }
+
+    public void sortCards() {
+        cardViews.sort(CardView::compareTo);
+
+        //Animation
+    }
 }

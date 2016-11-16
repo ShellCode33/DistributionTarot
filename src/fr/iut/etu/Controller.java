@@ -118,6 +118,7 @@ public class Controller extends Application {
                     break;
 
                 case A:
+                    test = test%18;
                     board.getPlayers().get(0).getCards().get(test++).show();
                     break;
             }
@@ -196,6 +197,8 @@ public class Controller extends Application {
                     for(Card card : board.getDog().getCards()) {
                         card.show();
                     }
+
+                    boardView.getPlayerView(0).sortCards();
                 });
 
                 new Thread(waitDispatchAnimation).start();

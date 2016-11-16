@@ -108,4 +108,8 @@ public class BoardView extends Group {
     public DogView getDogView() {
         return dogView;
     }
+
+    public PlayerView getPlayerView(int i) {
+        return playerViews.get(i);
+    }
 }
