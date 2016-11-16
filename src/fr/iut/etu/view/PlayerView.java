@@ -28,7 +28,7 @@ import java.util.Observer;
  */
 public class PlayerView extends Group implements Observer {
 
-    private static int GAP_BETWEEN_CARDS = 40;
+    private static int GAP_BETWEEN_CARDS = (int)(40 * Controller.SCALE_COEFF);
 
     private Player player;
 
@@ -78,13 +78,10 @@ public class PlayerView extends Group implements Observer {
 
             //Détermination de la position finale de la carte
             double x = 0;
-            for(int i = 1; i < cards.size(); i++){
+            for(int i = 1; i < cards.size(); i++)
+                x += GAP_BETWEEN_CARDS;
 
-                x += GAP_BETWEEN_CARDS*Controller.SCALE_COEFF;
-                if(i % 3 == 0)
-                    x += GAP_BETWEEN_CARDS*Controller.SCALE_COEFF;
-            }
-            Point3D destination = new Point3D(x, 0 , -Controller.CARD_THICK*Controller.SCALE_COEFF);
+            Point3D destination = new Point3D(x, 0 , -Controller.CARD_THICK-0.1*cardViews.size());
 
             //Détermination de la rotation de la playerView actuelle
             FilteredList<Transform> rotates = getTransforms().filtered(r -> r instanceof Rotate);
@@ -102,7 +99,6 @@ public class PlayerView extends Group implements Observer {
             translateTransition.setToX(destination.getX());
             translateTransition.setToY(destination.getY());
             translateTransition.setToZ(destination.getZ());
-            translateTransition.setToZ(-10);
             translateTransition.setCycleCount(1);
 
             RotateTransition rotateTransition = new RotateTransition(Duration.seconds(2), cardView);
@@ -118,5 +114,9 @@ public class PlayerView extends Group implements Observer {
 
 
         }
+    }
+
+    public int getWidth() {
+        return GAP_BETWEEN_CARDS*17 + Controller.CARD_WIDTH;
     }
 }

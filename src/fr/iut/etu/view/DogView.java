@@ -50,7 +50,7 @@ public class DogView extends Group implements Observer {
             Timeline timeline = new Timeline();
 
             KeyFrame cut = new KeyFrame(Duration.seconds(1),
-                    new KeyValue(cardViews.get(i).translateXProperty(), -Controller.CARD_WIDTH*Controller.SCALE_COEFF*i-i*20*Controller.SCALE_COEFF));
+                    new KeyValue(cardViews.get(i).translateXProperty(), -Controller.CARD_WIDTH*i-i*20*Controller.SCALE_COEFF));
 
             timeline.getKeyFrames().add(cut);
             timeline.play();

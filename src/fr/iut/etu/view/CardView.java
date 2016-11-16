@@ -30,8 +30,8 @@ public class CardView extends Group implements Observer {
 
         back = new ImageView(imageBottom);
         back.setSmooth(true);
-        back.setFitHeight(Controller.CARD_HEIGHT*Controller.SCALE_COEFF);
-        back.setFitWidth(Controller.CARD_WIDTH*Controller.SCALE_COEFF);
+        back.setFitHeight(Controller.CARD_HEIGHT);
+        back.setFitWidth(Controller.CARD_WIDTH);
         back.setTranslateZ(-Controller.CARD_WIDTH/2-1.01);
 
         getChildren().add(back);
@@ -53,8 +53,8 @@ public class CardView extends Group implements Observer {
             }
 
             front = new ImageView(imageFace);
-            front.setFitHeight(Controller.CARD_HEIGHT*Controller.SCALE_COEFF);
-            front.setFitWidth(Controller.CARD_WIDTH*Controller.SCALE_COEFF);
+            front.setFitHeight(Controller.CARD_HEIGHT);
+            front.setFitWidth(Controller.CARD_WIDTH);
 
             front.setTranslateZ(-Controller.CARD_WIDTH / 2 - 1);
 
@@ -70,9 +70,9 @@ public class CardView extends Group implements Observer {
             front = null;
         }
 
-        double width = Controller.CARD_WIDTH*Controller.SCALE_COEFF;
-        double height = Controller.CARD_HEIGHT*Controller.SCALE_COEFF;
-        double depth = Controller.CARD_THICK*Controller.SCALE_COEFF;
+        double width = Controller.CARD_WIDTH;
+        double height = Controller.CARD_HEIGHT;
+        double depth = Controller.CARD_THICK;
 
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
 

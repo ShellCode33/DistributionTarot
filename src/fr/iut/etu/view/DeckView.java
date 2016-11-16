@@ -47,8 +47,6 @@ public class DeckView extends Group implements Observer {
             for(int i = childrenCount; i < deckSize; i++) {
                 ImageView view = new ImageView(image);
                 view.setTranslateZ(-Controller.CARD_THICK*78-i*Controller.CARD_THICK);
-                view.setScaleX(Controller.SCALE_COEFF);
-                view.setScaleY(Controller.SCALE_COEFF);
                 view.setFitWidth(Controller.CARD_WIDTH);
                 view.setFitHeight(Controller.CARD_HEIGHT);
                 images.add(view);
@@ -82,10 +80,10 @@ public class DeckView extends Group implements Observer {
                 timeline = new Timeline();
 
                 KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                        new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), Controller.CARD_WIDTH/2*Controller.SCALE_COEFF+5));
+                        new KeyValue(getChildren().get(deck.size()-1-i).translateXProperty(), Controller.CARD_WIDTH/2+5));
 
                 KeyFrame cut2 = new KeyFrame(Duration.seconds(0.5),
-                        new KeyValue(getChildren().get(i).translateXProperty(), -Controller.CARD_WIDTH/2*Controller.SCALE_COEFF-5));
+                        new KeyValue(getChildren().get(i).translateXProperty(), -Controller.CARD_WIDTH/2-5));
 
                 timeline.getKeyFrames().addAll(cut, cut2);
                 timeline.setAutoReverse(true);

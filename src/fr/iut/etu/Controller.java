@@ -2,9 +2,12 @@ package fr.iut.etu;
 
 import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
+import fr.iut.etu.view.CardView;
 import fr.iut.etu.view.DeckView;
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -26,21 +29,21 @@ public class Controller extends Application {
     public static double SCREEN_WIDTH;
     public static double SCREEN_HEIGHT;
 
-    public static final int CARD_WIDTH = 120;
-    public static final int CARD_HEIGHT = 212;
+    public static int CARD_WIDTH = 120;
+    public static int CARD_HEIGHT = 212;
     public static final int CARD_THICK = 1;
 
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
-    private int test = 0;
+    int test = 0;
 
     private Board board;
     private BoardView boardView;
 
     private Menu menu;
 
-    private Stage stage;
+    public Stage stage;
     private Scene sceneGame;
 
     @Override
@@ -58,7 +61,7 @@ public class Controller extends Application {
         if(SCREEN_WIDTH / SCREEN_HEIGHT != 16.0/9.0) {
             System.out.println("Your display is not 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
             SCREEN_HEIGHT = (int)(SCREEN_WIDTH * 9.0 / 16.0);
-            Y_SCREEN_START = (int)Math.abs((bounds.getHeight()-SCREEN_HEIGHT)/4);
+            Y_SCREEN_START = (int)((bounds.getHeight()-SCREEN_HEIGHT)/2);
             System.out.println("New screen height : " + SCREEN_HEIGHT);
             System.out.println("New Y start : " + Y_SCREEN_START);
         }
@@ -67,6 +70,8 @@ public class Controller extends Application {
             System.out.println("Your display is 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
 
         SCALE_COEFF = SCREEN_WIDTH / 1920;
+        CARD_WIDTH *= SCALE_COEFF;
+        CARD_HEIGHT *= SCALE_COEFF;
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
 
         menu = new Menu(this);
@@ -113,13 +118,8 @@ public class Controller extends Application {
                     break;
 
                 case A:
-                    board.getPlayer(0).getCards().get(test++).show();
+                    board.getPlayers().get(0).getCards().get(test++).show();
                     break;
-                case Z:
-                    board.getDeck().deal(board.getPlayer(0));
-                    board.getDeck().deal(board.getPlayer(1));
-                    board.getDeck().deal(board.getPlayer(2));
-                    board.getDeck().deal(board.getPlayer(3));
             }
         });
 
@@ -158,18 +158,18 @@ public class Controller extends Application {
             waitCutAnimation.setOnSucceeded(workerStateEvent -> {
                 System.out.println("cut animation is over");
                 deck.shuffle();
-//                for(int i = 0; i < 6; i++){
-//                    for(Player p : board.getPlayers()){
-//
-//                        deck.deal(p);
-//                        deck.deal(p);
-//                        deck.deal(p);
-//
-//                    }
-//
-//                    deck.deal(board.getDog());
-//                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
-//                }
+                for(int i = 0; i < 6; i++){
+                    for(Player p : board.getPlayers()){
+
+                        deck.deal(p);
+                        deck.deal(p);
+                        deck.deal(p);
+
+                    }
+
+                    deck.deal(board.getDog());
+                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
+                }
 
                 for(Player p : board.getPlayers()){
                     ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
