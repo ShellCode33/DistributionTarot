@@ -35,6 +35,9 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         back.setTranslateZ(-1.01);
 
         getChildren().add(back);
+
+        setRotationAxis(Rotate.Y_AXIS);
+        setRotate(card.isHidden() ? 0 : 180);
     }
 
     @Override
@@ -63,12 +66,12 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
             getChildren().add(front);
         }
-
         else {
-
             getChildren().remove(front);
             front = null;
         }
+
+        setRotate(card.isHidden() ? 180 : 0);
 
         double width = Controller.CARD_WIDTH;
         double height = Controller.CARD_HEIGHT;
@@ -88,9 +91,8 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
         rotate.setByAngle(180);
-
         rotate.setAxis(animVertical ? Rotate.X_AXIS : Rotate.Y_AXIS);
-        rotate.setCycleCount(1);
+        rotate.setCycleCount(0);
 
         TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.3), this);
         translate3.setByZ(height/2);
