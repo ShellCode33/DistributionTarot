@@ -28,7 +28,7 @@ import java.util.Observer;
  */
 public class PlayerView extends Group implements Observer {
 
-    private static int GAP_BETWEEN_CARDS = (int)(40 * Controller.SCALE_COEFF);
+    private static int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
     private Player player;
 
@@ -41,8 +41,8 @@ public class PlayerView extends Group implements Observer {
         this.player.addObserver(this);
 
         ImageView avatar = new ImageView(player.getAvatar());
-        avatar.setFitHeight(50*Controller.SCALE_COEFF);
-        avatar.setFitWidth(50*Controller.SCALE_COEFF);
+        avatar.setFitHeight(50 * Controller.SCALE_COEFF);
+        avatar.setFitWidth(50 * Controller.SCALE_COEFF);
         avatar.setTranslateY(-75);
         avatar.setTranslateZ(-1);
 
@@ -52,7 +52,7 @@ public class PlayerView extends Group implements Observer {
         usernameLabel.setTranslateX(55);
         usernameLabel.setTranslateZ(-1);
         usernameLabel.setTextFill(Color.WHITE);
-        usernameLabel.setFont(new Font(30*Controller.SCALE_COEFF));
+        usernameLabel.setFont(new Font(30 * Controller.SCALE_COEFF));
 
         getChildren().add(avatar);
         getChildren().add(usernameLabel);
@@ -60,10 +60,10 @@ public class PlayerView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        if(o != null && o == Notifications.CARD_PICKED){
+        if (o != null && o == Notifications.CARD_PICKED) {
             ArrayList<Card> cards = player.getCards();
 
-            CardView cardView = new CardView(cards.get(cards.size()-1));
+            CardView cardView = new CardView(cards.get(cards.size() - 1));
             cardViews.add(cardView);
             getChildren().add(cardView);
 
@@ -77,16 +77,12 @@ public class PlayerView extends Group implements Observer {
             Point2D cardViewCenter = cardView.localToParent(cardViewBoundsInLocal.getWidth() / 2, cardViewBoundsInLocal.getHeight() / 2);
 
             //Détermination de la position finale de la carte
-            double x = 0;
-            for(int i = 1; i < cards.size(); i++)
-                x += GAP_BETWEEN_CARDS;
-
-            Point3D destination = new Point3D(x, 0 , -Controller.CARD_THICK-0.1*cardViews.size());
+            Point3D destination = new Point3D((cards.size() - 1)*GAP_BETWEEN_CARDS , 0, -Controller.CARD_THICK - 0.1 * cardViews.size());
 
             //Détermination de la rotation de la playerView actuelle
             FilteredList<Transform> rotates = getTransforms().filtered(r -> r instanceof Rotate);
             Rotate rotate;
-            if(rotates.size() > 0)
+            if (rotates.size() > 0)
                 rotate = (Rotate) rotates.get(0);
             else
                 rotate = new Rotate(0);
@@ -102,6 +98,7 @@ public class PlayerView extends Group implements Observer {
             translateTransition.setCycleCount(1);
 
             RotateTransition rotateTransition = new RotateTransition(Duration.seconds(2), cardView);
+            rotateTransition.setAxis(Rotate.Z_AXIS);
             rotateTransition.setFromAngle(270 - rotate.getAngle());
             rotateTransition.setByAngle(270 - rotate.getAngle());
             rotateTransition.setCycleCount(1);
