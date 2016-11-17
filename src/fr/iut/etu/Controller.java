@@ -9,8 +9,11 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.DepthTest;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
@@ -95,12 +98,13 @@ public class Controller extends Application {
 
 
         boardView = new BoardView(board);
+        boardView.setDepthTest(DepthTest.ENABLE);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
         camera.setRotate(15);
 
-        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true);
+        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.BALANCED);
         sceneGame.setCamera(camera);
         boardView.setTranslateY(Y_SCREEN_START);
         sceneGame.setFill(Color.BLACK);
@@ -188,17 +192,14 @@ public class Controller extends Application {
                     @Override
                     protected Void call() throws Exception {
                         boardView.getDogView().dispatch();
-                        Thread.sleep(1200);
+                        Thread.sleep(3000);
                         return null;
                     }
                 };
 
                 waitDispatchAnimation.setOnSucceeded(workerStateEvent1 -> {
-                    for(Card card : board.getDog().getCards()) {
-                        card.show();
-                    }
-
                     boardView.getPlayerView(0).sortCards();
+                    boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
                 });
 
                 new Thread(waitDispatchAnimation).start();
@@ -229,6 +230,24 @@ public class Controller extends Application {
             stage.setFullScreen(true);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setUserChoice(Player.UserChoice userChoice) {
+        board.getPlayer(0).setChoice(userChoice);
+
+        if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
+
+            System.out.println("show dog");
+
+            for (Card card : board.getDog().getCards())
+                card.show();
+
+            //ecart
+        }
+
+        else {
+            System.out.println("user choice set");
         }
     }
 }

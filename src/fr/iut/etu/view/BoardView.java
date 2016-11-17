@@ -2,17 +2,28 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Player;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -111,5 +122,86 @@ public class BoardView extends Group {
 
     public PlayerView getPlayerView(int i) {
         return playerViews.get(i);
+    }
+
+    public void askUserChoice(URL res, Controller controller) {
+
+        System.out.println("Asking user...");
+
+        VBox vbox = null;
+
+        try {
+            vbox = FXMLLoader.load(res);
+            vbox.setTranslateZ(-100);
+            vbox.setPrefWidth(Controller.SCREEN_WIDTH / 2);
+            vbox.setMaxWidth(Controller.SCREEN_WIDTH / 2);
+            vbox.setPrefHeight(Controller.SCREEN_HEIGHT / 2);
+            vbox.setMaxHeight(Controller.SCREEN_HEIGHT / 2);
+            vbox.setTranslateX(Controller.SCREEN_WIDTH / 4);
+            vbox.setTranslateY(Controller.SCREEN_HEIGHT / 4);
+
+            double buttonWidth = Controller.SCREEN_WIDTH / 5;
+            double buttonHeight = Controller.SCREEN_HEIGHT / 12;
+
+            Button button1 = (Button)vbox.getChildren().get(1);
+            Button button2 = (Button)vbox.getChildren().get(2);
+            Button button3 = (Button)vbox.getChildren().get(3);
+            Button button4 = (Button)vbox.getChildren().get(4);
+
+            button1.setPrefWidth(buttonWidth);
+            button1.setPrefHeight(buttonHeight);
+            button1.setMaxWidth(buttonWidth);
+            button1.setMaxHeight(buttonHeight);
+
+            button2.setPrefWidth(buttonWidth);
+            button2.setPrefHeight(buttonHeight);
+            button2.setMaxWidth(buttonWidth);
+            button2.setMaxHeight(buttonHeight);
+
+            button3.setPrefWidth(buttonWidth);
+            button3.setPrefHeight(buttonHeight);
+            button3.setMaxWidth(buttonWidth);
+            button3.setMaxHeight(buttonHeight);
+
+            button4.setPrefWidth(buttonWidth);
+            button4.setPrefHeight(buttonHeight);
+            button4.setMaxWidth(buttonWidth);
+            button4.setMaxHeight(buttonHeight);
+
+            Button finalButton = button1;
+            Button finalButton1 = button2;
+            Button finalButton2 = button3;
+            Button finalButton3 = button4;
+            button1.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton, controller));
+            button2.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton1, controller));
+            button3.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton2, controller));
+            button4.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton3, controller));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        VBox finalBox = vbox;
+        Platform.runLater(() -> getChildren().add(finalBox));
+    }
+
+    public void buttonClicked(Button button, Controller controller) {
+
+        Player.UserChoice choice = null;
+        String id = button.getId();
+
+        if(id.equals("button1"))
+            choice = Player.UserChoice.TAKE;
+        else if(id.equals("button2"))
+            choice = Player.UserChoice.KEEP;
+        else if(id.equals("button3"))
+            choice = Player.UserChoice.KEEP_WITHOUT_DOG;
+        else if(id.equals("button4"))
+            choice = Player.UserChoice.KEEP_AGAINST_DOG;
+
+        System.out.println("User choose: " + choice.toString());
+        controller.setUserChoice(choice);
+
+        getChildren().remove(getChildren().size()-1);
     }
 }

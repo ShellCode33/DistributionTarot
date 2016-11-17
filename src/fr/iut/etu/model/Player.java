@@ -11,6 +11,15 @@ public class Player extends Hand{
     private Image avatar;
     private static int nb_computers = 0;
 
+    public enum UserChoice {
+        TAKE,
+        KEEP,
+        KEEP_WITHOUT_DOG,
+        KEEP_AGAINST_DOG
+    }
+
+    UserChoice choice = null;
+
     public Player() {
         this("#computer" + nb_computers++, new Image("file:res/avatar_default.png"));
     }
@@ -26,5 +35,13 @@ public class Player extends Hand{
     }
     public Image getAvatar() {
         return avatar;
+    }
+
+    public void setChoice(UserChoice choice) {
+        this.choice = choice;
+    }
+
+    public UserChoice getChoice() {
+        return choice;
     }
 }
