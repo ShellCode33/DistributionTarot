@@ -1,19 +1,16 @@
 package fr.iut.etu;
 
-import fr.iut.etu.model.*;
+import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
-import fr.iut.etu.view.CardView;
-import fr.iut.etu.view.DeckView;
+import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.DepthTest;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
@@ -22,20 +19,15 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class Controller extends Application {
 
+    public static final int CARD_THICK = 1;
     private static final int PLAYER_COUNT = 4;
-
     public static double SCREEN_WIDTH;
     public static double SCREEN_HEIGHT;
-
     public static int CARD_WIDTH = 120;
     public static int CARD_HEIGHT = 212;
-    public static final int CARD_THICK = 1;
-
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
@@ -48,6 +40,10 @@ public class Controller extends Application {
 
     public Stage stage;
     private Scene sceneGame;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -120,107 +116,56 @@ public class Controller extends Application {
                     board = null;
                     boardView = null;
                     break;
-
-                case A:
-                    test = test%18;
-                    board.getPlayers().get(0).getCards().get(test++).show();
-                    break;
             }
         });
 
-        while(!deal());
+       deal();
     }
 
     private boolean deal(){
-        final boolean[] isWellDealt = {true};
-        Deck deck = board.getDeck();
-        DeckView deckView = boardView.getDeckView();
 
-        deck.refill();
+        SequentialTransition st = new SequentialTransition();
+        st.getChildren().add(boardView.getBringDeckOnBoardAnimation());
 
-        Task<Void> waitBringDeckAnimation = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                boardView.bringDeckOnBoardAnimation();
-                Thread.sleep(3000);
-                return null;
+        board.getDeck().refill();
+        board.getDeck().shuffle();
+        board.getDeck().cut(29);
+        //st.getChildren().add(boardView.getDeckView().getCutAnimation());
+
+        for(int i = 0; i < 6; i++){
+            for(int j = 0; j < PLAYER_COUNT; j++){
+                ParallelTransition pt = new ParallelTransition();
+                board.getDeck().deal(board.getPlayer(j));
+                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
+                board.getDeck().deal(board.getPlayer(j));
+                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
+                board.getDeck().deal(board.getPlayer(j));
+                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
+
+                st.getChildren().add(pt);
+                //st.getChildren().add(boardView.getPlayerView(j).getRecenterCardViewsAnimation());
             }
-        };
 
-        waitBringDeckAnimation.setOnSucceeded(event -> {
+            board.getDeck().deal(board.getDog());
+            st.getChildren().add(boardView.getDogView().getPickACardFromDeckAnimation());
+        }
 
-            System.out.println("bring deck animation is over");
+        st.getChildren().add(boardView.getDogView().getDispatchAnimation());
+        st.getChildren().add(boardView.getPlayerView(0).flipAllCardViewsAnimation());
 
-            Task<Void> waitCutAnimation = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    deckView.cutAnimation();
-                    Thread.sleep(3000);
-                    return null;
-                }
-            };
-
-            waitCutAnimation.setOnSucceeded(workerStateEvent -> {
-                System.out.println("cut animation is over");
-                deck.shuffle();
-                for(int i = 0; i < 6; i++){
-                    for(Player p : board.getPlayers()){
-
-                        deck.deal(p);
-                        deck.deal(p);
-                        deck.deal(p);
-
-                    }
-
-                    deck.deal(board.getDog());
-                    ((CardView)boardView.getDogView().getChildren().get(boardView.getDogView().getChildren().size()-1)).setVertical(false);
-                }
-
-                for(Player p : board.getPlayers()){
-                    ArrayList<Card> trumps = p.getCards().stream().filter(card -> card.getType() == Card.Type.TRUMP).collect(Collectors.toCollection(ArrayList::new));
-                    boolean gotFool = p.getCards().contains(new Fool());
-
-                    if(trumps.size() == 1 && trumps.get(0).getValue() == 1 && !gotFool){
-                        reset();
-                        isWellDealt[0] = false;
-                    }
-                }
-
-                boardView.dealCardAnimation();
-
-                Task<Void> waitDispatchAnimation = new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        boardView.getDogView().dispatch();
-                        Thread.sleep(3000);
-                        return null;
-                    }
-                };
-
-                waitDispatchAnimation.setOnSucceeded(workerStateEvent1 -> {
-                    boardView.getPlayerView(0).sortCards();
-                    boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
-                });
-
-                new Thread(waitDispatchAnimation).start();
-            });
-
-            new Thread(waitCutAnimation).start();
+        st.setOnFinished(event -> {
+                boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
         });
-        new Thread(waitBringDeckAnimation).start();
 
-        return isWellDealt[0];
+        st.play();
 
+        return true;
     }
 
     private void reset() {
         //TODO : repenser l'usage de cette fonction
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
     public void askUsername() {
@@ -240,8 +185,7 @@ public class Controller extends Application {
 
             System.out.println("show dog");
 
-            for (Card card : board.getDog().getCards())
-                card.show();
+            boardView.getDogView().getFlipAllCardViewsAnimation().play();
 
             //ecart
         }

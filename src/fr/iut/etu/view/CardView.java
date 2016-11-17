@@ -2,8 +2,7 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
-import javafx.animation.RotateTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,12 +17,14 @@ import java.util.Observer;
  */
 public class CardView extends Group implements Observer, Comparable<CardView> {
     private Card card;
-    private ImageView front = null, back;
-    private boolean animVertical = true;
+    private ImageView front, back;
+    private boolean verticalAnimation = true;
+    private Animation flipAnimation;
 
-    public CardView(Card card) {
+    public CardView(Card card, boolean verticalAnimation) {
 
         this.card = card;
+        this.verticalAnimation = verticalAnimation;
         this.card.addObserver(this);
 
         Image imageBottom = new Image("file:res/back.jpg");
@@ -36,49 +37,38 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
         getChildren().add(back);
 
-        setRotationAxis(Rotate.Y_AXIS);
-        setRotate(card.isHidden() ? 0 : 180);
+        Image imageFace;
+
+        if (card.getType() == Card.Type.FOOL) {
+            imageFace = new Image("file:./res/FOOL.png");
+        } else {
+            imageFace = new Image("file:./res/" + card.getType().toString() + "_" + card.getValue() + ".png");
+        }
+
+        front = new ImageView(imageFace);
+        front.setFitHeight(Controller.CARD_HEIGHT);
+        front.setFitWidth(Controller.CARD_WIDTH);
+
+        front.setTranslateZ(-1);
+
+        front.setRotationAxis(Rotate.Y_AXIS);
+        front.setRotate(180);
+
+        getChildren().add(front);
+
+        createFlipAnimation();
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-
-        if(front == null) {
-
-            //La carte se montre
-
-            Image imageFace;
-
-            if (card.getType() == Card.Type.FOOL) {
-                imageFace = new Image("file:./res/FOOL.png");
-            } else {
-                imageFace = new Image("file:./res/" + card.getType().toString() + "_" + card.getValue() + ".png");
-            }
-
-            front = new ImageView(imageFace);
-            front.setFitHeight(Controller.CARD_HEIGHT);
-            front.setFitWidth(Controller.CARD_WIDTH);
-
-            front.setTranslateZ(-1);
-
-            front.setRotationAxis(Rotate.Y_AXIS);
-            front.setRotate(180);
-
-            getChildren().add(front);
-        }
-        else {
-            getChildren().remove(front);
-            front = null;
-        }
-
-        setRotate(card.isHidden() ? 180 : 0);
-
+    private void createFlipAnimation() {
         double width = Controller.CARD_WIDTH;
         double height = Controller.CARD_HEIGHT;
 
+        setRotationAxis(Rotate.Y_AXIS);
+        setRotate(card.isHidden() ? 0 : 0);
+
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
 
-        if(animVertical)
+        if(verticalAnimation)
             translate1.setByY(-height);
         else
             translate1.setByX(-width);
@@ -86,49 +76,42 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         translate1.setCycleCount(1);
 
         TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.5), this);
-        translate2.setByZ(-height/2);
+        translate2.setByZ(-height);
         translate2.setCycleCount(1);
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
-        rotate.setByAngle(180);
-        rotate.setAxis(animVertical ? Rotate.X_AXIS : Rotate.Y_AXIS);
-        rotate.setCycleCount(0);
+        rotate.setFromAngle(getRotate());
+        rotate.setToAngle(-180);
+        rotate.setAxis(verticalAnimation ? Rotate.X_AXIS : Rotate.Y_AXIS);
+        rotate.setCycleCount(1);
 
-        TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.3), this);
-        translate3.setByZ(height/2);
+        TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.2), this);
+        translate3.setByZ(height);
         translate3.setCycleCount(1);
 
         TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
-        if(animVertical)
+        if(verticalAnimation)
             translate4.setByY(height);
         else
             translate4.setByX(width);
 
         translate4.setCycleCount(1);
 
-        translate1.play();
+        ParallelTransition pt = new ParallelTransition();
+        pt.getChildren().addAll(translate2, rotate);
 
-        translate1.setOnFinished(event1 -> {
+        SequentialTransition st = new SequentialTransition();
+        st.getChildren().addAll(translate1,pt, translate3, translate4);
 
-            translate2.play();
-            rotate.play();
-
-            translate2.setOnFinished(event2 -> {
-
-                translate3.play();
-
-                translate3.setOnFinished(event3 -> {
-
-                    translate4.play();
-
-                });
-            });
-
-        });
+        flipAnimation = st;
     }
 
-    public void setVertical(boolean vertical) {
-        animVertical = vertical;
+    public Animation getFlipAnimation() {
+        return flipAnimation;
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
     }
 
     @Override

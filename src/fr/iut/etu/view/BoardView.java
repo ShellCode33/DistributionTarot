@@ -3,11 +3,11 @@ package fr.iut.etu.view;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Player;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -15,8 +15,6 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -36,6 +34,7 @@ public class BoardView extends Group {
     private ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
     private DogView dogView;
+    private Animation bringDeckOnBoardAnimation;
 
     public BoardView(Board board) {
         super();
@@ -52,6 +51,19 @@ public class BoardView extends Group {
             getChildren().add(playerView);
         }
 
+
+        deckView = new DeckView(board.getDeck());
+        getChildren().add(deckView);
+        dogView = new DogView(board.getDog());
+        dogView.setTranslateX(4*Controller.SCREEN_WIDTH/6);
+        dogView.setTranslateY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
+        getChildren().add(dogView);
+
+        placePlayerViews();
+        createBringDeckOnBoardAnimation();
+    }
+
+    private void placePlayerViews(){
         Bounds boundsInLocal = playerViews.get(0).getBoundsInLocal();
         Point2D point2D = playerViews.get(0).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
 
@@ -80,36 +92,24 @@ public class BoardView extends Group {
                 Controller.SCREEN_HEIGHT/2 - point2D.getY()));
         playerViews.get(3).getTransforms().add(new Rotate(270));
 
-        deckView = new DeckView(board.getDeck());
-        getChildren().add(deckView);
-        dogView = new DogView(board.getDog());
-        dogView.setTranslateX(4*Controller.SCREEN_WIDTH/6);
-        dogView.setTranslateY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
-        getChildren().add(dogView);
-
     }
 
-    public void bringDeckOnBoardAnimation(){
-
-        RotateTransition rotate = new RotateTransition(Duration.seconds(3), deckView);
-
+    private void createBringDeckOnBoardAnimation() {
+        RotateTransition rotate = new RotateTransition(Duration.seconds(2), deckView);
         rotate.setAxis(Rotate.Z_AXIS);
         rotate.setFromAngle(0);
         rotate.setToAngle(270);
         rotate.setCycleCount(1);
-        rotate.play();
 
-        TranslateTransition translate = new TranslateTransition(Duration.seconds(3), deckView);
+        TranslateTransition translate = new TranslateTransition(Duration.seconds(2), deckView);
         translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH)/2);
         translate.setToY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
-
         translate.setCycleCount(1);
-        translate.play();
 
-    }
+        ParallelTransition st = new ParallelTransition();
+        st.getChildren().addAll(rotate, translate);
 
-    public void dealCardAnimation() {
-
+        bringDeckOnBoardAnimation = st;
     }
 
     public DeckView getDeckView() {
@@ -122,6 +122,10 @@ public class BoardView extends Group {
 
     public PlayerView getPlayerView(int i) {
         return playerViews.get(i);
+    }
+
+    public Animation getBringDeckOnBoardAnimation() {
+        return bringDeckOnBoardAnimation;
     }
 
     public void askUserChoice(URL res, Controller controller) {
