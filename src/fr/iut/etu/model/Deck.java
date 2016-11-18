@@ -8,6 +8,8 @@ import java.util.*;
 public class Deck extends Observable{
 
     private List<Card> cards = new ArrayList<Card>();
+    private Card lastCardDealt;
+    private Card lastCardAdded;
 
     public int size() {
         return cards.size();
@@ -29,8 +31,10 @@ public class Deck extends Observable{
     private void add(Card card){
         cards.add(card);
 
+        lastCardAdded = card;
+
         setChanged();
-        notifyObservers();
+        notifyObservers(Notifications.CARD_ADDED);
     }
 
     public void refill() {
@@ -56,22 +60,19 @@ public class Deck extends Observable{
         notifyObservers(Notifications.SHUFFLED);
     }
 
-    public Card deal() {
-
+    public void deal(Hand hand){
         if(cards.isEmpty())
             throw new NoSuchElementException("Deck is empty, can't deal !");
 
         Card card = cards.get(cards.size() - 1);
         cards.remove(card);
 
+        hand.addCard(card);
+
+        lastCardDealt = card;
+
         setChanged();
         notifyObservers(Notifications.CARD_DEALED);
-
-        return card;
-    }
-
-    public void deal(Hand hand){
-        hand.pickACard(this);
     }
 
     public void cut(int i) {
@@ -95,4 +96,11 @@ public class Deck extends Observable{
     }
 
 
+    public Card getLastCardDealt() {
+        return lastCardDealt;
+    }
+
+    public Card getLastCardAdded() {
+        return lastCardAdded;
+    }
 }

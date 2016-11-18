@@ -48,7 +48,7 @@ public class TarotTests {
         Player player = new Player();
         assertNotEquals("Player not created !", null, player);
 
-        Player player2 = new Player("Patrick", null);
+        Player player2 = new Player("Patrick");
         assertNotEquals("Player not created !", null, player2);
     }
 
@@ -154,28 +154,14 @@ public class TarotTests {
         assertTrue("Deck not cuted !", deck.getCard(0).equals(cardAtCut));
     }
 
-    @Test
-    public void canDealACard() throws Exception {
-        Deck deck = new Deck();
-        assertNotEquals("Deck not created !", deck, null);
-        assertEquals("Wrong deck size !", deck.size(), 0);
-
-        deck.refill();
-        assertEquals("Wrong deck size !", deck.size(), 78);
-
-        assertTrue("Deck.contains not working !", deck.contains(new Card(Card.Type.CLUB, 9)));
-
-        assertTrue("Deck didn't deal !", deck.deal().equals(new Fool()));
-        assertEquals("Deck size not reduced !", deck.size(), 77);
-    }
-
     @Test(expected = NoSuchElementException.class)
     public void exceptionDealACard() throws Exception {
         Deck deck = new Deck();
         assertNotEquals("Deck not created !", deck, null);
         assertEquals("Wrong deck size !", deck.size(), 0);
 
-        deck.deal();
+        Player player = new Player();
+        deck.deal(player);
     }
 
     @Test

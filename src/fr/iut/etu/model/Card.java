@@ -36,18 +36,6 @@ public class Card extends Observable implements Comparable<Card> {
         return value;
     }
 
-    public void show(){
-        this.hidden = false;
-        setChanged();
-        notifyObservers();
-    }
-
-    public void hide(){
-        this.hidden = true;
-        setChanged();
-        notifyObservers();
-    }
-
     public boolean isHidden() {
         return hidden;
     }

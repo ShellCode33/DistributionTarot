@@ -1,7 +1,6 @@
 package fr.iut.etu.model;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.Observable;
 
 /**
@@ -19,14 +18,8 @@ public class Hand extends Observable{
         return cards;
     }
 
-    public void pickACard(Deck deck) {
+    public void addCard(Card card) {
 
-        try {
-            cards.add(deck.deal());
-            setChanged();
-            notifyObservers(Notifications.CARD_PICKED);
-        }catch (NoSuchElementException e){
-            e.printStackTrace();
-        }
+        cards.add(card);
     }
 }

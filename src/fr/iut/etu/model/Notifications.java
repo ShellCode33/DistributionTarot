@@ -7,5 +7,5 @@ public enum Notifications {
     CARD_PICKED,
     CARD_DEALED,
     SHUFFLED,
-    CUT
+    CARD_ADDED, CUT
 }

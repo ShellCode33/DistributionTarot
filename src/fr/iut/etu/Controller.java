@@ -3,7 +3,6 @@ package fr.iut.etu;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
-import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
@@ -87,7 +86,7 @@ public class Controller extends Application {
     public void startGame(String myPlayerUsername, Image selectedImage) {
         board = new Board(PLAYER_COUNT);
 
-        board.addPlayer(new Player(myPlayerUsername, selectedImage));
+        board.addPlayer(new Player(myPlayerUsername));
 
         for(int i = 0; i < PLAYER_COUNT-1; i++)
             board.addPlayer(new Player());
@@ -125,37 +124,38 @@ public class Controller extends Application {
     private boolean deal(){
 
         SequentialTransition st = new SequentialTransition();
-        st.getChildren().add(boardView.getBringDeckOnBoardAnimation());
 
         board.getDeck().refill();
+        st.getChildren().add(boardView.getBringDeckOnBoardAnimation());
+
         board.getDeck().shuffle();
         board.getDeck().cut(29);
         //st.getChildren().add(boardView.getDeckView().getCutAnimation());
 
-        for(int i = 0; i < 6; i++){
-            for(int j = 0; j < PLAYER_COUNT; j++){
-                ParallelTransition pt = new ParallelTransition();
-                board.getDeck().deal(board.getPlayer(j));
-                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
-                board.getDeck().deal(board.getPlayer(j));
-                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
-                board.getDeck().deal(board.getPlayer(j));
-                pt.getChildren().add(boardView.getPlayerView(j).getPickACardFromDeckAnimation());
+//        for(int i = 0; i < 6; i++){
+//            for(int j = 0; j < PLAYER_COUNT; j++){
+//                ParallelTransition pt = new ParallelTransition();
+//                board.getDeck().deal(board.getPlayer(j));
+//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
+//                board.getDeck().deal(board.getPlayer(j));
+//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
+//                board.getDeck().deal(board.getPlayer(j));
+//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
+//
+//
+//                st.getChildren().add(pt);
+//            }
+//
+//            board.getDeck().deal(board.getDog());
+//            st.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getDogView()));
+//        }
 
-                st.getChildren().add(pt);
-                //st.getChildren().add(boardView.getPlayerView(j).getRecenterCardViewsAnimation());
-            }
-
-            board.getDeck().deal(board.getDog());
-            st.getChildren().add(boardView.getDogView().getPickACardFromDeckAnimation());
-        }
-
-        st.getChildren().add(boardView.getDogView().getDispatchAnimation());
-        st.getChildren().add(boardView.getPlayerView(0).flipAllCardViewsAnimation());
-
-        st.setOnFinished(event -> {
-                boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
-        });
+//        st.getChildren().add(boardView.getDogView().getDispatchAnimation());
+//        st.getChildren().add(boardView.getPlayerView(0).flipAllCardViewsAnimation());
+//
+//        st.setOnFinished(event -> {
+//                boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
+//        });
 
         st.play();
 
@@ -185,7 +185,7 @@ public class Controller extends Application {
 
             System.out.println("show dog");
 
-            boardView.getDogView().getFlipAllCardViewsAnimation().play();
+            //boardView.getDogView().getFlipAllCardViewsAnimation().play();
 
             //ecart
         }
