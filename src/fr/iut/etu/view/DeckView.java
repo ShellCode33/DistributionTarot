@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -21,18 +22,16 @@ import java.util.Observer;
 public class DeckView extends Group implements Observer {
 
     private Deck deck;
-    private Image image;
     private ArrayList<CardView> cardViews = new ArrayList<>();
     private LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
     private Animation cutAnimation;
+    private Image backCardCustom;
 
-    public DeckView(Deck deck) {
+    public DeckView(Deck deck, Image backCardCustom) {
         super();
-
+        this.backCardCustom = backCardCustom;
         this.deck = deck;
         deck.addObserver(this);
-
-        image = new Image("file:res/back.jpg");
 
         createCutAnimation();
     }
@@ -68,7 +67,7 @@ public class DeckView extends Group implements Observer {
             cardViewsWaitingToBeDealt.push(cardViews.get(cardViews.size() - 1));
         }
         else if(o == Notifications.CARD_ADDED){
-            CardView cardView = new CardView(deck.getLastCardAdded(), true);
+            CardView cardView = new CardView(deck.getLastCardAdded(), true, backCardCustom);
             cardViews.add(cardView);
             getChildren().add(cardView);
             cardView.setTranslateZ(-cardViews.size()*Controller.CARD_THICK);

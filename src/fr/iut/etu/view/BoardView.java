@@ -36,14 +36,16 @@ public class BoardView extends Group {
     private DogView dogView;
     private Animation bringDeckOnBoardAnimation;
 
-    public BoardView(Board board) {
+    public BoardView(Board board, Image backgroundCustom, Image backCardCustom) {
         super();
         this.board = board;
 
-        ImageView backgroundView = new ImageView(new Image("file:res/background_board.jpg"));
-        backgroundView.setFitWidth(Controller.SCREEN_WIDTH);
-        backgroundView.setFitHeight(Controller.SCREEN_HEIGHT);
-        getChildren().add(backgroundView);
+
+        ImageView backgroundCustomView = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
+
+        backgroundCustomView.setFitWidth(Controller.SCREEN_WIDTH);
+        backgroundCustomView.setFitHeight(Controller.SCREEN_HEIGHT);
+        getChildren().add(backgroundCustomView);
 
         for (int i = 0; i < board.getPlayerCount(); i++) {
             PlayerView playerView = new PlayerView(this.board.getPlayer(i));
@@ -52,7 +54,7 @@ public class BoardView extends Group {
         }
 
 
-        deckView = new DeckView(board.getDeck());
+        deckView = new DeckView(board.getDeck(), backCardCustom);
         getChildren().add(deckView);
         dogView = new DogView(board.getDog());
         dogView.setTranslateX(4*Controller.SCREEN_WIDTH/6);

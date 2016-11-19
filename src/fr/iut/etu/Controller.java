@@ -11,12 +11,17 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Controller extends Application {
@@ -34,11 +39,14 @@ public class Controller extends Application {
 
     private Board board;
     private BoardView boardView;
+    private Image boardImage = null;
+    private Image backCardImage = null;
 
     private Menu menu;
 
     public Stage stage;
     private Scene sceneGame;
+    private MediaPlayer musicPlayer;
 
     public static void main(String[] args) {
         launch(args);
@@ -81,6 +89,19 @@ public class Controller extends Application {
         primaryStage.setY(Y_SCREEN_START);
         primaryStage.setHeight(SCREEN_HEIGHT);
         primaryStage.setWidth(SCREEN_WIDTH);
+
+        Media music = new Media(new File("res/audio/main.mp3").toURI().toString());
+
+        try {
+            musicPlayer = new MediaPlayer(music);
+            musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            musicPlayer.setVolume(0.5);
+            musicPlayer.play();
+        }
+
+        catch(MediaException e) {
+            System.out.println("Your OS doesn't support music player");
+        }
     }
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
@@ -92,7 +113,7 @@ public class Controller extends Application {
             board.addPlayer(new Player());
 
 
-        boardView = new BoardView(board);
+        boardView = new BoardView(board, boardImage, backCardImage);
         boardView.setDepthTest(DepthTest.ENABLE);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
@@ -104,14 +125,12 @@ public class Controller extends Application {
         boardView.setTranslateY(Y_SCREEN_START);
         sceneGame.setFill(Color.BLACK);
 
-        stage.setScene(sceneGame);
-        stage.setFullScreen(true);
+        setScene(sceneGame);
 
         sceneGame.setOnKeyReleased(event -> {
             switch (event.getCode()) {
                 case ESCAPE:
-                    stage.setScene(menu);
-                    stage.setFullScreen(true);
+                    setScene(menu);
                     board = null;
                     boardView = null;
                     break;
@@ -165,17 +184,7 @@ public class Controller extends Application {
     private void reset() {
         //TODO : repenser l'usage de cette fonction
         board = new Board(PLAYER_COUNT);
-        boardView = new BoardView(board);
-    }
-
-    public void askUsername() {
-
-        try {
-            stage.setScene(new UserInput(this));
-            stage.setFullScreen(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        boardView = new BoardView(board, boardImage, backCardImage);
     }
 
     public void setUserChoice(Player.UserChoice userChoice) {
@@ -193,5 +202,34 @@ public class Controller extends Application {
         else {
             System.out.println("user choice set");
         }
+    }
+
+    public void setScene(Scene scene) {
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+
+        scene.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
+                case ESCAPE:
+                    setScene(menu);
+                    break;
+            }
+        });
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setBackCardImage(Image imageView) {
+        backCardImage = imageView;
+    }
+
+    public void setBoardImage(Image imageView) {
+        boardImage = imageView;
+    }
+
+    public MediaPlayer getMusicPlayer() {
+        return musicPlayer;
     }
 }

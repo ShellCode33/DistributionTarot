@@ -55,18 +55,23 @@ public class Menu extends Scene {
         exitButton.setOnAction(e -> buttonClicked(e));
     }
 
-    public void buttonClicked(ActionEvent e)
-    {
+    public void buttonClicked(ActionEvent e) {
         Button button = (Button)e.getSource();
 
-        if(button == playButton)
-            controller.askUsername();
+        try {
+            if (button == playButton)
+                controller.setScene(new UserInput(controller));
 
-        else if(button == settingsButton)
-            settingsButton.setText("Not yet implemented");
+            else if (button == settingsButton)
+                controller.setScene(new Settings(controller));
 
-        else if(button == exitButton) {
-            System.exit(0);
+            else if (button == exitButton) {
+                System.exit(0);
+            }
+        }
+
+        catch(IOException e1) {
+            e1.printStackTrace();
         }
     }
 }

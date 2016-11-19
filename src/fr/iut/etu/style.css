@@ -37,17 +37,17 @@
 }
 
 .background-menu {
-    -fx-background-image: url("file:res/background_menu.jpeg");
+    -fx-background-image: url("file:res/backgrounds/background_menu.jpeg");
     -fx-background-repeat: stretch;
 }
 
-.vboxStyle {
-    -fx-background-image: url("file:res/background_board.jpg");
+.vboxStyle, .background-settings {
+    -fx-background-image: url("file:res/backgrounds/background_board0.jpg");
     -fx-background-repeat: stretch;
 }
 
 .user-choice {
-    -fx-background-image: url("file:res/background_userchoice.jpg");
+    -fx-background-image: url("file:res/backgrounds/background_userchoice.jpg");
     -fx-background-repeat: stretch;
     -fx-border-color: black;
     -fx-border-width: 5;

@@ -21,15 +21,13 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     private boolean verticalAnimation = true;
     private Animation flipAnimation;
 
-    public CardView(Card card, boolean verticalAnimation) {
+    public CardView(Card card, boolean verticalAnimation, Image backCustom) {
 
         this.card = card;
         this.verticalAnimation = verticalAnimation;
         this.card.addObserver(this);
 
-        Image imageBottom = new Image("file:res/back.jpg");
-
-        back = new ImageView(imageBottom);
+        back = new ImageView(backCustom == null ? new Image("file:res/cards/back0.jpg") : backCustom);
         back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);
@@ -40,9 +38,9 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         Image imageFace;
 
         if (card.getType() == Card.Type.FOOL) {
-            imageFace = new Image("file:./res/FOOL.png");
+            imageFace = new Image("file:./res/cards/FOOL.png");
         } else {
-            imageFace = new Image("file:./res/" + card.getType().toString() + "_" + card.getValue() + ".png");
+            imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_" + card.getValue() + ".png");
         }
 
         front = new ImageView(imageFace);

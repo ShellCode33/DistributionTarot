@@ -51,10 +51,11 @@ public class UserInput extends Scene {
         int num_avatar = 1;
         for(int i = 0; i < 4;i++) {
             for(int j = 0; j < 5; j++) {
-                Image img = new Image("file:res/avatar" + num_avatar++ + ".png");
+                Image img = new Image("file:res/avatars/avatar" + num_avatar++ + ".png");
 
-                if(selectedImage == null)
+                if(selectedImage == null) {
                     selectedImage = img;
+                }
 
                 ImageView imgView = new ImageView(img);
                 imgView.setFitWidth(100);
@@ -62,10 +63,8 @@ public class UserInput extends Scene {
                 imgView.setOnMouseClicked(mouseEvent -> imgView.requestFocus());
                 imgView.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) ->
                 {
-                    if(newValue) {
+                    if(newValue)
                         selectedImage = imgView.getImage();
-                        System.out.println("selectedImage: " + selectedImage);
-                    }
 
                     imgView.setEffect(newValue ? border : null);
                 });
