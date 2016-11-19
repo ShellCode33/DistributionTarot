@@ -112,7 +112,10 @@ public class Settings extends Scene {
         saveButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());
             controller.setBackCardImage(selectedBackCard.getImage());
-            controller.getMusicPlayer().setVolume(slider.getValue() / 100);
+
+            if(controller.getMusicPlayer() != null)
+                controller.getMusicPlayer().setVolume(slider.getValue() / 100);
+
             controller.setScene(controller.getMenu());
         });
 
