@@ -30,8 +30,10 @@ public class DeckView extends Group implements Observer {
         this.deck = deck;
         deck.addObserver(this);
 
-        if(backCardCustom != null)
+        if(backCardCustom == null)
             backCard = new Image("file:res/cards/back0.jpg");
+        else
+            backCard = backCardCustom;
 
         createCutAnimation();
     }
@@ -59,7 +61,7 @@ public class DeckView extends Group implements Observer {
             imageView.setSmooth(true);
             imageView.setFitHeight(Controller.CARD_HEIGHT);
             imageView.setFitWidth(Controller.CARD_WIDTH);
-            imageView.setTranslateZ(-getChildren().size()*Controller.CARD_THICK);
+            imageView.setTranslateZ(-getChildren().size()*2*Controller.CARD_THICK);
 
             getChildren().add(imageView);
         }

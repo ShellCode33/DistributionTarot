@@ -8,6 +8,8 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -24,13 +26,6 @@ public class PlayerView extends HandView {
 
     public PlayerView(Player player) {
         super(player);
-
-//        ImageView avatar = new ImageView(player.getAvatar());
-//        avatar.setFitHeight(50 * Controller.SCALE_COEFF);
-//        avatar.setFitWidth(50 * Controller.SCALE_COEFF);
-//        avatar.setTranslateY(-75);
-//        avatar.setTranslateZ(-1);
-//        getChildren().add(avatar);
 
         usernameLabel.setText(player.getName());
         usernameLabel.setTranslateY(-68);
@@ -59,5 +54,14 @@ public class PlayerView extends HandView {
         }
 
         return pt;
+    }
+
+    public void setAvatar(Image image) {
+        ImageView avatar = new ImageView(image);
+        avatar.setFitHeight(50 * Controller.SCALE_COEFF);
+        avatar.setFitWidth(50 * Controller.SCALE_COEFF);
+        avatar.setTranslateY(-75);
+        avatar.setTranslateZ(-1);
+        getChildren().add(avatar);
     }
 }

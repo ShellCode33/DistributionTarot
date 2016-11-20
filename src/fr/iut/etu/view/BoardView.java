@@ -288,5 +288,4 @@ public class BoardView extends Group {
 
         getChildren().remove(getChildren().size()-1);
     }
-
 }

@@ -102,7 +102,7 @@ public class Controller extends Application {
         }
 
         catch(MediaException e) {
-            System.out.println("Your OS doesn't support music player");
+            System.out.println("Your OS doesn't support music player : might be a javafx issue");
         }
     }
 
@@ -117,6 +117,12 @@ public class Controller extends Application {
 
         boardView = new BoardView(board, boardImage, backCardImage);
         boardView.setDepthTest(DepthTest.ENABLE);
+
+        Image defaultImage = new Image("file:res/avatars/avatar_default.png");
+        boardView.getPlayerView(0).setAvatar(selectedImage != null ? selectedImage : defaultImage);
+
+        for(int i = 1; i < board.getPlayerCount(); i++)
+            boardView.getPlayerView(i).setAvatar(defaultImage);
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
