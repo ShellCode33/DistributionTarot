@@ -4,9 +4,13 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
@@ -38,9 +42,21 @@ public class PlayerView extends HandView {
         getChildren().add(usernameLabel);
     }
 
-    public Animation getRecenterCardViewsAnimation(){
-
+    @Override
+    public Animation getDispatchAnimation() {
         ParallelTransition pt = new ParallelTransition();
+
+        FilteredList<Node> cardViews = getChildren().filtered(c -> c instanceof CardView);
+
+        for (int i = cardViews.size() - 1; i >= 0; i--) {
+
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
+            translateTransition.setByX(-i*GAP_BETWEEN_CARDS +  cardViews.size()*GAP_BETWEEN_CARDS/2);
+            translateTransition.setCycleCount(1);
+
+            pt.getChildren().add(translateTransition);
+
+        }
 
         return pt;
     }

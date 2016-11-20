@@ -10,7 +10,7 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -57,42 +57,76 @@ public class BoardView extends Group {
         deckView = new DeckView(board.getDeck(), backCardCustom);
         getChildren().add(deckView);
         dogView = new DogView(board.getDog());
-        dogView.setTranslateX(4*Controller.SCREEN_WIDTH/6);
-        dogView.setTranslateY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
         getChildren().add(dogView);
 
-        placePlayerViews();
+        placeHandViews();
         createBringDeckOnBoardAnimation();
+
+
     }
 
-    private void placePlayerViews(){
-        Bounds boundsInLocal = playerViews.get(0).getBoundsInLocal();
-        Point2D point2D = playerViews.get(0).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+    private void placeHandViews(){
 
-        playerViews.get(0).getTransforms().add(new Translate((Controller.SCREEN_WIDTH)/2 - point2D.getX(),
-                Controller.SCREEN_HEIGHT - playerViews.get(0).getLayoutBounds().getHeight()*2));
-        playerViews.get(3).getTransforms().add(new Rotate(0));
+        dogView.getTransforms().addAll(
+                new Translate(
+                        4*Controller.SCREEN_WIDTH/6,
+                        (Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2,
+                        -1),
+                new Rotate(
+                        0,
+                        Rotate.Z_AXIS
+                )
+        );
 
-        boundsInLocal = playerViews.get(1).getBoundsInLocal();
-        point2D = playerViews.get(1).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+        PlayerView playerView;
 
-        playerViews.get(1).getTransforms().add(new Translate(- point2D.getX() + Controller.CARD_HEIGHT,
-                Controller.SCREEN_HEIGHT/2 - point2D.getY()));
-        playerViews.get(1).getTransforms().add(new Rotate(90));
+        playerView = getPlayerView(0);
+        playerView.getTransforms().addAll(
+                new Translate(
+                    Controller.SCREEN_WIDTH/2,
+                    Controller.SCREEN_HEIGHT - Controller.CARD_HEIGHT/2,
+                    -1),
+                new Rotate(
+                        0,
+                        Rotate.Z_AXIS
+                )
+        );
 
-        boundsInLocal = playerViews.get(2).getBoundsInLocal();
-        point2D = playerViews.get(2).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
+        playerView = getPlayerView(1);
+        playerView.getTransforms().addAll(
+                new Translate(
+                        Controller.CARD_HEIGHT,
+                        Controller.SCREEN_HEIGHT/2,
+                        -1),
+                new Rotate(
+                        90,
+                        Rotate.Z_AXIS
+                )
+        );
 
-        playerViews.get(2).getTransforms().add(new Translate(Controller.SCREEN_WIDTH/2 - point2D.getX(),
-                - point2D.getY()+Controller.CARD_HEIGHT/2));
-        playerViews.get(2).getTransforms().add(new Rotate(180));
+        playerView = getPlayerView(2);
+        playerView.getTransforms().addAll(
+                new Translate(
+                        Controller.SCREEN_WIDTH/2,
+                        Controller.CARD_HEIGHT/2,
+                        -1),
+                new Rotate(
+                        180,
+                        Rotate.Z_AXIS
+                )
+        );
 
-        boundsInLocal = playerViews.get(3).getBoundsInLocal();
-        point2D = playerViews.get(3).localToParent(boundsInLocal.getWidth() / 2, boundsInLocal.getHeight() / 2);
-
-        playerViews.get(3).getTransforms().add(new Translate(Controller.SCREEN_WIDTH - point2D.getX() - Controller.CARD_HEIGHT,
-                Controller.SCREEN_HEIGHT/2 - point2D.getY()));
-        playerViews.get(3).getTransforms().add(new Rotate(270));
+        playerView = getPlayerView(3);
+        playerView.getTransforms().addAll(
+                new Translate(
+                        Controller.SCREEN_WIDTH - Controller.CARD_HEIGHT,
+                        Controller.SCREEN_HEIGHT/2,
+                        -1),
+                new Rotate(
+                        270,
+                        Rotate.Z_AXIS
+                )
+        );
 
     }
 
@@ -128,6 +162,48 @@ public class BoardView extends Group {
 
     public Animation getBringDeckOnBoardAnimation() {
         return bringDeckOnBoardAnimation;
+    }
+
+    public Animation getDealACardAnimation(HandView handView) {
+
+        if(deckView.getCardViewsWaitingToBeDealt().isEmpty())
+            throw new UnsupportedOperationException("No card was dealt in the model");
+
+        CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
+        handView.getChildren().add(cardView);
+
+        Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
+        Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
+
+        cardView.setTranslateX(-1000);
+        cardView.setRotationAxis(Rotate.Z_AXIS);
+        cardView.setRotate(270 - handViewRotate.getAngle());
+
+
+        int cardViewCount = handView.getChildren().filtered(c -> c instanceof CardView).size();
+        Point3D destination = new Point3D(0,0,-cardViewCount*Controller.CARD_THICK-1);
+
+        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.7), cardView);
+        translateTransition.setFromX(deckViewBoundsInHandView.getMinX());
+        translateTransition.setFromY(deckViewBoundsInHandView.getMinY());
+        translateTransition.setFromZ(deckViewBoundsInHandView.getMinZ());
+        translateTransition.setToX(destination.getX());
+        translateTransition.setToY(destination.getY());
+        translateTransition.setToZ(destination.getZ());
+        translateTransition.setCycleCount(1);
+
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.7), cardView);
+        rotateTransition.setAxis(Rotate.Z_AXIS);
+        rotateTransition.setFromAngle(270 - handViewRotate.getAngle());
+        rotateTransition.setByAngle(270 - handViewRotate.getAngle());
+        rotateTransition.setCycleCount(1);
+
+        ParallelTransition parallelTransition = new ParallelTransition();
+        parallelTransition.getChildren().addAll(translateTransition, rotateTransition);
+
+        parallelTransition.setOnFinished(event -> deckView.getChildren().remove(deckView.getChildren().size() - 1));
+
+        return parallelTransition;
     }
 
     public void askUserChoice(URL res, Controller controller) {
@@ -210,4 +286,5 @@ public class BoardView extends Group {
 
         getChildren().remove(getChildren().size()-1);
     }
+
 }

@@ -18,16 +18,13 @@ import java.util.Observer;
 public class CardView extends Group implements Observer, Comparable<CardView> {
     private Card card;
     private ImageView front, back;
-    private boolean verticalAnimation = true;
     private Animation flipAnimation;
 
-    public CardView(Card card, boolean verticalAnimation, Image backCustom) {
+    public CardView(Card card) {
 
         this.card = card;
-        this.verticalAnimation = verticalAnimation;
         this.card.addObserver(this);
 
-        back = new ImageView(backCustom == null ? new Image("file:res/cards/back0.jpg") : backCustom);
         back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);
@@ -57,6 +54,8 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         createFlipAnimation();
     }
 
+
+
     private void createFlipAnimation() {
         double width = Controller.CARD_WIDTH;
         double height = Controller.CARD_HEIGHT;
@@ -64,23 +63,21 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         setRotationAxis(Rotate.Y_AXIS);
         setRotate(card.isHidden() ? 0 : 0);
 
-        TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.3), this);
+        TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.2), this);
 
-        if(verticalAnimation)
-            translate1.setByY(-height);
-        else
-            translate1.setByX(-width);
+        translate1.setByY(-height);
+        translate1.setByX(-width);
 
         translate1.setCycleCount(1);
 
-        TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.5), this);
+        TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.3), this);
         translate2.setByZ(-height);
         translate2.setCycleCount(1);
 
-        RotateTransition rotate = new RotateTransition(Duration.seconds(0.5), this);
+        RotateTransition rotate = new RotateTransition(Duration.seconds(0.3), this);
         rotate.setFromAngle(getRotate());
         rotate.setToAngle(-180);
-        rotate.setAxis(verticalAnimation ? Rotate.X_AXIS : Rotate.Y_AXIS);
+        rotate.setAxis(Rotate.X_AXIS);
         rotate.setCycleCount(1);
 
         TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.2), this);
@@ -88,10 +85,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         translate3.setCycleCount(1);
 
         TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
-        if(verticalAnimation)
-            translate4.setByY(height);
-        else
-            translate4.setByX(width);
+        translate4.setByY(height);
 
         translate4.setCycleCount(1);
 

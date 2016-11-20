@@ -3,6 +3,8 @@ package fr.iut.etu;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
@@ -137,48 +139,75 @@ public class Controller extends Application {
             }
         });
 
-       deal();
+        deal();
     }
 
     private boolean deal(){
 
-        SequentialTransition st = new SequentialTransition();
-
         board.getDeck().refill();
-        st.getChildren().add(boardView.getBringDeckOnBoardAnimation());
+        boardView.getBringDeckOnBoardAnimation().play();
 
-        board.getDeck().shuffle();
-        board.getDeck().cut(29);
-        //st.getChildren().add(boardView.getDeckView().getCutAnimation());
+        boardView.getBringDeckOnBoardAnimation().setOnFinished(event1 -> {
 
-//        for(int i = 0; i < 6; i++){
-//            for(int j = 0; j < PLAYER_COUNT; j++){
-//                ParallelTransition pt = new ParallelTransition();
-//                board.getDeck().deal(board.getPlayer(j));
-//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
-//                board.getDeck().deal(board.getPlayer(j));
-//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
-//                board.getDeck().deal(board.getPlayer(j));
-//                pt.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(j)));
-//
-//
-//                st.getChildren().add(pt);
-//            }
-//
-//            board.getDeck().deal(board.getDog());
-//            st.getChildren().add(boardView.getDeckView().getDealACardAnimation(boardView.getDogView()));
-//        }
+            SequentialTransition st = new SequentialTransition();
+            recursiveDealingSequence(0, st);
 
-//        st.getChildren().add(boardView.getDogView().getDispatchAnimation());
-//        st.getChildren().add(boardView.getPlayerView(0).flipAllCardViewsAnimation());
-//
-//        st.setOnFinished(event -> {
-//                boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
-//        });
+            st.setOnFinished(event2 -> {
 
-        st.play();
+                SequentialTransition st2 = new SequentialTransition();
+
+                ParallelTransition pt = new ParallelTransition();
+                pt.getChildren().add(boardView.getDogView().getDispatchAnimation());
+
+                for(int i = 0; i < PLAYER_COUNT; i++)
+                    pt.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
+
+                st2.getChildren().add(pt);
+                st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
+
+                st2.setOnFinished(event3 ->{
+                    boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
+                });
+
+                st2.play();
+            });
+
+            st.play();
+        });
 
         return true;
+    }
+
+    private void recursiveDealingSequence(int playerIndex, SequentialTransition st){
+
+        Animation animation;
+
+        if(playerIndex == -1) {
+            board.getDeck().deal(board.getDog());
+            animation = boardView.getDealACardAnimation(boardView.getDogView());
+        }
+        else{
+            board.getDeck().deal(board.getPlayer(playerIndex));
+            board.getDeck().deal(board.getPlayer(playerIndex));
+            board.getDeck().deal(board.getPlayer(playerIndex));
+            animation = new ParallelTransition();
+            ((ParallelTransition) animation).getChildren().addAll(
+                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex)),
+                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex)),
+                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex))
+            );
+        }
+
+        animation.setCycleCount(1);
+        st.getChildren().add(animation);
+        if(board.getDeck().size() > 0){
+
+            int nextHand = playerIndex + 1;
+            if(nextHand == PLAYER_COUNT)
+                nextHand = -1;
+
+            recursiveDealingSequence(nextHand, st);
+        }
     }
 
     private void reset() {
@@ -194,7 +223,7 @@ public class Controller extends Application {
 
             System.out.println("show dog");
 
-            //boardView.getDogView().getFlipAllCardViewsAnimation().play();
+            boardView.getDogView().getFlipAllCardViewsAnimation().play();
 
             //ecart
         }
