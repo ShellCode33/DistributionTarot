@@ -50,14 +50,14 @@ public class BoardView extends Group {
         for (int i = 0; i < board.getPlayerCount(); i++) {
             PlayerView playerView = new PlayerView(this.board.getPlayer(i));
             playerViews.add(playerView);
-            getChildren().add(playerView);
+            getChildren().add(playerView.getElementsToDraw());
         }
 
 
         deckView = new DeckView(board.getDeck(), backCardCustom);
         getChildren().add(deckView);
         dogView = new DogView(board.getDog());
-        getChildren().add(dogView);
+        getChildren().add(dogView.getElementsToDraw());
 
         placeHandViews();
         createBringDeckOnBoardAnimation();
@@ -67,7 +67,7 @@ public class BoardView extends Group {
 
     private void placeHandViews(){
 
-        dogView.getTransforms().addAll(
+        dogView.getElementsToDraw().getTransforms().addAll(
                 new Translate(
                         4*Controller.SCREEN_WIDTH/6,
                         (Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2,
@@ -81,7 +81,7 @@ public class BoardView extends Group {
         PlayerView playerView;
 
         playerView = getPlayerView(0);
-        playerView.getTransforms().addAll(
+        playerView.getElementsToDraw().getTransforms().addAll(
                 new Translate(
                     Controller.SCREEN_WIDTH/2,
                     Controller.SCREEN_HEIGHT - Controller.CARD_HEIGHT/2,
@@ -93,7 +93,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(1);
-        playerView.getTransforms().addAll(
+        playerView.getElementsToDraw().getTransforms().addAll(
                 new Translate(
                         Controller.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
@@ -105,7 +105,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(2);
-        playerView.getTransforms().addAll(
+        playerView.getElementsToDraw().getTransforms().addAll(
                 new Translate(
                         Controller.SCREEN_WIDTH/2,
                         Controller.CARD_HEIGHT/2,
@@ -117,7 +117,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(3);
-        playerView.getTransforms().addAll(
+        playerView.getElementsToDraw().getTransforms().addAll(
                 new Translate(
                         Controller.SCREEN_WIDTH - Controller.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
@@ -170,17 +170,17 @@ public class BoardView extends Group {
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
-        handView.getChildren().add(cardView);
+        handView.add(cardView);
 
-        Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
-        Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
+        Rotate handViewRotate = (Rotate) handView.getElementsToDraw().getTransforms().get(1);
+        Bounds deckViewBoundsInHandView = handView.getElementsToDraw().parentToLocal(deckView.getBoundsInParent());
 
         cardView.setTranslateX(-1000);
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
 
-        int cardViewCount = handView.getChildren().filtered(c -> c instanceof CardView).size();
+        int cardViewCount = handView.size();
         Point3D destination = new Point3D(0,0,-cardViewCount*Controller.CARD_THICK-1);
 
         TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.7), cardView);

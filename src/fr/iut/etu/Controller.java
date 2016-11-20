@@ -1,17 +1,21 @@
 package fr.iut.etu;
 
 import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
+import fr.iut.etu.view.CardView;
 import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.DepthTest;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
+import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
@@ -148,40 +152,56 @@ public class Controller extends Application {
         deal();
     }
 
-    private boolean deal(){
+    private void deal(){
 
         board.getDeck().refill();
-        boardView.getBringDeckOnBoardAnimation().play();
+        board.getDeck().shuffle();
 
         boardView.getBringDeckOnBoardAnimation().setOnFinished(event1 -> {
 
-            SequentialTransition st = new SequentialTransition();
-            recursiveDealingSequence(0, st);
+            Animation cutAnim = boardView.getDeckView().createCutAnimation();
 
-            st.setOnFinished(event2 -> {
+            cutAnim.setOnFinished(actionEvent -> {
 
-                SequentialTransition st2 = new SequentialTransition();
+                //Z reset because the deal begins on the middle of the deck
+                ObservableList<Node> children = boardView.getDeckView().getChildren();
+                for(int i = 0; i < children.size(); i++)
+                    children.get(i).setTranslateZ(-Controller.CARD_THICK * children.size() - i * 2 * Controller.CARD_THICK);
+                //--------------------------------------------------
 
-                ParallelTransition pt = new ParallelTransition();
-                pt.getChildren().add(boardView.getDogView().getDispatchAnimation());
+                SequentialTransition st = new SequentialTransition();
+                recursiveDealingSequence(0, st);
 
-                for(int i = 0; i < PLAYER_COUNT; i++)
-                    pt.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
+                st.setOnFinished(event2 -> {
 
-                st2.getChildren().add(pt);
-                st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
+                    SequentialTransition st2 = new SequentialTransition();
 
-                st2.setOnFinished(event3 ->{
-                    boardView.askUserChoice(this);
+                    ParallelTransition pt = new ParallelTransition();
+                    pt.getChildren().add(boardView.getDogView().getDispatchAnimation());
+
+                    for(int i = 0; i < PLAYER_COUNT; i++)
+                        pt.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
+
+                    st2.getChildren().add(pt);
+                    st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
+
+                    boardView.getPlayerView(0).sort(CardView::compareTo);
+                    st2.getChildren().add(boardView.getPlayerView(0).getSortAnimation());
+
+                    st2.setOnFinished(event3 ->{
+                        boardView.askUserChoice(this);
+                    });
+
+                    st2.play();
                 });
 
-                st2.play();
+                st.play();
             });
 
-            st.play();
+            cutAnim.play();
         });
 
-        return true;
+        boardView.getBringDeckOnBoardAnimation().play();
     }
 
     private void recursiveDealingSequence(int playerIndex, SequentialTransition st){

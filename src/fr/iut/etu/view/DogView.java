@@ -4,6 +4,7 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Hand;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Node;
@@ -23,12 +24,10 @@ public class DogView extends HandView{
 
         ParallelTransition pt = new ParallelTransition();
 
-        FilteredList<Node> cardViews = getChildren().filtered(c -> c instanceof CardView);
+        for (int i = size() - 1; i >= 0; i--) {
 
-        for (int i = cardViews.size() - 1; i >= 0; i--) {
-
-                TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
-                translateTransition.setByX(-i*Controller.CARD_WIDTH);
+                TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), get(i));
+                translateTransition.setByX(-i*Controller.CARD_WIDTH-i*20);
                 translateTransition.setCycleCount(1);
 
                 pt.getChildren().add(translateTransition);
@@ -36,5 +35,16 @@ public class DogView extends HandView{
         }
 
         return pt;
+    }
+
+    @Override
+    public Animation getFlipAllCardViewsAnimation() {
+        SequentialTransition st = new SequentialTransition();
+
+        for (CardView cardView : this) {
+            st.getChildren().add(cardView.getFlipAnimation());
+        }
+
+        return st;
     }
 }
