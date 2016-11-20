@@ -20,11 +20,12 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     private ImageView front, back;
     private Animation flipAnimation;
 
-    public CardView(Card card) {
+    public CardView(Card card, Image backCardCustom) {
 
         this.card = card;
         this.card.addObserver(this);
 
+        back = new ImageView(backCardCustom);
         back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);

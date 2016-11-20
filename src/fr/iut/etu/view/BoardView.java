@@ -206,7 +206,9 @@ public class BoardView extends Group {
         return parallelTransition;
     }
 
-    public void askUserChoice(URL res, Controller controller) {
+    public void askUserChoice(Controller controller) {
+
+        URL res = controller.getClass().getResource("user_choice.fxml");
 
         System.out.println("Asking user...");
 

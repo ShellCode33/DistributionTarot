@@ -166,7 +166,7 @@ public class Controller extends Application {
                 st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
 
                 st2.setOnFinished(event3 ->{
-                    boardView.askUserChoice(getClass().getResource("user_choice.fxml"), this);
+                    boardView.askUserChoice(this);
                 });
 
                 st2.play();

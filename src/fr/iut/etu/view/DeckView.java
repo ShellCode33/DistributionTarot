@@ -21,17 +21,18 @@ import java.util.Observer;
 public class DeckView extends Group implements Observer {
 
     private Deck deck;
-    private Image image;
+    private Image backCard;
     private LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
     private Animation cutAnimation;
 
-    public DeckView(Deck deck) {
+    public DeckView(Deck deck, Image backCardCustom) {
         super();
 
         this.deck = deck;
         deck.addObserver(this);
 
-        image = new Image("file:res/back.jpg");
+        if(backCardCustom != null)
+            backCard = new Image("file:res/back0.jpg");
 
         createCutAnimation();
     }
@@ -64,10 +65,10 @@ public class DeckView extends Group implements Observer {
             return;
 
         if(o == Notifications.CARD_DEALED) {
-            cardViewsWaitingToBeDealt.push(new CardView(deck.getLastCardDealt()));
+            cardViewsWaitingToBeDealt.push(new CardView(deck.getLastCardDealt(), backCard));
         }
         else if(o == Notifications.CARD_ADDED){
-            ImageView imageView = new ImageView(image);
+            ImageView imageView = new ImageView(backCard);
             imageView.setSmooth(true);
             imageView.setFitHeight(Controller.CARD_HEIGHT);
             imageView.setFitWidth(Controller.CARD_WIDTH);
