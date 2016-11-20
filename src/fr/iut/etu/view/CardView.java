@@ -67,7 +67,6 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.2), this);
 
         translate1.setByY(-height);
-        translate1.setByX(-width);
 
         translate1.setCycleCount(1);
 

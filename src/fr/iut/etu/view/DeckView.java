@@ -5,7 +5,6 @@ import fr.iut.etu.model.Deck;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.Animation;
 import javafx.animation.SequentialTransition;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -32,7 +31,7 @@ public class DeckView extends Group implements Observer {
         deck.addObserver(this);
 
         if(backCardCustom != null)
-            backCard = new Image("file:res/back0.jpg");
+            backCard = new Image("file:res/cards/back0.jpg");
 
         createCutAnimation();
     }
@@ -45,18 +44,6 @@ public class DeckView extends Group implements Observer {
 
     public Animation getCutAnimation() {
         return cutAnimation;
-    }
-
-    public Animation getDealACardAnimation(HandView handView){
-
-        Point2D handViewPosInBoardView = handView.localToParent(0, 0);
-        Point2D handViewPosInDeckView = parentToLocal(handViewPosInBoardView);
-
-        CardView cardView = cardViewsWaitingToBeDealt.poll();
-
-        System.out.println(cardView);
-
-        return null;
     }
 
     @Override
