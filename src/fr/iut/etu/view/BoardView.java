@@ -8,10 +8,12 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -50,14 +52,14 @@ public class BoardView extends Group {
         for (int i = 0; i < board.getPlayerCount(); i++) {
             PlayerView playerView = new PlayerView(this.board.getPlayer(i));
             playerViews.add(playerView);
-            getChildren().add(playerView.getElementsToDraw());
+            getChildren().add(playerView);
         }
 
 
         deckView = new DeckView(board.getDeck(), backCardCustom);
         getChildren().add(deckView);
         dogView = new DogView(board.getDog());
-        getChildren().add(dogView.getElementsToDraw());
+        getChildren().add(dogView);
 
         placeHandViews();
         createBringDeckOnBoardAnimation();
@@ -67,7 +69,7 @@ public class BoardView extends Group {
 
     private void placeHandViews(){
 
-        dogView.getElementsToDraw().getTransforms().addAll(
+        dogView.getTransforms().addAll(
                 new Translate(
                         4*Controller.SCREEN_WIDTH/6,
                         (Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2,
@@ -81,7 +83,7 @@ public class BoardView extends Group {
         PlayerView playerView;
 
         playerView = getPlayerView(0);
-        playerView.getElementsToDraw().getTransforms().addAll(
+        playerView.getTransforms().addAll(
                 new Translate(
                     Controller.SCREEN_WIDTH/2,
                     Controller.SCREEN_HEIGHT - Controller.CARD_HEIGHT/2,
@@ -93,7 +95,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(1);
-        playerView.getElementsToDraw().getTransforms().addAll(
+        playerView.getTransforms().addAll(
                 new Translate(
                         Controller.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
@@ -105,7 +107,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(2);
-        playerView.getElementsToDraw().getTransforms().addAll(
+        playerView.getTransforms().addAll(
                 new Translate(
                         Controller.SCREEN_WIDTH/2,
                         Controller.CARD_HEIGHT/2,
@@ -117,7 +119,7 @@ public class BoardView extends Group {
         );
 
         playerView = getPlayerView(3);
-        playerView.getElementsToDraw().getTransforms().addAll(
+        playerView.getTransforms().addAll(
                 new Translate(
                         Controller.SCREEN_WIDTH - Controller.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
@@ -170,17 +172,17 @@ public class BoardView extends Group {
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
-        handView.add(cardView);
+        handView.getChildren().add(cardView);
 
-        Rotate handViewRotate = (Rotate) handView.getElementsToDraw().getTransforms().get(1);
-        Bounds deckViewBoundsInHandView = handView.getElementsToDraw().parentToLocal(deckView.getBoundsInParent());
+        Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
+        Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
 
         cardView.setTranslateX(-1000);
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
 
-        int cardViewCount = handView.size();
+        int cardViewCount = handView.getChildren().filtered(e -> e instanceof CardView).size();
         Point3D destination = new Point3D(0,0,-cardViewCount*Controller.CARD_THICK-1);
 
         TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.7), cardView);

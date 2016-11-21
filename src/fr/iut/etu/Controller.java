@@ -5,13 +5,16 @@ import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
+import fr.iut.etu.view.HandView;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.beans.Observable;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -29,6 +32,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 public class Controller extends Application {
 
@@ -159,6 +163,7 @@ public class Controller extends Application {
 
         boardView.getBringDeckOnBoardAnimation().setOnFinished(event1 -> {
 
+            //Cut animation even if we shuffled the deck, because the deck is initially sorted...
             Animation cutAnim = boardView.getDeckView().createCutAnimation();
 
             cutAnim.setOnFinished(actionEvent -> {
@@ -166,7 +171,7 @@ public class Controller extends Application {
                 //Z reset because the deal begins on the middle of the deck
                 ObservableList<Node> children = boardView.getDeckView().getChildren();
                 for(int i = 0; i < children.size(); i++)
-                    children.get(i).setTranslateZ(-Controller.CARD_THICK * children.size() - i * 2 * Controller.CARD_THICK);
+                        children.get(i).setTranslateZ(-Controller.CARD_THICK * children.size() - i * 2 * Controller.CARD_THICK);
                 //--------------------------------------------------
 
                 SequentialTransition st = new SequentialTransition();
@@ -185,7 +190,7 @@ public class Controller extends Application {
                     st2.getChildren().add(pt);
                     st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
 
-                    boardView.getPlayerView(0).sort(CardView::compareTo);
+                    boardView.getPlayerView(0).sort();
                     st2.getChildren().add(boardView.getPlayerView(0).getSortAnimation());
 
                     st2.setOnFinished(event3 ->{

@@ -24,9 +24,9 @@ public class DogView extends HandView{
 
         ParallelTransition pt = new ParallelTransition();
 
-        for (int i = size() - 1; i >= 0; i--) {
+        for (int i = getChildren().size() - 1; i >= 0; i--) {
 
-                TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), get(i));
+                TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), getChildren().get(i));
                 translateTransition.setByX(-i*Controller.CARD_WIDTH-i*20);
                 translateTransition.setCycleCount(1);
 
@@ -41,8 +41,9 @@ public class DogView extends HandView{
     public Animation getFlipAllCardViewsAnimation() {
         SequentialTransition st = new SequentialTransition();
 
-        for (CardView cardView : this) {
-            st.getChildren().add(cardView.getFlipAnimation());
+        for (Node cardView : getChildren()) {
+            if(cardView instanceof CardView)
+                st.getChildren().add(((CardView)cardView).getFlipAnimation());
         }
 
         return st;
