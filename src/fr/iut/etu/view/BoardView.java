@@ -177,7 +177,7 @@ public class BoardView extends Group {
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
 
-        cardView.setTranslateX(-1000);
+        cardView.setTranslateX(-100000);
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
