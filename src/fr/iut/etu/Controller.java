@@ -6,10 +6,7 @@ import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
 import fr.iut.etu.view.HandView;
-import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -22,6 +19,7 @@ import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -36,7 +34,7 @@ import java.util.Collections;
 
 public class Controller extends Application {
 
-    public static final int CARD_THICK = 1;
+    public static final double CARD_THICK = 1.5;
     private static final int PLAYER_COUNT = 4;
     public static double SCREEN_WIDTH;
     public static double SCREEN_HEIGHT;
@@ -167,11 +165,10 @@ public class Controller extends Application {
             Animation cutAnim = boardView.getDeckView().createCutAnimation();
 
             cutAnim.setOnFinished(actionEvent -> {
-
                 //Z reset because the deal begins on the middle of the deck
                 ObservableList<Node> children = boardView.getDeckView().getChildren();
                 for(int i = 0; i < children.size(); i++)
-                        children.get(i).setTranslateZ(-Controller.CARD_THICK * children.size() - i * 2 * Controller.CARD_THICK);
+                        children.get(i).setTranslateZ(-(i+1) * Controller.CARD_THICK);
                 //--------------------------------------------------
 
                 SequentialTransition st = new SequentialTransition();
@@ -247,21 +244,60 @@ public class Controller extends Application {
         boardView = new BoardView(board, boardImage, backCardImage);
     }
 
-    public void setUserChoice(Player.UserChoice userChoice) {
-        board.getPlayer(0).setChoice(userChoice);
+    public void setUserChoice(int user_index, Player.UserChoice userChoice) {
+        board.getPlayer(user_index).setChoice(userChoice);
 
         if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
+            Animation animFlip = boardView.getDogView().getFlipAllCardViewsAnimation();
+            animFlip.setOnFinished(actionEvent -> {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-            System.out.println("show dog");
+                System.out.println("Transfert dog to player");
+                board.getDog().transferCardsTo(board.getPlayer(0));
+                Animation transferAnim  = boardView.getDogView().transferCardViewsTo(boardView.getPlayerView(0));
 
-            boardView.getDogView().getFlipAllCardViewsAnimation().play();
+                transferAnim.setOnFinished(actionEvent12 -> {
+                    boardView.getPlayerView(0).sort();
+                    Animation sortAnim = boardView.getPlayerView(0).getSortAnimation();
 
-            //ecart
+                    sortAnim.setOnFinished(actionEvent1 -> {
+
+                        for (CardView cardView : boardView.getPlayerView(0).getCardViews()) {
+                            cardView.setOnMousePressed(mouseEvent -> {
+                                System.out.println("Drag");
+                                cardView.setMovement(true);
+                            });
+
+                            cardView.setOnMouseMoved(mouseEvent -> {
+                                if(cardView.isMoving()) {
+                                    System.out.println("moving card " + cardView);
+                                    cardView.setLayoutX(mouseEvent.getX());
+                                    cardView.setLayoutY(mouseEvent.getY());
+                                }
+                            });
+
+                            cardView.setOnMouseReleased(mouseEvent -> {
+                                System.out.println("Drop");
+                                cardView.setMovement(false);
+                            });
+                        }
+
+                    });
+
+                    sortAnim.play();
+                });
+
+                transferAnim.play();
+            });
+
+            animFlip.play();
         }
 
-        else {
-            System.out.println("user choice set");
-        }
+        System.out.println("user choice set");
     }
 
     public void setScene(Scene scene) {

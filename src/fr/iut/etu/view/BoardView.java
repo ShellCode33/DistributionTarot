@@ -8,12 +8,10 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -172,7 +170,7 @@ public class BoardView extends Group {
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
-        handView.add(cardView);
+        handView.addCard(cardView);
 
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
@@ -284,7 +282,7 @@ public class BoardView extends Group {
             choice = Player.UserChoice.KEEP_AGAINST_DOG;
 
         System.out.println("User choose: " + choice.toString());
-        controller.setUserChoice(choice);
+        controller.setUserChoice(0, choice);
 
         getChildren().remove(getChildren().size()-1);
     }

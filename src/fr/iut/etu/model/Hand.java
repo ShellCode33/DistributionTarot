@@ -19,7 +19,15 @@ public class Hand extends Observable{
     }
 
     public void addCard(Card card) {
-
         cards.add(card);
+    }
+
+    public void transferCardsTo(Hand hand) {
+
+        for(Card card : cards) {
+            hand.addCard(card);
+        }
+
+        cards.clear();
     }
 }

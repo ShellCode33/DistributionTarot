@@ -19,6 +19,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     private Card card;
     private ImageView front, back;
     private Animation flipAnimation;
+    private boolean move = false;
 
     public CardView(Card card, Image backCardCustom) {
 
@@ -115,4 +116,13 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     public String toString() {
         return card.toString();
     }
+
+    public boolean isMoving() {
+        return move;
+    }
+
+    public void setMovement(boolean move) {
+        this.move = move;
+    }
+
 }

@@ -3,12 +3,17 @@ package fr.iut.etu.view;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
+import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -68,12 +73,39 @@ public abstract class HandView extends Group implements Observer {
         cardViews.sort(CardView::compareTo);
     }
 
-    public void add(CardView cardView) {
+    public void addCard(CardView cardView) {
         getChildren().add(cardView);
         cardViews.add(cardView);
     }
 
     public ArrayList<CardView> getCardViews() {
         return cardViews;
+    }
+
+    public Animation transferCardViewsTo(HandView playerView) {
+
+        ParallelTransition pt = new ParallelTransition();
+
+        Bounds boundsInScenePlayer = playerView.localToScreen(playerView.getBoundsInLocal());
+
+        for(CardView cardView : cardViews) {
+
+            Bounds boundsInSceneCard = cardView.localToScreen(cardView.getBoundsInLocal());
+            double x_translate = boundsInScenePlayer.getMinX() - boundsInSceneCard.getMinX();
+            double y_translate = boundsInScenePlayer.getMinY() - boundsInSceneCard.getMinY();
+            System.out.println("x_translate: " + x_translate);
+
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
+            tt.setFromY(-y_translate);
+            tt.setToY(0);
+            pt.getChildren().add(tt);
+
+            playerView.addCard(cardView); //Local coordinates change here
+            cardView.setTranslateX(-x_translate-400); //TODO : Pourquoi -400?....
+        }
+
+        cardViews.clear();
+
+        return pt;
     }
 }

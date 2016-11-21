@@ -78,7 +78,7 @@ public class DeckView extends Group implements Observer {
 
         for (int i = 0; i < childrenSize / 2; i++) {
             KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                    new KeyValue(getChildren().get(i).translateZProperty(), 2*(-Controller.CARD_THICK * childrenSize - i * Controller.CARD_THICK)));
+                    new KeyValue(getChildren().get(i).translateZProperty(), -Controller.CARD_THICK * childrenSize - i * Controller.CARD_THICK));
 
             timeline2.getKeyFrames().add(cut);
         }
@@ -110,7 +110,7 @@ public class DeckView extends Group implements Observer {
         rt2.setByAngle(-90);
 
         TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), this);
-        tt.setByZ(Controller.CARD_THICK * childrenSize);
+        tt.setToZ(-Controller.CARD_THICK * childrenSize);
 
         st.getChildren().addAll(rt, pt, timeline2, pt2, rt2, tt);
 
@@ -130,7 +130,7 @@ public class DeckView extends Group implements Observer {
             imageView.setSmooth(true);
             imageView.setFitHeight(Controller.CARD_HEIGHT);
             imageView.setFitWidth(Controller.CARD_WIDTH);
-            imageView.setTranslateZ(-getChildren().size()*2*Controller.CARD_THICK);
+            imageView.setTranslateZ(-getChildren().size()*Controller.CARD_THICK);
 
             getChildren().add(imageView);
         }

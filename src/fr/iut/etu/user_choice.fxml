@@ -10,9 +10,9 @@
     <children>
         <Label fx:id="label1" styleClass="textMenu" text="Make your choice :" />
         <Button id="button1" fx:id="button1" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Take" />
-        <Button id="button2" fx:id="button2" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Keep" />
-        <Button id="button3" fx:id="button3" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Keep without dog" />
-        <Button id="button4" fx:id="button4" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Keep against dog" />
+        <Button id="button2" fx:id="button2" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Guard" />
+        <Button id="button3" fx:id="button3" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Guard without the dog" />
+        <Button id="button4" fx:id="button4" mnemonicParsing="false" styleClass="button" stylesheets="@style.css" text="Guard against the dog" />
 
         <HBox prefHeight="100.0" prefWidth="200.0" />
     </children>

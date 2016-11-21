@@ -5,8 +5,6 @@ import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
-import javafx.collections.transformation.FilteredList;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

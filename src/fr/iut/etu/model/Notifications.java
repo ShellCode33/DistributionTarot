@@ -5,6 +5,7 @@ package fr.iut.etu.model;
  */
 public enum Notifications {
     CARD_PICKED,
+    CARDS_DELETED, //notifies that all the cards are deleted
     CARD_DEALED,
     SHUFFLED,
     CARD_ADDED, CUT
