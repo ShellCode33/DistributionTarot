@@ -21,6 +21,7 @@ import java.util.Observer;
  */
 public abstract class HandView extends Group implements Observer {
     private Hand hand;
+    protected ArrayList<CardView> cardViews = new ArrayList<>();
 
     protected static int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
@@ -35,9 +36,8 @@ public abstract class HandView extends Group implements Observer {
     public Animation getFlipAllCardViewsAnimation() {
         ParallelTransition pt = new ParallelTransition();
 
-        for (Node node : getChildren()) {
-            if(node instanceof CardView)
-                pt.getChildren().add(((CardView)node).getFlipAnimation());
+        for (CardView cardView : cardViews) {
+            pt.getChildren().add(cardView.getFlipAnimation());
         }
 
         return pt;
@@ -53,11 +53,9 @@ public abstract class HandView extends Group implements Observer {
     public Animation getSortAnimation() {
         ParallelTransition pt = new ParallelTransition();
 
-        FilteredList<Node> filteredChildren = getChildren().filtered(e -> e instanceof CardView);
-
-        for (int i = 0; i < filteredChildren.size(); i++) {
-            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), filteredChildren.get(i));
-            translateTransition.setToX(i*GAP_BETWEEN_CARDS -  filteredChildren.size()*GAP_BETWEEN_CARDS/2);
+        for (int i = 0; i < cardViews.size(); i++) {
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), cardViews.get(i));
+            translateTransition.setToX(i*GAP_BETWEEN_CARDS -  cardViews.size()*GAP_BETWEEN_CARDS/2);
             translateTransition.setToZ(-1-i* Controller.CARD_THICK);
             translateTransition.setCycleCount(1);
             pt.getChildren().add(translateTransition);
@@ -67,18 +65,15 @@ public abstract class HandView extends Group implements Observer {
     }
 
     public void sort() {
-        ObservableList<Node> workingCollection = FXCollections.observableArrayList(getChildren());
-        Collections.sort(workingCollection, HandView::compareTo);
-        getChildren().setAll(workingCollection);
+        cardViews.sort(CardView::compareTo);
     }
 
-    private static int compareTo(Node node, Node node1) {
-        if(!(node instanceof CardView))
-            return 0;
+    public void add(CardView cardView) {
+        getChildren().add(cardView);
+        cardViews.add(cardView);
+    }
 
-        if(!(node1 instanceof CardView))
-            return 0;
-
-        return ((CardView)node).compareTo((CardView)node1);
+    public ArrayList<CardView> getCardViews() {
+        return cardViews;
     }
 }

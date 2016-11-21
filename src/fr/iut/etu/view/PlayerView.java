@@ -39,12 +39,10 @@ public class PlayerView extends HandView {
     public Animation getDispatchAnimation() {
         ParallelTransition pt = new ParallelTransition();
 
-        FilteredList<Node> filteredChildren = getChildren().filtered(e -> e instanceof CardView);
+        for (int i = cardViews.size() - 1; i >= 0; i--) {
 
-        for (int i = filteredChildren.size() - 1; i >= 0; i--) {
-
-            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), filteredChildren.get(i));
-            translateTransition.setByX(-i*GAP_BETWEEN_CARDS +  filteredChildren.size()*GAP_BETWEEN_CARDS/2);
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
+            translateTransition.setByX(-i*GAP_BETWEEN_CARDS +  cardViews.size()*GAP_BETWEEN_CARDS/2);
             translateTransition.setCycleCount(1);
 
             pt.getChildren().add(translateTransition);

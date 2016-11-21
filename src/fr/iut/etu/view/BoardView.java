@@ -172,7 +172,7 @@ public class BoardView extends Group {
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
-        handView.getChildren().add(cardView);
+        handView.add(cardView);
 
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
@@ -181,9 +181,7 @@ public class BoardView extends Group {
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
-
-        int cardViewCount = handView.getChildren().filtered(e -> e instanceof CardView).size();
-        Point3D destination = new Point3D(0,0,-cardViewCount*Controller.CARD_THICK-1);
+        Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*Controller.CARD_THICK-1);
 
         TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.7), cardView);
         translateTransition.setFromX(deckViewBoundsInHandView.getMinX());
