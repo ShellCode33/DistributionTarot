@@ -16,17 +16,23 @@ import java.util.Observer;
  * Created by Sylvain DUPOUY on 25/10/16.
  */
 public class CardView extends Group implements Observer, Comparable<CardView> {
+
+    public static Image backCard = null;
+
     private Card card;
     private ImageView front, back;
     private Animation flipAnimation;
     private boolean move = false;
 
-    public CardView(Card card, Image backCardCustom) {
+    public CardView(Card card) {
 
         this.card = card;
         this.card.addObserver(this);
 
-        back = new ImageView(backCardCustom);
+        if(backCard == null)
+            backCard = new Image("file:./res/cards/back0.jpg");
+
+        back = new ImageView(backCard);
         back.setSmooth(true);
         back.setFitHeight(Controller.CARD_HEIGHT);
         back.setFitWidth(Controller.CARD_WIDTH);

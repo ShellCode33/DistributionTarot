@@ -36,7 +36,8 @@ public class BoardView extends Group {
     private DogView dogView;
     private Animation bringDeckOnBoardAnimation;
 
-    public BoardView(Board board, Image backgroundCustom, Image backCardCustom) {
+    public BoardView(Board board, Image backgroundCustom) {
+
         super();
         this.board = board;
 
@@ -54,7 +55,7 @@ public class BoardView extends Group {
         }
 
 
-        deckView = new DeckView(board.getDeck(), backCardCustom);
+        deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
         dogView = new DogView(board.getDog());
         getChildren().add(dogView);
@@ -166,10 +167,10 @@ public class BoardView extends Group {
 
     public Animation getDealACardAnimation(HandView handView) {
 
-        if(deckView.getCardViewsWaitingToBeDealt().isEmpty())
+        if(handView.getCardViewsWaitingToBeDealt().isEmpty())
             throw new UnsupportedOperationException("No card was dealt in the model");
 
-        CardView cardView = deckView.getCardViewsWaitingToBeDealt().poll();
+        CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
         handView.addCard(cardView);
 
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
@@ -199,7 +200,7 @@ public class BoardView extends Group {
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(translateTransition, rotateTransition);
 
-        parallelTransition.setOnFinished(event -> deckView.getChildren().remove(deckView.getChildren().size() - 1));
+        parallelTransition.setOnFinished(event -> deckView.removeImageViewOnTop());
 
         return parallelTransition;
     }

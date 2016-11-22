@@ -4,15 +4,16 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Deck;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -22,19 +23,12 @@ import java.util.Observer;
 public class DeckView extends Group implements Observer {
 
     private Deck deck;
-    private Image backCard;
-    private LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
 
-    public DeckView(Deck deck, Image backCardCustom) {
+    public DeckView(Deck deck) {
         super();
 
         this.deck = deck;
         deck.addObserver(this);
-
-        if(backCardCustom == null)
-            backCard = new Image("file:res/cards/back0.jpg");
-        else
-            backCard = backCardCustom;
     }
 
     public Animation createCutAnimation() {
@@ -117,28 +111,33 @@ public class DeckView extends Group implements Observer {
         return st;
     }
 
+    public void removeImageViewOnTop(){
+        FilteredList<Node> imageViews = getChildren().filtered(i -> i instanceof ImageView);
+        if(imageViews.isEmpty())
+            throw new NoSuchElementException("No ImageView to remove in deckView");
+
+        ArrayList<Node> imageViewsSorted = new ArrayList<>();
+        imageViewsSorted.addAll(imageViews);
+        imageViewsSorted.sort((node, t1) -> (int) (node.getBoundsInParent().getMaxZ() - t1.getBoundsInParent().getMaxZ()));
+
+        getChildren().remove(imageViewsSorted.get(0));
+        Tooltip.install(this, new Tooltip(getChildren().size() + " cards!"));
+
+    }
+
     @Override
     public void update(Observable observable, Object o) {
-        if( o == null)
+        if (o == null)
             return;
 
-        if(o == Notifications.CARD_DEALED) {
-            cardViewsWaitingToBeDealt.push(new CardView(deck.getLastCardDealt(), backCard));
-        }
-        else if(o == Notifications.CARD_ADDED){
-            ImageView imageView = new ImageView(backCard);
+        if (o == Notifications.CARD_ADDED) {
+            ImageView imageView = new ImageView(CardView.backCard);
             imageView.setSmooth(true);
             imageView.setFitHeight(Controller.CARD_HEIGHT);
             imageView.setFitWidth(Controller.CARD_WIDTH);
-            imageView.setTranslateZ(-getChildren().size()*Controller.CARD_THICK);
+            imageView.setTranslateZ(-getChildren().size() * Controller.CARD_THICK);
 
             getChildren().add(imageView);
         }
-
-        Tooltip.install(this, new Tooltip(this.deck.size() + " cards!"));
-    }
-
-    public LinkedList<CardView> getCardViewsWaitingToBeDealt() {
-        return cardViewsWaitingToBeDealt;
     }
 }

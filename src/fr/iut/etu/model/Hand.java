@@ -8,6 +8,9 @@ import java.util.Observable;
  */
 public class Hand extends Observable{
 
+    private Card lastCardAdded;
+    private Card lastCardRemoved;
+
     private ArrayList<Card> cards = new ArrayList<>();
 
     public int getCardCount(){
@@ -20,6 +23,10 @@ public class Hand extends Observable{
 
     public void addCard(Card card) {
         cards.add(card);
+        lastCardAdded = card;
+
+        setChanged();
+        notifyObservers(Notifications.CARD_ADDED);
     }
 
     public void transferCardsTo(Hand hand) {
@@ -29,5 +36,13 @@ public class Hand extends Observable{
         }
 
         cards.clear();
+    }
+
+    public Card getLastCardAdded() {
+        return lastCardAdded;
+    }
+
+    public Card getLastCardRemoved() {
+        return lastCardRemoved;
     }
 }

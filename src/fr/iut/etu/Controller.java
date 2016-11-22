@@ -1,25 +1,20 @@
 package fr.iut.etu;
 
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
-import fr.iut.etu.view.HandView;
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.beans.Observable;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.*;
+import javafx.scene.DepthTest;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -29,8 +24,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
 
 public class Controller extends Application {
 
@@ -48,7 +41,6 @@ public class Controller extends Application {
     private Board board;
     private BoardView boardView;
     private Image boardImage = null;
-    private Image backCardImage = null;
 
     private Menu menu;
 
@@ -114,14 +106,13 @@ public class Controller extends Application {
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
         board = new Board(PLAYER_COUNT);
-
         board.addPlayer(new Player(myPlayerUsername));
 
         for(int i = 0; i < PLAYER_COUNT-1; i++)
             board.addPlayer(new Player());
 
 
-        boardView = new BoardView(board, boardImage, backCardImage);
+        boardView = new BoardView(board, boardImage);
         boardView.setDepthTest(DepthTest.ENABLE);
 
         Image defaultImage = new Image("file:res/avatars/avatar_default.png");
@@ -129,6 +120,8 @@ public class Controller extends Application {
 
         for(int i = 1; i < board.getPlayerCount(); i++)
             boardView.getPlayerView(i).setAvatar(defaultImage);
+
+        CardView.backCard = new Image("file:res/cards/back0.jpg");
 
         PerspectiveCamera camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
@@ -165,11 +158,6 @@ public class Controller extends Application {
             Animation cutAnim = boardView.getDeckView().createCutAnimation();
 
             cutAnim.setOnFinished(actionEvent -> {
-                //Z reset because the deal begins on the middle of the deck
-                ObservableList<Node> children = boardView.getDeckView().getChildren();
-                for(int i = 0; i < children.size(); i++)
-                        children.get(i).setTranslateZ(-(i+1) * Controller.CARD_THICK);
-                //--------------------------------------------------
 
                 SequentialTransition st = new SequentialTransition();
                 recursiveDealingSequence(0, st);
@@ -241,7 +229,7 @@ public class Controller extends Application {
     private void reset() {
         //TODO : repenser l'usage de cette fonction
         board = new Board(PLAYER_COUNT);
-        boardView = new BoardView(board, boardImage, backCardImage);
+        boardView = new BoardView(board, boardImage);
     }
 
     public void setUserChoice(int user_index, Player.UserChoice userChoice) {
@@ -317,8 +305,8 @@ public class Controller extends Application {
         return menu;
     }
 
-    public void setBackCardImage(Image imageView) {
-        backCardImage = imageView;
+    public void setBackCardImage(Image image) {
+        CardView.backCard = image;
     }
 
     public void setBoardImage(Image imageView) {

@@ -1,23 +1,17 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
-import javafx.animation.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,6 +21,7 @@ import java.util.Observer;
 public abstract class HandView extends Group implements Observer {
     private Hand hand;
     protected ArrayList<CardView> cardViews = new ArrayList<>();
+    private LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
 
     protected static int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
@@ -52,7 +47,12 @@ public abstract class HandView extends Group implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
+        if(o == Notifications.CARD_ADDED) {
+            cardViewsWaitingToBeDealt.push(new CardView(hand.getLastCardAdded()));
+        }
+        else if(o == Notifications.CARD_DELETED){
 
+        }
     }
 
     public Animation getSortAnimation() {
@@ -107,5 +107,9 @@ public abstract class HandView extends Group implements Observer {
         cardViews.clear();
 
         return pt;
+    }
+
+    public LinkedList<CardView> getCardViewsWaitingToBeDealt() {
+        return cardViewsWaitingToBeDealt;
     }
 }
