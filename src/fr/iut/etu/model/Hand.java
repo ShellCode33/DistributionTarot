@@ -29,6 +29,14 @@ public class Hand extends Observable{
         notifyObservers(Notifications.CARD_ADDED);
     }
 
+    public void removeCard(Card card) {
+        cards.remove(card);
+        lastCardRemoved = card;
+
+        setChanged();
+        notifyObservers(Notifications.CARD_DELETED);
+    }
+
     public void transferCardsTo(Hand hand) {
 
         for(Card card : cards) {

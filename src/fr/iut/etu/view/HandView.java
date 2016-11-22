@@ -1,6 +1,7 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
+import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.Animation;
@@ -52,6 +53,14 @@ public abstract class HandView extends Group implements Observer {
         }
         else if(o == Notifications.CARD_DELETED){
 
+            CardView relatedImageView = null;
+
+            for(int i = 0; i < cardViews.size(); i++)
+                if(cardViews.get(i).getCard() == hand.getLastCardRemoved())
+                    relatedImageView = cardViews.get(i);
+
+            cardViews.remove(relatedImageView);
+            getChildren().remove(relatedImageView);
         }
     }
 
@@ -93,7 +102,6 @@ public abstract class HandView extends Group implements Observer {
             Bounds boundsInSceneCard = cardView.localToScreen(cardView.getBoundsInLocal());
             double x_translate = boundsInScenePlayer.getMinX() - boundsInSceneCard.getMinX();
             double y_translate = boundsInScenePlayer.getMinY() - boundsInSceneCard.getMinY();
-            System.out.println("x_translate: " + x_translate);
 
             TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
             tt.setFromY(-y_translate);

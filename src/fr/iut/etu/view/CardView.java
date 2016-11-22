@@ -22,7 +22,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     private Card card;
     private ImageView front, back;
     private Animation flipAnimation;
-    private boolean move = false;
+    private boolean selected = false;
 
     public CardView(Card card) {
 
@@ -123,12 +123,16 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         return card.toString();
     }
 
-    public boolean isMoving() {
-        return move;
+    public void setSelect(boolean value) {
+        selected = value;
+        setTranslateY(selected ? -40 : 0);
     }
 
-    public void setMovement(boolean move) {
-        this.move = move;
+    public boolean isSelected() {
+        return selected;
     }
 
+    public Card getCard() {
+        return card;
+    }
 }

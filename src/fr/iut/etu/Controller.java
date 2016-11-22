@@ -1,29 +1,37 @@
 package fr.iut.etu;
 
-import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Player;
+import com.sun.javafx.tk.FontLoader;
+import com.sun.javafx.tk.Toolkit;
+import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
+import fr.iut.etu.view.HandView;
+import javafx.animation.*;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.DepthTest;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
+import javafx.scene.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class Controller extends Application {
 
@@ -36,8 +44,7 @@ public class Controller extends Application {
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
-    int test = 0;
-
+    private static PerspectiveCamera camera;
     private Board board;
     private BoardView boardView;
     private Image boardImage = null;
@@ -106,6 +113,7 @@ public class Controller extends Application {
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
         board = new Board(PLAYER_COUNT);
+
         board.addPlayer(new Player(myPlayerUsername));
 
         for(int i = 0; i < PLAYER_COUNT-1; i++)
@@ -123,7 +131,7 @@ public class Controller extends Application {
 
         CardView.backCard = new Image("file:res/cards/back0.jpg");
 
-        PerspectiveCamera camera = new PerspectiveCamera(false);
+        camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
         camera.setRotate(15);
 
@@ -179,7 +187,7 @@ public class Controller extends Application {
                     st2.getChildren().add(boardView.getPlayerView(0).getSortAnimation());
 
                     st2.setOnFinished(event3 ->{
-                        boardView.askUserChoice(this);
+                        askUserChoice();
                     });
 
                     st2.play();
@@ -232,7 +240,7 @@ public class Controller extends Application {
         boardView = new BoardView(board, boardImage);
     }
 
-    public void setUserChoice(int user_index, Player.UserChoice userChoice) {
+    public void processUserChoice(int user_index, Player.UserChoice userChoice) {
         board.getPlayer(user_index).setChoice(userChoice);
 
         if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
@@ -245,34 +253,96 @@ public class Controller extends Application {
                 }
 
                 System.out.println("Transfert dog to player");
-                board.getDog().transferCardsTo(board.getPlayer(0));
+                board.getDog().transferCardsTo(board.getPlayer(user_index));
                 Animation transferAnim  = boardView.getDogView().transferCardViewsTo(boardView.getPlayerView(0));
 
                 transferAnim.setOnFinished(actionEvent12 -> {
-                    boardView.getPlayerView(0).sort();
-                    Animation sortAnim = boardView.getPlayerView(0).getSortAnimation();
+                    boardView.getPlayerView(user_index).sort();
+                    Animation sortAnim = boardView.getPlayerView(user_index).getSortAnimation();
 
                     sortAnim.setOnFinished(actionEvent1 -> {
 
-                        for (CardView cardView : boardView.getPlayerView(0).getCardViews()) {
-                            cardView.setOnMousePressed(mouseEvent -> {
-                                System.out.println("Drag");
-                                cardView.setMovement(true);
-                            });
+                        Button doneButton = new Button();
+                        doneButton.setText("Done");
+                        doneButton.setFont(new Font(30*SCALE_COEFF));
+                        doneButton.getStylesheets().add("file:src/fr/iut/etu/style.css");
+                        doneButton.getStyleClass().add("button");
+                        doneButton.setMaxWidth(SCREEN_WIDTH / 5);
+                        doneButton.setPrefWidth(SCREEN_WIDTH / 5);
+                        doneButton.setMaxHeight(SCREEN_HEIGHT / 12);
+                        doneButton.setPrefHeight(SCREEN_HEIGHT / 12);
+                        doneButton.setTranslateX((SCREEN_WIDTH - SCREEN_WIDTH / 5) / 2);
+                        doneButton.setTranslateY((SCREEN_HEIGHT - SCREEN_HEIGHT / 12) / 2);
+                        doneButton.setTranslateZ(-1);
 
-                            cardView.setOnMouseMoved(mouseEvent -> {
-                                if(cardView.isMoving()) {
-                                    System.out.println("moving card " + cardView);
-                                    cardView.setLayoutX(mouseEvent.getX());
-                                    cardView.setLayoutY(mouseEvent.getY());
+                        Label hint = new Label();
+                        hint.setFont(new Font(30*SCALE_COEFF));
+                        hint.setTextFill(Color.WHITE);
+                        hint.setText("Please choose 6 cards to exclude");
+                        FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
+                        hint.setTranslateX((SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
+                        hint.setTranslateY((SCREEN_HEIGHT - hint.getHeight()) / 2);
+                        hint.setTranslateZ(-1);
+                        boardView.getChildren().add(hint);
+
+                        ArrayList<CardView> trumps = new ArrayList<>();
+                        ArrayList<CardView> allowed_cards = new ArrayList<>();
+
+                        for (CardView cardView : boardView.getPlayerView(user_index).getCardViews())
+                            if(cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) //On exclut les bouts
+                                trumps.add(cardView);
+                            else if(cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) //On exclut les rois et l'excuse
+                                allowed_cards.add(cardView);
+
+                        int nb_allowed_trumps = 0;
+
+                        if(allowed_cards.size() < 6) {
+                            nb_allowed_trumps = 6 - allowed_cards.size(); //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
+                            allowed_cards.addAll(trumps);
+                        }
+
+                        ArrayList<CardView> gap = new ArrayList<>(6);
+
+                        final int[] nb_trump_played = {0};
+
+                        int finalNb_allowed_trumps = nb_allowed_trumps;
+                        for (CardView cardView : allowed_cards) {
+                            cardView.setOnMouseClicked(mouseEvent -> {
+
+                                if (cardView.isSelected()) {
+
+                                    if(cardView.getCard() instanceof Trump)
+                                        nb_trump_played[0]--;
+
+                                    gap.remove(cardView);
+                                    cardView.setSelect(!cardView.isSelected());
+
+                                    boardView.getChildren().remove(doneButton);
+                                    boardView.getChildren().add(hint);
+                                }
+
+                                else if(gap.size() < 6) {
+
+                                    //On s'assure que le nombre d'atouts dans l'écart est respecté
+                                    if((cardView.getCard() instanceof Trump && nb_trump_played[0] < finalNb_allowed_trumps) || !(cardView.getCard() instanceof Trump)) {
+                                        gap.add(cardView);
+                                        cardView.setSelect(!cardView.isSelected());
+
+                                        if (gap.size() == 6) {
+                                            boardView.getChildren().remove(hint);
+                                            boardView.getChildren().add(doneButton);
+                                        }
+                                    }
                                 }
                             });
-
-                            cardView.setOnMouseReleased(mouseEvent -> {
-                                System.out.println("Drop");
-                                cardView.setMovement(false);
-                            });
                         }
+
+                        doneButton.setOnAction(actionEvent2 -> {
+                            System.out.println("6 cards will be removed");
+                            gap.forEach(cardView -> board.getPlayer(user_index).removeCard(cardView.getCard()));
+                            boardView.getPlayerView(user_index).getSortAnimation().play();
+                            boardView.getChildren().remove(doneButton);
+                        });
 
                     });
 
@@ -315,5 +385,92 @@ public class Controller extends Application {
 
     public MediaPlayer getMusicPlayer() {
         return musicPlayer;
+    }
+
+    public static PerspectiveCamera getCamera() {
+        return camera;
+    }
+
+    public void askUserChoice() {
+
+        URL res = getClass().getResource("user_choice.fxml");
+
+        System.out.println("Asking user...");
+
+        VBox vbox = null;
+
+        try {
+            vbox = FXMLLoader.load(res);
+            vbox.setTranslateZ(-100);
+            vbox.setPrefWidth(Controller.SCREEN_WIDTH / 2);
+            vbox.setMaxWidth(Controller.SCREEN_WIDTH / 2);
+            vbox.setPrefHeight(Controller.SCREEN_HEIGHT / 2);
+            vbox.setMaxHeight(Controller.SCREEN_HEIGHT / 2);
+            vbox.setTranslateX(Controller.SCREEN_WIDTH / 4);
+            vbox.setTranslateY(Controller.SCREEN_HEIGHT / 4);
+
+            double buttonWidth = Controller.SCREEN_WIDTH / 5;
+            double buttonHeight = Controller.SCREEN_HEIGHT / 12;
+
+            Button button1 = (Button)vbox.getChildren().get(1);
+            Button button2 = (Button)vbox.getChildren().get(2);
+            Button button3 = (Button)vbox.getChildren().get(3);
+            Button button4 = (Button)vbox.getChildren().get(4);
+
+            button1.setPrefWidth(buttonWidth);
+            button1.setPrefHeight(buttonHeight);
+            button1.setMaxWidth(buttonWidth);
+            button1.setMaxHeight(buttonHeight);
+
+            button2.setPrefWidth(buttonWidth);
+            button2.setPrefHeight(buttonHeight);
+            button2.setMaxWidth(buttonWidth);
+            button2.setMaxHeight(buttonHeight);
+
+            button3.setPrefWidth(buttonWidth);
+            button3.setPrefHeight(buttonHeight);
+            button3.setMaxWidth(buttonWidth);
+            button3.setMaxHeight(buttonHeight);
+
+            button4.setPrefWidth(buttonWidth);
+            button4.setPrefHeight(buttonHeight);
+            button4.setMaxWidth(buttonWidth);
+            button4.setMaxHeight(buttonHeight);
+
+            Button finalButton = button1;
+            Button finalButton1 = button2;
+            Button finalButton2 = button3;
+            Button finalButton3 = button4;
+            button1.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton));
+            button2.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton1));
+            button3.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton2));
+            button4.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton3));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        VBox finalBox = vbox;
+        boardView.getChildren().add(finalBox);
+    }
+
+    public void buttonClicked(Button button) {
+
+        Player.UserChoice choice = null;
+        String id = button.getId();
+
+        if(id.equals("button1"))
+            choice = Player.UserChoice.TAKE;
+        else if(id.equals("button2"))
+            choice = Player.UserChoice.KEEP;
+        else if(id.equals("button3"))
+            choice = Player.UserChoice.KEEP_WITHOUT_DOG;
+        else if(id.equals("button4"))
+            choice = Player.UserChoice.KEEP_AGAINST_DOG;
+
+        System.out.println("User choose: " + choice.toString());
+        processUserChoice(0, choice);
+
+        boardView.getChildren().remove(boardView.getChildren().size()-1);
     }
 }
