@@ -165,13 +165,13 @@ public class BoardView extends Group {
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
 
-        cardView.setTranslateX(-1000000);
+        cardView.setTranslateX(-1000000); //TODO : hum...
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
         Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*Controller.CARD_THICK-1);
 
-        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.6), cardView);
+        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.4), cardView);
         translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
         translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
         translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
@@ -180,13 +180,13 @@ public class BoardView extends Group {
         translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
         translateTransition1.setCycleCount(1);
 
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.6), cardView);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.4), cardView);
         rotateTransition.setAxis(Rotate.Z_AXIS);
         rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
         rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
         rotateTransition.setCycleCount(1);
 
-        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.4), cardView);
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.2), cardView);
         translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
         translateTransition2.setToZ(destination.getZ());
         translateTransition2.setCycleCount(1);

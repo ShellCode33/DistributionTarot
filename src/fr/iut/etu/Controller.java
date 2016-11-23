@@ -2,16 +2,14 @@ package fr.iut.etu;
 
 import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
-import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Fool;
-import fr.iut.etu.model.Player;
-import fr.iut.etu.model.Trump;
+import fr.iut.etu.model.*;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
+import javafx.animation.*;
 import javafx.application.Application;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.DepthTest;
@@ -113,9 +111,12 @@ public class Controller extends Application {
         catch(MediaException e) {
             System.out.println("Your OS doesn't support music player : might be a javafx issue");
         }
+
+        CardView.backCard = new Image("file:./res/cards/back0.jpg");
     }
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
+
         board = new Board(PLAYER_COUNT);
 
         board.addPlayer(new Player(myPlayerUsername));
@@ -132,8 +133,6 @@ public class Controller extends Application {
 
         for(int i = 1; i < board.getPlayerCount(); i++)
             boardView.getPlayerView(i).setAvatar(defaultImage);
-
-        CardView.backCard = new Image("file:res/cards/back0.jpg");
 
         camera = new PerspectiveCamera(false);
         camera.setRotationAxis(Rotate.X_AXIS);
@@ -221,11 +220,11 @@ public class Controller extends Application {
 
             board.getDeck().deal(board.getPlayer(playerIndex));
             Animation secondAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            secondAnimation.setDelay(Duration.millis(150));
+            secondAnimation.setDelay(Duration.millis(200));
 
             board.getDeck().deal(board.getPlayer(playerIndex));
             Animation thirdAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            thirdAnimation.setDelay(Duration.millis(300));
+            thirdAnimation.setDelay(Duration.millis(400));
 
             animation = new ParallelTransition();
             ((ParallelTransition) animation).getChildren().addAll(
@@ -252,20 +251,16 @@ public class Controller extends Application {
     }
 
     public void processUserChoice(int user_index, Player.UserChoice userChoice) {
+        boardView.getChildren().remove(boardView.getChildren().size()-1); //Remove UserChoice GUI
         board.getPlayer(user_index).setChoice(userChoice);
 
         if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
             Animation animFlip = boardView.getDogView().getFlipAllCardViewsAnimation();
             animFlip.setOnFinished(actionEvent -> {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 System.out.println("Transfert dog to player");
                 board.getDog().transferCardsTo(board.getPlayer(user_index));
                 Animation transferAnim  = boardView.getDogView().transferCardViewsTo(boardView.getPlayerView(0));
+                transferAnim.setDelay(Duration.seconds(1.5));
 
                 transferAnim.setOnFinished(actionEvent12 -> {
                     boardView.getPlayerView(user_index).sort();
@@ -322,14 +317,18 @@ public class Controller extends Application {
 
                                 if (cardView.isSelected()) {
 
+                                    if(gap.size() == 6) {
+                                        boardView.getChildren().remove(doneButton);
+                                        boardView.getChildren().add(hint);
+                                    }
+
                                     if(cardView.getCard() instanceof Trump)
                                         nb_trump_played[0]--;
 
                                     gap.remove(cardView);
                                     cardView.setSelect(!cardView.isSelected());
 
-                                    boardView.getChildren().remove(doneButton);
-                                    boardView.getChildren().add(hint);
+
                                 }
 
                                 else if(gap.size() < 6) {
@@ -350,9 +349,33 @@ public class Controller extends Application {
 
                         doneButton.setOnAction(actionEvent2 -> {
                             System.out.println("6 cards will be removed");
-                            gap.forEach(cardView -> board.getPlayer(user_index).removeCard(cardView.getCard()));
-                            boardView.getPlayerView(user_index).getSortAnimation().play();
+
                             boardView.getChildren().remove(doneButton);
+
+                            ParallelTransition pt = new ParallelTransition();
+
+                            for(CardView cardView : gap) {
+                                SequentialTransition st = new SequentialTransition();
+
+                                if(cardView.getCard() instanceof Trump) {
+                                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
+                                    tt.setByY(-SCREEN_HEIGHT / 2);
+                                    st.getChildren().add(tt);
+                                }
+
+                                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
+                                ft.setDelay(Duration.seconds(1));
+                                ft.setToValue(0);
+                                st.getChildren().add(ft);
+                                pt.getChildren().add(st);
+                            }
+
+                            pt.setOnFinished(workerStateEvent -> {
+                                gap.forEach(cardView -> board.getPlayer(user_index).removeCard(cardView.getCard()));
+                                boardView.getPlayerView(user_index).getSortAnimation().play();
+                            });
+
+                            pt.play();
                         });
 
                     });
@@ -403,85 +426,10 @@ public class Controller extends Application {
     }
 
     public void askUserChoice() {
-
-        URL res = getClass().getResource("user_choice.fxml");
-
         System.out.println("Asking user...");
-
-        VBox vbox = null;
-
-        try {
-            vbox = FXMLLoader.load(res);
-            vbox.setTranslateZ(-100);
-            vbox.setPrefWidth(Controller.SCREEN_WIDTH / 2);
-            vbox.setMaxWidth(Controller.SCREEN_WIDTH / 2);
-            vbox.setPrefHeight(Controller.SCREEN_HEIGHT / 2);
-            vbox.setMaxHeight(Controller.SCREEN_HEIGHT / 2);
-            vbox.setTranslateX(Controller.SCREEN_WIDTH / 4);
-            vbox.setTranslateY(Controller.SCREEN_HEIGHT / 4);
-
-            double buttonWidth = Controller.SCREEN_WIDTH / 5;
-            double buttonHeight = Controller.SCREEN_HEIGHT / 12;
-
-            Button button1 = (Button)vbox.getChildren().get(1);
-            Button button2 = (Button)vbox.getChildren().get(2);
-            Button button3 = (Button)vbox.getChildren().get(3);
-            Button button4 = (Button)vbox.getChildren().get(4);
-
-            button1.setPrefWidth(buttonWidth);
-            button1.setPrefHeight(buttonHeight);
-            button1.setMaxWidth(buttonWidth);
-            button1.setMaxHeight(buttonHeight);
-
-            button2.setPrefWidth(buttonWidth);
-            button2.setPrefHeight(buttonHeight);
-            button2.setMaxWidth(buttonWidth);
-            button2.setMaxHeight(buttonHeight);
-
-            button3.setPrefWidth(buttonWidth);
-            button3.setPrefHeight(buttonHeight);
-            button3.setMaxWidth(buttonWidth);
-            button3.setMaxHeight(buttonHeight);
-
-            button4.setPrefWidth(buttonWidth);
-            button4.setPrefHeight(buttonHeight);
-            button4.setMaxWidth(buttonWidth);
-            button4.setMaxHeight(buttonHeight);
-
-            Button finalButton = button1;
-            Button finalButton1 = button2;
-            Button finalButton2 = button3;
-            Button finalButton3 = button4;
-            button1.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton));
-            button2.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton1));
-            button3.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton2));
-            button4.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton3));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        VBox finalBox = vbox;
-        boardView.getChildren().add(finalBox);
+        UserChoice userChoice = new UserChoice(this);
+        boardView.getChildren().add(userChoice);
     }
 
-    public void buttonClicked(Button button) {
 
-        Player.UserChoice choice = null;
-        String id = button.getId();
-
-        if(id.equals("button1"))
-            choice = Player.UserChoice.TAKE;
-        else if(id.equals("button2"))
-            choice = Player.UserChoice.KEEP;
-        else if(id.equals("button3"))
-            choice = Player.UserChoice.KEEP_WITHOUT_DOG;
-        else if(id.equals("button4"))
-            choice = Player.UserChoice.KEEP_AGAINST_DOG;
-
-        System.out.println("User choose: " + choice.toString());
-        processUserChoice(0, choice);
-
-        boardView.getChildren().remove(boardView.getChildren().size()-1);
-    }
 }

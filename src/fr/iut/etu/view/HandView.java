@@ -91,25 +91,27 @@ public abstract class HandView extends Group implements Observer {
         return cardViews;
     }
 
-    public Animation transferCardViewsTo(HandView playerView) {
+    public Animation transferCardViewsTo(HandView handView) {
 
         ParallelTransition pt = new ParallelTransition();
 
-        Bounds boundsInScenePlayer = playerView.localToScreen(playerView.getBoundsInLocal());
+        Bounds boundsPlayer = handView.localToParent(handView.getBoundsInLocal());
+        System.out.println("player: " + boundsPlayer);
 
         for(CardView cardView : cardViews) {
 
-            Bounds boundsInSceneCard = cardView.localToScreen(cardView.getBoundsInLocal());
-            double x_translate = boundsInScenePlayer.getMinX() - boundsInSceneCard.getMinX();
-            double y_translate = boundsInScenePlayer.getMinY() - boundsInSceneCard.getMinY();
+            Bounds boundsCard = localToParent(cardView.localToParent(cardView.getBoundsInLocal()));
+            System.out.println("card: " + boundsCard);
+            double x_translate = boundsPlayer.getMinX() - boundsCard.getMinX();
+            double y_translate = boundsPlayer.getMinY() - boundsCard.getMinY();
 
             TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
             tt.setFromY(-y_translate);
             tt.setToY(0);
             pt.getChildren().add(tt);
 
-            playerView.addCard(cardView); //Local coordinates change here
-            cardView.setTranslateX(-x_translate-400); //TODO : Pourquoi -400?....
+            handView.addCard(cardView); //Local coordinates change here
+            cardView.setTranslateX(-x_translate - boundsPlayer.getWidth() / 2);
         }
 
         cardViews.clear();

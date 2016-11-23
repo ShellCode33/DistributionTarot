@@ -24,7 +24,8 @@ public class DogView extends HandView{
         for (int i = cardViews.size() - 1; i >= 0; i--) {
 
                 TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
-                translateTransition.setByX(-i*CardView.CARD_WIDTH-i*20);
+                translateTransition.setByX(-i*CardView.CARD_WIDTH-i*GAP_BETWEEN_CARDS / 2);
+                translateTransition.setToZ(-1);
                 translateTransition.setCycleCount(1);
 
                 pt.getChildren().add(translateTransition);
