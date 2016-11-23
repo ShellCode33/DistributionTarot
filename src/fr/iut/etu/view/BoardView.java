@@ -2,29 +2,16 @@ package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Player;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.RotateTransition;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
+import javafx.animation.*;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.PointLight;
-import javafx.scene.control.Button;
-import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -73,7 +60,7 @@ public class BoardView extends Group {
         dogView.getTransforms().addAll(
                 new Translate(
                         4*Controller.SCREEN_WIDTH/6,
-                        (Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2,
+                        (Controller.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2,
                         -1),
                 new Rotate(
                         0,
@@ -87,7 +74,7 @@ public class BoardView extends Group {
         playerView.getTransforms().addAll(
                 new Translate(
                     Controller.SCREEN_WIDTH/2,
-                    Controller.SCREEN_HEIGHT - Controller.CARD_HEIGHT/2,
+                    Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
                     -1),
                 new Rotate(
                         0,
@@ -98,7 +85,7 @@ public class BoardView extends Group {
         playerView = getPlayerView(1);
         playerView.getTransforms().addAll(
                 new Translate(
-                        Controller.CARD_HEIGHT,
+                        CardView.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
                         -1),
                 new Rotate(
@@ -111,7 +98,7 @@ public class BoardView extends Group {
         playerView.getTransforms().addAll(
                 new Translate(
                         Controller.SCREEN_WIDTH/2,
-                        Controller.CARD_HEIGHT/2,
+                        CardView.CARD_HEIGHT/2,
                         -1),
                 new Rotate(
                         180,
@@ -122,7 +109,7 @@ public class BoardView extends Group {
         playerView = getPlayerView(3);
         playerView.getTransforms().addAll(
                 new Translate(
-                        Controller.SCREEN_WIDTH - Controller.CARD_HEIGHT,
+                        Controller.SCREEN_WIDTH - CardView.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
                         -1),
                 new Rotate(
@@ -141,8 +128,8 @@ public class BoardView extends Group {
         rotate.setCycleCount(1);
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(2), deckView);
-        translate.setToX((Controller.SCREEN_WIDTH-Controller.CARD_WIDTH)/2);
-        translate.setToY((Controller.SCREEN_HEIGHT-Controller.CARD_HEIGHT)/2);
+        translate.setToX((Controller.SCREEN_WIDTH-CardView.CARD_WIDTH)/2);
+        translate.setToY((Controller.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2);
         translate.setCycleCount(1);
 
         ParallelTransition st = new ParallelTransition();
@@ -178,32 +165,43 @@ public class BoardView extends Group {
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
 
-        cardView.setTranslateX(-100000);
+        cardView.setTranslateX(-1000000);
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
         Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*Controller.CARD_THICK-1);
 
-        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.7), cardView);
-        translateTransition.setFromX(deckViewBoundsInHandView.getMinX());
-        translateTransition.setFromY(deckViewBoundsInHandView.getMinY());
-        translateTransition.setFromZ(deckViewBoundsInHandView.getMinZ());
-        translateTransition.setToX(destination.getX());
-        translateTransition.setToY(destination.getY());
-        translateTransition.setToZ(destination.getZ());
-        translateTransition.setCycleCount(1);
+        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.6), cardView);
+        translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
+        translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
+        translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
+        translateTransition1.setToX(destination.getX());
+        translateTransition1.setToY(destination.getY());
+        translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
+        translateTransition1.setCycleCount(1);
 
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.7), cardView);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.6), cardView);
         rotateTransition.setAxis(Rotate.Z_AXIS);
-        rotateTransition.setFromAngle(270 - handViewRotate.getAngle());
-        rotateTransition.setByAngle(270 - handViewRotate.getAngle());
+        rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
+        rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
         rotateTransition.setCycleCount(1);
 
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.4), cardView);
+        translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
+        translateTransition2.setToZ(destination.getZ());
+        translateTransition2.setCycleCount(1);
+
+        SequentialTransition sequentialTransition = new SequentialTransition();
+
+        //Execution de cette transition au début de l'animation afin de réduire le deck avant le "vrai" début de l'animation
+        Transition voidAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
+        voidAnimation.setOnFinished(event -> deckView.removeImageViewOnTop());
+
         ParallelTransition parallelTransition = new ParallelTransition();
-        parallelTransition.getChildren().addAll(translateTransition, rotateTransition);
+        parallelTransition.getChildren().addAll(voidAnimation, translateTransition1, rotateTransition);
 
-        parallelTransition.setOnFinished(event -> deckView.removeImageViewOnTop());
+        sequentialTransition.getChildren().addAll(parallelTransition, translateTransition2);
 
-        return parallelTransition;
+        return sequentialTransition;
     }
 }

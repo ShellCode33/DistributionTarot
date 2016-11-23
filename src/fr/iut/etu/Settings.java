@@ -1,5 +1,6 @@
 package fr.iut.etu;
 
+import fr.iut.etu.view.CardView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -83,8 +84,8 @@ public class Settings extends Scene {
                     selectedBackCard.setEffect(border);
                 }
 
-                imageView.setFitWidth(Controller.CARD_WIDTH);
-                imageView.setFitHeight(Controller.CARD_HEIGHT);
+                imageView.setFitWidth(CardView.CARD_WIDTH);
+                imageView.setFitHeight(CardView.CARD_HEIGHT);
 
                 ImageView finalImageView1 = imageView;
                 imageView.setOnMouseClicked(mouseEvent -> {

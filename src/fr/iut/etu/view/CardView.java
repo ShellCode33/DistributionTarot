@@ -1,6 +1,5 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
 import javafx.animation.*;
 import javafx.scene.Group;
@@ -16,6 +15,9 @@ import java.util.Observer;
  * Created by Sylvain DUPOUY on 25/10/16.
  */
 public class CardView extends Group implements Observer, Comparable<CardView> {
+
+    public static int CARD_WIDTH = 120;
+    public static int CARD_HEIGHT = 212;
 
     public static Image backCard = null;
 
@@ -34,8 +36,8 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
         back = new ImageView(backCard);
         back.setSmooth(true);
-        back.setFitHeight(Controller.CARD_HEIGHT);
-        back.setFitWidth(Controller.CARD_WIDTH);
+        back.setFitHeight(CARD_HEIGHT);
+        back.setFitWidth(CARD_WIDTH);
         back.setTranslateZ(-1.01);
 
         getChildren().add(back);
@@ -49,8 +51,8 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         }
 
         front = new ImageView(imageFace);
-        front.setFitHeight(Controller.CARD_HEIGHT);
-        front.setFitWidth(Controller.CARD_WIDTH);
+        front.setFitHeight(CARD_HEIGHT);
+        front.setFitWidth(CARD_WIDTH);
 
         front.setTranslateZ(-1);
 
@@ -65,8 +67,8 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
 
     private void createFlipAnimation() {
-        double width = Controller.CARD_WIDTH;
-        double height = Controller.CARD_HEIGHT;
+        double width = CARD_WIDTH;
+        double height = CARD_HEIGHT;
 
         setRotationAxis(Rotate.Y_AXIS);
         setRotate(card.isHidden() ? 0 : 0);

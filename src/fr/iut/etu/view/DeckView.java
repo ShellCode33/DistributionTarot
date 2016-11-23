@@ -49,7 +49,7 @@ public class DeckView extends Group implements Observer {
         for (int i = 0; i < childrenSize / 2; i++) {
 
             KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                    new KeyValue(getChildren().get(i).translateXProperty(), -Controller.CARD_WIDTH / 2 - 10));
+                    new KeyValue(getChildren().get(i).translateXProperty(), -CardView.CARD_WIDTH / 2 - 10));
 
             timeline.getKeyFrames().add(cut);
         }
@@ -81,7 +81,7 @@ public class DeckView extends Group implements Observer {
 
         for (int i = 0; i < childrenSize / 2; i++) {
             KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                    new KeyValue(getChildren().get(childrenSize - 1 - i).translateXProperty(), Controller.CARD_WIDTH / 2 + 10));
+                    new KeyValue(getChildren().get(childrenSize - 1 - i).translateXProperty(), CardView.CARD_WIDTH / 2 + 10));
 
             timeline.getKeyFrames().add(cut);
         }
@@ -122,7 +122,6 @@ public class DeckView extends Group implements Observer {
 
         getChildren().remove(imageViewsSorted.get(0));
         Tooltip.install(this, new Tooltip(getChildren().size() + " cards!"));
-
     }
 
     @Override
@@ -133,8 +132,8 @@ public class DeckView extends Group implements Observer {
         if (o == Notifications.CARD_ADDED) {
             ImageView imageView = new ImageView(CardView.backCard);
             imageView.setSmooth(true);
-            imageView.setFitHeight(Controller.CARD_HEIGHT);
-            imageView.setFitWidth(Controller.CARD_WIDTH);
+            imageView.setFitHeight(CardView.CARD_HEIGHT);
+            imageView.setFitWidth(CardView.CARD_WIDTH);
             imageView.setTranslateZ(-getChildren().size() * Controller.CARD_THICK);
 
             getChildren().add(imageView);

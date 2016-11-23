@@ -2,17 +2,22 @@ package fr.iut.etu;
 
 import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
-import fr.iut.etu.model.*;
+import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Fool;
+import fr.iut.etu.model.Player;
+import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
-import fr.iut.etu.view.HandView;
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.*;
+import javafx.scene.DepthTest;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -26,12 +31,12 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class Controller extends Application {
 
@@ -39,8 +44,7 @@ public class Controller extends Application {
     private static final int PLAYER_COUNT = 4;
     public static double SCREEN_WIDTH;
     public static double SCREEN_HEIGHT;
-    public static int CARD_WIDTH = 120;
-    public static int CARD_HEIGHT = 212;
+
     public static double SCALE_COEFF = 1;
     public static int Y_SCREEN_START = 0;
 
@@ -83,8 +87,8 @@ public class Controller extends Application {
             System.out.println("Your display is 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
 
         SCALE_COEFF = SCREEN_WIDTH / 1920;
-        CARD_WIDTH *= SCALE_COEFF;
-        CARD_HEIGHT *= SCALE_COEFF;
+        CardView.CARD_WIDTH *= SCALE_COEFF;
+        CardView.CARD_HEIGHT *= SCALE_COEFF;
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
 
         menu = new Menu(this);
@@ -212,13 +216,20 @@ public class Controller extends Application {
         }
         else{
             board.getDeck().deal(board.getPlayer(playerIndex));
+            Animation firstAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
+            firstAnimation.setDelay(Duration.millis(0));
+
             board.getDeck().deal(board.getPlayer(playerIndex));
+            Animation secondAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
+            secondAnimation.setDelay(Duration.millis(150));
+
             board.getDeck().deal(board.getPlayer(playerIndex));
+            Animation thirdAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
+            thirdAnimation.setDelay(Duration.millis(300));
+
             animation = new ParallelTransition();
             ((ParallelTransition) animation).getChildren().addAll(
-                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex)),
-                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex)),
-                    boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex))
+                    firstAnimation, secondAnimation, thirdAnimation
             );
         }
 
