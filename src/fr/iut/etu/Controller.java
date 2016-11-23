@@ -99,7 +99,7 @@ public class Controller extends Application {
         primaryStage.setHeight(SCREEN_HEIGHT);
         primaryStage.setWidth(SCREEN_WIDTH);
 
-        Media music = new Media(new File("res/audio/main.mp3").toURI().toString());
+        Media music = new Media(new File("res/audio/main.wav").toURI().toString());
 
         try {
             musicPlayer = new MediaPlayer(music);
