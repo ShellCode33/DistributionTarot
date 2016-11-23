@@ -104,6 +104,7 @@ public class Settings extends Scene {
 
         slider.valueProperty().addListener((observableValue, number, t1) -> {
             sliderLabel.setText("" + (int)slider.getValue() + " %");
+            controller.getMusicPlayer().setVolume(slider.getValue() / 100);
         });
 
 
@@ -113,10 +114,6 @@ public class Settings extends Scene {
         saveButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());
             controller.setBackCardImage(selectedBackCard.getImage());
-
-            if(controller.getMusicPlayer() != null)
-                controller.getMusicPlayer().setVolume(slider.getValue() / 100);
-
             controller.setScene(controller.getMenu());
         });
 
