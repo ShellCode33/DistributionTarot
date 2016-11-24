@@ -19,9 +19,7 @@ import java.util.ArrayList;
  */
 public class BoardView extends Group {
 
-    private Board board;
-
-    private ArrayList<PlayerView> playerViews = new ArrayList<>();
+    private final ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
     private DogView dogView;
     private Animation bringDeckOnBoardAnimation;
@@ -29,7 +27,6 @@ public class BoardView extends Group {
     public BoardView(Board board, Image backgroundCustom) {
 
         super();
-        this.board = board;
 
         ImageView backgroundCustomView = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
 
@@ -38,7 +35,7 @@ public class BoardView extends Group {
         getChildren().add(backgroundCustomView);
 
         for (int i = 0; i < board.getPlayerCount(); i++) {
-            PlayerView playerView = new PlayerView(this.board.getPlayer(i));
+            PlayerView playerView = new PlayerView(board.getPlayer(i));
             playerViews.add(playerView);
             getChildren().add(playerView);
         }
@@ -84,8 +81,7 @@ public class BoardView extends Group {
 
         playerView = getPlayerView(1);
         playerView.getTransforms().addAll(
-                new Translate(
-                        CardView.CARD_HEIGHT,
+                new Translate(CardView.CARD_HEIGHT,
                         Controller.SCREEN_HEIGHT/2,
                         -1),
                 new Rotate(
@@ -160,16 +156,14 @@ public class BoardView extends Group {
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
-        handView.addCard(cardView);
 
         Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
         Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
 
-        cardView.setTranslateX(-1000000); //TODO : hum...
         cardView.setRotationAxis(Rotate.Z_AXIS);
         cardView.setRotate(270 - handViewRotate.getAngle());
 
-        Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*Controller.CARD_THICK-1);
+        Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
 
         TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.4), cardView);
         translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
@@ -195,7 +189,10 @@ public class BoardView extends Group {
 
         //Execution de cette transition au début de l'animation afin de réduire le deck avant le "vrai" début de l'animation
         Transition voidAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
-        voidAnimation.setOnFinished(event -> deckView.removeImageViewOnTop());
+        voidAnimation.setOnFinished(event -> {
+            handView.addCard(cardView);
+            deckView.removeImageViewOnTop();
+        });
 
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(voidAnimation, translateTransition1, rotateTransition);

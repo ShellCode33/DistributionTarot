@@ -11,7 +11,7 @@ public class Hand extends Observable{
     private Card lastCardAdded;
     private Card lastCardRemoved;
 
-    private ArrayList<Card> cards = new ArrayList<>();
+    private final ArrayList<Card> cards = new ArrayList<>();
 
     public int getCardCount(){
         return cards.size();

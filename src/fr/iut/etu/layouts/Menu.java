@@ -1,9 +1,11 @@
-package fr.iut.etu;
+package fr.iut.etu.layouts;
 
+import fr.iut.etu.Controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+
 import java.io.IOException;
 
 /**
@@ -16,7 +18,7 @@ public class Menu extends Scene {
     private Controller controller;
 
     public Menu(Controller controller) throws IOException {
-        super(FXMLLoader.load(controller.getClass().getResource("menu.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        super(FXMLLoader.load(controller.getClass().getResource("layouts/menu.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         this.controller = controller;
 
         playButton = (Button)lookup("#playButton");
@@ -50,12 +52,12 @@ public class Menu extends Scene {
         settingsButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2);
         exitButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2 + 150);
 
-        playButton.setOnAction(e -> buttonClicked(e));
-        settingsButton.setOnAction(e -> buttonClicked(e));
-        exitButton.setOnAction(e -> buttonClicked(e));
+        playButton.setOnAction(this::buttonClicked);
+        settingsButton.setOnAction(this::buttonClicked);
+        exitButton.setOnAction(this::buttonClicked);
     }
 
-    public void buttonClicked(ActionEvent e) {
+    private void buttonClicked(ActionEvent e) {
         Button button = (Button)e.getSource();
 
         try {

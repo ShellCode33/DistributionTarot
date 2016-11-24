@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Deck extends Observable{
 
-    private List<Card> cards = new ArrayList<Card>();
+    private final List<Card> cards = new ArrayList<>();
     private Card lastCardDealt;
     private Card lastCardAdded;
 
@@ -72,7 +72,7 @@ public class Deck extends Observable{
         lastCardDealt = card;
 
         setChanged();
-        notifyObservers(Notifications.CARD_DEALED);
+        notifyObservers(Notifications.CARD_DEALT);
     }
 
     public void cut(int i) {
@@ -80,8 +80,8 @@ public class Deck extends Observable{
         if(cards.size() < 8 || i < 4 || i > cards.size()-4)
             throw new IllegalArgumentException("You can't cut here !");
 
-        List<Card> end = new ArrayList<Card>();
-        List<Card> start = new ArrayList<Card>();
+        List<Card> end = new ArrayList<>();
+        List<Card> start = new ArrayList<>();
 
         end.addAll(cards.subList(i, this.cards.size()));
         start.addAll(cards.subList(0, i));

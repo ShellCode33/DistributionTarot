@@ -1,5 +1,6 @@
-package fr.iut.etu;
+package fr.iut.etu.layouts;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.view.CardView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,15 +19,13 @@ import java.io.IOException;
 /**
  * Created by shellcode on 11/19/16.
  */
-public class Settings extends Scene {
+class Settings extends Scene {
 
-    Controller controller;
-    ImageView selectedBackground = null;
-    ImageView selectedBackCard = null;
+    private ImageView selectedBackground = null;
+    private ImageView selectedBackCard = null;
 
     public Settings(Controller controller) throws IOException {
-        super(FXMLLoader.load(controller.getClass().getResource("settings.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
-        this.controller = controller;
+        super(FXMLLoader.load(controller.getClass().getResource("layouts/settings.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
 
         VBox vbox = (VBox)lookup("#vbox-userinput");
         vbox.setTranslateX((Controller.SCREEN_WIDTH - vbox.getWidth()) / 2);
@@ -34,8 +33,8 @@ public class Settings extends Scene {
         HBox backgroundsContainer = (HBox)lookup("#backgrounds-container");
         HBox backcardsContainer = (HBox)lookup("#backcards-container");
 
-        Image image = null;
-        ImageView imageView = null;
+        Image image;
+        ImageView imageView;
         DropShadow border = new DropShadow( 30, Color.BLACK );
 
         int i = 0;
@@ -117,8 +116,6 @@ public class Settings extends Scene {
             controller.setScene(controller.getMenu());
         });
 
-        cancelButton.setOnAction(actionEvent -> {
-            controller.setScene(controller.getMenu());
-        });
+        cancelButton.setOnAction(actionEvent -> controller.setScene(controller.getMenu()));
     }
 }

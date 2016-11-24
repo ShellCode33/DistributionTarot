@@ -18,11 +18,10 @@ import javafx.util.Duration;
 public class PlayerView extends HandView {
 
 
-    private Label usernameLabel = new Label();
-
     public PlayerView(Player player) {
         super(player);
 
+        Label usernameLabel = new Label();
         usernameLabel.setText(player.getName());
         usernameLabel.setTranslateY(-68);
         usernameLabel.setTranslateX(55);

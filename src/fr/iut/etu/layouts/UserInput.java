@@ -1,48 +1,41 @@
-package fr.iut.etu;
+package fr.iut.etu.layouts;
 
+import fr.iut.etu.Controller;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 /**
  * Created by shellcode on 11/7/16.
  */
-public class UserInput extends Scene {
+class UserInput extends Scene {
 
-    private VBox vbox;
-    private GridPane gridLayout;
     private TextField userInput;
-    private Button submitButton;
     private Image selectedImage = null;
 
     private Controller controller;
 
     public UserInput(Controller controller) throws IOException {
-        super(FXMLLoader.load(controller.getClass().getResource("user_input.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        super(FXMLLoader.load(controller.getClass().getResource("layouts/user_input.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         this.controller = controller;
 
 
-        vbox = (VBox)lookup("#vbox-userinput");
-        gridLayout = (GridPane) lookup("#gridLayout");
+        VBox vbox = (VBox) lookup("#vbox-userinput");
+        GridPane gridLayout = (GridPane) lookup("#gridLayout");
         userInput = (TextField)lookup("#userInput");
-        submitButton = (Button)lookup("#submitButton");
+        Button submitButton = (Button) lookup("#submitButton");
         Label label1 = (Label)lookup("#label1");
         Label label2 = (Label)lookup("#label2");
 
@@ -84,21 +77,21 @@ public class UserInput extends Scene {
         submitButton.setPrefHeight(buttonHeight);
         submitButton.setMaxHeight(buttonHeight);
 
-        submitButton.setOnAction(e -> buttonClicked(e));
+        submitButton.setOnAction(this::buttonClicked);
 
         userInput.setPrefWidth(buttonWidth*2);
         userInput.setMaxWidth(buttonWidth*2);
         userInput.setPrefHeight(buttonHeight/1.5);
         userInput.setMaxHeight(buttonHeight/1.5);
 
-        userInput.setOnAction(e -> buttonClicked(e));
+        userInput.setOnAction(this::buttonClicked);
 
         vbox.setScaleX(Controller.SCALE_COEFF);
         vbox.setScaleY(Controller.SCALE_COEFF);
         vbox.setTranslateX((Controller.SCREEN_WIDTH-buttonWidth*2-50*2)/2);
     }
 
-    public void buttonClicked(ActionEvent e)
+    private void buttonClicked(ActionEvent e)
     {
         if(userInput.getText().isEmpty())
             userInput.setText("User42");

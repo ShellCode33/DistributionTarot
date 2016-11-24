@@ -6,7 +6,6 @@ package fr.iut.etu.model;
 public class Player extends Hand{
 
     private String name = "";
-    private static int nb_computers = 0;
 
     public enum UserChoice {
         TAKE,
@@ -15,10 +14,10 @@ public class Player extends Hand{
         KEEP_AGAINST_DOG
     }
 
-    UserChoice choice = null;
+    private UserChoice choice = null;
 
     public Player() {
-        this("#computer" + nb_computers++);
+        super();
     }
 
     public Player(String name) {
@@ -28,6 +27,10 @@ public class Player extends Hand{
 
     public String getName(){
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setChoice(UserChoice choice) {

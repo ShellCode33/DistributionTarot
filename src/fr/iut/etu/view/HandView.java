@@ -1,7 +1,6 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.Animation;
@@ -20,13 +19,13 @@ import java.util.Observer;
  * Created by Sylvain DUPOUY on 11/18/16.
  */
 public abstract class HandView extends Group implements Observer {
-    private Hand hand;
-    protected ArrayList<CardView> cardViews = new ArrayList<>();
-    private LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
+    private final Hand hand;
+    final ArrayList<CardView> cardViews = new ArrayList<>();
+    private final LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
 
-    protected static int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
+    static final int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
-    public HandView(Hand hand) {
+    HandView(Hand hand) {
         super();
 
         this.hand = hand;
@@ -55,9 +54,9 @@ public abstract class HandView extends Group implements Observer {
 
             CardView relatedImageView = null;
 
-            for(int i = 0; i < cardViews.size(); i++)
-                if(cardViews.get(i).getCard() == hand.getLastCardRemoved())
-                    relatedImageView = cardViews.get(i);
+            for (CardView cardView : cardViews)
+                if (cardView.getCard() == hand.getLastCardRemoved())
+                    relatedImageView = cardView;
 
             cardViews.remove(relatedImageView);
             getChildren().remove(relatedImageView);
@@ -70,7 +69,7 @@ public abstract class HandView extends Group implements Observer {
         for (int i = 0; i < cardViews.size(); i++) {
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), cardViews.get(i));
             translateTransition.setToX(i*GAP_BETWEEN_CARDS -  cardViews.size()*GAP_BETWEEN_CARDS/2);
-            translateTransition.setToZ(-1-i* Controller.CARD_THICK);
+            translateTransition.setToZ(-1-i* CardView.CARD_THICK);
             translateTransition.setCycleCount(1);
             pt.getChildren().add(translateTransition);
         }

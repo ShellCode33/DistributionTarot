@@ -1,5 +1,6 @@
-package fr.iut.etu;
+package fr.iut.etu.layouts;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Player;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -62,14 +63,11 @@ public class UserChoice extends Group {
         button4.setMaxWidth(buttonWidth);
         button4.setMaxHeight(buttonHeight);
 
-        Button finalButton = button1;
-        Button finalButton1 = button2;
-        Button finalButton2 = button3;
-        Button finalButton3 = button4;
-        button1.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton));
-        button2.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton1));
-        button3.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton2));
-        button4.setOnMouseClicked(mouseEvent -> buttonClicked(finalButton3));
+
+        button1.setOnMouseClicked(mouseEvent -> buttonClicked(button1));
+        button2.setOnMouseClicked(mouseEvent -> buttonClicked(button2));
+        button3.setOnMouseClicked(mouseEvent -> buttonClicked(button3));
+        button4.setOnMouseClicked(mouseEvent -> buttonClicked(button4));
 
         getChildren().add(vbox);
     }
@@ -77,16 +75,21 @@ public class UserChoice extends Group {
     public void buttonClicked(Button button) {
 
         Player.UserChoice choice = null;
-        String id = button.getId();
 
-        if(id.equals("button1"))
-            choice = Player.UserChoice.TAKE;
-        else if(id.equals("button2"))
-            choice = Player.UserChoice.KEEP;
-        else if(id.equals("button3"))
-            choice = Player.UserChoice.KEEP_WITHOUT_DOG;
-        else if(id.equals("button4"))
-            choice = Player.UserChoice.KEEP_AGAINST_DOG;
+        switch (button.getId()) {
+            case "button1":
+                choice = Player.UserChoice.TAKE;
+                break;
+            case "button2":
+                choice = Player.UserChoice.KEEP;
+                break;
+            case "button3":
+                choice = Player.UserChoice.KEEP_WITHOUT_DOG;
+                break;
+            case "button4":
+                choice = Player.UserChoice.KEEP_AGAINST_DOG;
+                break;
+        }
 
         System.out.println("User choose: " + choice.toString());
         controller.processUserChoice(0, choice);

@@ -5,6 +5,7 @@ import java.util.Observable;
 /**
  * Created by shellcode on 9/27/16.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class Card extends Observable implements Comparable<Card> {
 
     public enum Type {
@@ -16,9 +17,8 @@ public class Card extends Observable implements Comparable<Card> {
         FOOL
     }
 
-    private Type cardType;
-    private int value;
-    private boolean hidden = false;
+    private final Type cardType;
+    private final int value;
 
     public Card(Type cardType, int value) {
         this.cardType = cardType;
@@ -36,10 +36,6 @@ public class Card extends Observable implements Comparable<Card> {
         return value;
     }
 
-    public boolean isHidden() {
-        return hidden;
-    }
-
     @Override
     public String toString() {
         return cardType.toString() + ": " + value;
@@ -47,6 +43,10 @@ public class Card extends Observable implements Comparable<Card> {
 
     @Override
     public boolean equals(Object o) {
+
+        if(!(o instanceof Card))
+            throw new IllegalArgumentException("o is not a Card");
+
         return cardType == ((Card)o).getType() && value == ((Card)o).getValue();
     }
 

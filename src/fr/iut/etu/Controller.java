@@ -2,15 +2,16 @@ package fr.iut.etu;
 
 import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
-import fr.iut.etu.model.*;
+import fr.iut.etu.layouts.Menu;
+import fr.iut.etu.layouts.UserChoice;
+import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Fool;
+import fr.iut.etu.model.Player;
+import fr.iut.etu.model.Trump;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
 import javafx.animation.*;
 import javafx.application.Application;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.DepthTest;
 import javafx.scene.PerspectiveCamera;
@@ -20,7 +21,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -32,14 +32,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Controller extends Application {
 
-    public static final double CARD_THICK = 1.5;
-    private static final int PLAYER_COUNT = 4;
+    public static final int PLAYER_COUNT = 4;
     public static double SCREEN_WIDTH;
     public static double SCREEN_HEIGHT;
 
@@ -53,8 +50,7 @@ public class Controller extends Application {
 
     private Menu menu;
 
-    public Stage stage;
-    private Scene sceneGame;
+    private Stage stage;
     private MediaPlayer musicPlayer;
 
     public static void main(String[] args) {
@@ -116,14 +112,12 @@ public class Controller extends Application {
     }
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
-
         board = new Board(PLAYER_COUNT);
 
-        board.addPlayer(new Player(myPlayerUsername));
+        board.getPlayer(0).setName(myPlayerUsername);
 
-        for(int i = 0; i < PLAYER_COUNT-1; i++)
-            board.addPlayer(new Player());
-
+        for(int i = 1; i < PLAYER_COUNT; i++)
+            board.getPlayer(i).setName("#computer"+(i-1));
 
         boardView = new BoardView(board, boardImage);
         boardView.setDepthTest(DepthTest.ENABLE);
@@ -138,7 +132,7 @@ public class Controller extends Application {
         camera.setRotationAxis(Rotate.X_AXIS);
         camera.setRotate(15);
 
-        sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.BALANCED);
+        Scene sceneGame = new Scene(boardView, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.BALANCED);
         sceneGame.setCamera(camera);
         boardView.setTranslateY(Y_SCREEN_START);
         sceneGame.setFill(Color.BLACK);
@@ -163,49 +157,41 @@ public class Controller extends Application {
         board.getDeck().refill();
         board.getDeck().shuffle();
 
-        boardView.getBringDeckOnBoardAnimation().setOnFinished(event1 -> {
+        Animation bringDeckOnBoardAnimation = boardView.getBringDeckOnBoardAnimation();
+        Animation cutAnim = boardView.getDeckView().getCutAnimation();
+        ParallelTransition dealingAnimation = new ParallelTransition();
+        ParallelTransition dispatchAllCardsAnimation = new ParallelTransition();
 
-            //Cut animation even if we shuffled the deck, because the deck is initially sorted...
-            Animation cutAnim = boardView.getDeckView().createCutAnimation();
-
-            cutAnim.setOnFinished(actionEvent -> {
-
-                SequentialTransition st = new SequentialTransition();
-                recursiveDealingSequence(0, st);
-
-                st.setOnFinished(event2 -> {
-
-                    SequentialTransition st2 = new SequentialTransition();
-
-                    ParallelTransition pt = new ParallelTransition();
-                    pt.getChildren().add(boardView.getDogView().getDispatchAnimation());
-
-                    for(int i = 0; i < PLAYER_COUNT; i++)
-                        pt.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
-
-                    st2.getChildren().add(pt);
-                    st2.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
-
-                    boardView.getPlayerView(0).sort();
-                    st2.getChildren().add(boardView.getPlayerView(0).getSortAnimation());
-
-                    st2.setOnFinished(event3 ->{
-                        askUserChoice();
-                    });
-
-                    st2.play();
-                });
-
-                st.play();
-            });
-
+        bringDeckOnBoardAnimation.setOnFinished(event -> {
+            board.getDeck().cut((int) (Math.random()*(board.getDeck().size()-8) + 4));
             cutAnim.play();
         });
 
-        boardView.getBringDeckOnBoardAnimation().play();
+        cutAnim.setOnFinished(event -> {
+            recursiveDealingSequence(0, Duration.ZERO, dealingAnimation);
+            dealingAnimation.play();
+        });
+
+        dealingAnimation.setOnFinished(event -> {
+            dispatchAllCardsAnimation.getChildren().add(boardView.getDogView().getDispatchAnimation());
+
+            for(int i = 0; i < PLAYER_COUNT; i++)
+                dispatchAllCardsAnimation.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
+
+            dispatchAllCardsAnimation.play();
+        });
+
+        dispatchAllCardsAnimation.setOnFinished(event -> {
+            Animation flipAllCardViewsAnimation = boardView.getPlayerView(0).getFlipAllCardViewsAnimation();
+
+            flipAllCardViewsAnimation.setOnFinished(event1 -> askUserChoice());
+            flipAllCardViewsAnimation.play();
+        });
+
+        bringDeckOnBoardAnimation.play();
     }
 
-    private void recursiveDealingSequence(int playerIndex, SequentialTransition st){
+    private void recursiveDealingSequence(int playerIndex, Duration delay, ParallelTransition st){
 
         Animation animation;
 
@@ -220,17 +206,19 @@ public class Controller extends Application {
 
             board.getDeck().deal(board.getPlayer(playerIndex));
             Animation secondAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            secondAnimation.setDelay(Duration.millis(200));
+            secondAnimation.setDelay(Duration.millis(150));
 
             board.getDeck().deal(board.getPlayer(playerIndex));
             Animation thirdAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            thirdAnimation.setDelay(Duration.millis(400));
+            thirdAnimation.setDelay(Duration.millis(300));
 
             animation = new ParallelTransition();
             ((ParallelTransition) animation).getChildren().addAll(
                     firstAnimation, secondAnimation, thirdAnimation
             );
         }
+
+        animation.setDelay(delay);
 
         animation.setCycleCount(1);
         st.getChildren().add(animation);
@@ -240,7 +228,13 @@ public class Controller extends Application {
             if(nextHand == PLAYER_COUNT)
                 nextHand = -1;
 
-            recursiveDealingSequence(nextHand, st);
+            Duration nextDelay;
+            if(nextHand == -1)
+                nextDelay = Duration.millis(delay.toMillis()+150);
+            else
+                nextDelay = Duration.millis(delay.toMillis() + 450);
+
+            recursiveDealingSequence(nextHand, nextDelay,st);
         }
     }
 
@@ -249,7 +243,6 @@ public class Controller extends Application {
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board, boardImage);
     }
-
     public void processUserChoice(int user_index, Player.UserChoice userChoice) {
         boardView.getChildren().remove(boardView.getChildren().size()-1); //Remove UserChoice GUI
         board.getPlayer(user_index).setChoice(userChoice);
@@ -271,7 +264,7 @@ public class Controller extends Application {
                         Button doneButton = new Button();
                         doneButton.setText("Done");
                         doneButton.setFont(new Font(30*SCALE_COEFF));
-                        doneButton.getStylesheets().add("file:src/fr/iut/etu/style.css");
+                        doneButton.getStylesheets().add("file:src/fr/iut/etu/layouts/style.css");
                         doneButton.getStyleClass().add("button");
                         doneButton.setMaxWidth(SCREEN_WIDTH / 5);
                         doneButton.setPrefWidth(SCREEN_WIDTH / 5);
@@ -334,7 +327,7 @@ public class Controller extends Application {
                                 else if(gap.size() < 6) {
 
                                     //On s'assure que le nombre d'atouts dans l'écart est respecté
-                                    if((cardView.getCard() instanceof Trump && nb_trump_played[0] < finalNb_allowed_trumps) || !(cardView.getCard() instanceof Trump)) {
+                                    if(!(cardView.getCard() instanceof Trump) || nb_trump_played[0] < finalNb_allowed_trumps) {
                                         gap.add(cardView);
                                         cardView.setSelect(!cardView.isSelected());
 

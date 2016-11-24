@@ -7,27 +7,18 @@ import java.util.ArrayList;
  */
 public class Board {
 
-    private ArrayList<Player> players = new ArrayList<>();
-    private Hand dog = new Hand();
-    private Deck deck = new Deck();
-    private int playerCount;
+    private final ArrayList<Player> players = new ArrayList<>();
+    private final Hand dog = new Hand();
+    private final Deck deck = new Deck();
 
     public Board(int playerCount){
-
-        this.playerCount = playerCount;
 
         if(playerCount < 3 || playerCount > 5)
             throw new IllegalArgumentException("playerCount should be between 3 and 5");
 
+        for(int i = 0; i < playerCount; i++)
+            players.add(new Player());
 
-    }
-
-    public void addPlayer(Player player) {
-
-        if(players.size() == 5)
-            throw new IllegalArgumentException("playerCount should be between 3 and 5");
-
-        players.add(player);
     }
 
     public Player getPlayer(int i){
@@ -35,10 +26,6 @@ public class Board {
             throw new IndexOutOfBoundsException();
 
         return players.get(i);
-    }
-
-    public ArrayList<Player> getPlayers() {
-        return players;
     }
 
     public Hand getDog() {
@@ -50,7 +37,7 @@ public class Board {
     }
 
     public int getPlayerCount() {
-        return playerCount;
+        return players.size();
     }
 
 }

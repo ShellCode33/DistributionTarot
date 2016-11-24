@@ -16,13 +16,13 @@ import java.util.Observer;
  */
 public class CardView extends Group implements Observer, Comparable<CardView> {
 
-    public static int CARD_WIDTH = 120;
-    public static int CARD_HEIGHT = 212;
+    public static final double CARD_THICK = 2;
+    public static double CARD_WIDTH = 120;
+    public static double CARD_HEIGHT = 212;
 
     public static Image backCard = null;
 
-    private Card card;
-    private ImageView front, back;
+    private final Card card;
     private Animation flipAnimation;
     private boolean selected = false;
 
@@ -34,7 +34,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         if(backCard == null)
             backCard = new Image("file:./res/cards/back0.jpg");
 
-        back = new ImageView(backCard);
+        ImageView back = new ImageView(backCard);
         back.setSmooth(true);
         back.setFitHeight(CARD_HEIGHT);
         back.setFitWidth(CARD_WIDTH);
@@ -50,7 +50,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
             imageFace = new Image("file:./res/cards/" + card.getType().toString() + "_" + card.getValue() + ".png");
         }
 
-        front = new ImageView(imageFace);
+        ImageView front = new ImageView(imageFace);
         front.setFitHeight(CARD_HEIGHT);
         front.setFitWidth(CARD_WIDTH);
 
@@ -67,20 +67,17 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
 
     private void createFlipAnimation() {
-        double width = CARD_WIDTH;
-        double height = CARD_HEIGHT;
 
         setRotationAxis(Rotate.Y_AXIS);
-        setRotate(card.isHidden() ? 0 : 0);
 
         TranslateTransition translate1 = new TranslateTransition(Duration.seconds(0.2), this);
 
-        translate1.setByY(-height);
+        translate1.setByY(-CARD_HEIGHT);
 
         translate1.setCycleCount(1);
 
         TranslateTransition translate2 = new TranslateTransition(Duration.seconds(0.3), this);
-        translate2.setByZ(-height);
+        translate2.setByZ(-CARD_HEIGHT);
         translate2.setCycleCount(1);
 
         RotateTransition rotate = new RotateTransition(Duration.seconds(0.3), this);
@@ -90,11 +87,11 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         rotate.setCycleCount(1);
 
         TranslateTransition translate3 = new TranslateTransition(Duration.seconds(0.2), this);
-        translate3.setByZ(height);
+        translate3.setByZ(CARD_HEIGHT);
         translate3.setCycleCount(1);
 
         TranslateTransition translate4 = new TranslateTransition(Duration.seconds(0.3), this);
-        translate4.setByY(height);
+        translate4.setByY(CARD_HEIGHT);
 
         translate4.setCycleCount(1);
 

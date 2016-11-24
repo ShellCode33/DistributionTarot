@@ -1,6 +1,5 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Controller;
 import fr.iut.etu.model.Deck;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
@@ -22,16 +21,13 @@ import java.util.Observer;
  */
 public class DeckView extends Group implements Observer {
 
-    private Deck deck;
-
     public DeckView(Deck deck) {
         super();
 
-        this.deck = deck;
         deck.addObserver(this);
     }
 
-    public Animation createCutAnimation() {
+    public Animation getCutAnimation() {
 
         SequentialTransition st = new SequentialTransition();
 
@@ -72,7 +68,7 @@ public class DeckView extends Group implements Observer {
 
         for (int i = 0; i < childrenSize / 2; i++) {
             KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
-                    new KeyValue(getChildren().get(i).translateZProperty(), -Controller.CARD_THICK * childrenSize - i * Controller.CARD_THICK));
+                    new KeyValue(getChildren().get(i).translateZProperty(), -CardView.CARD_THICK * childrenSize - i * CardView.CARD_THICK));
 
             timeline2.getKeyFrames().add(cut);
         }
@@ -104,7 +100,7 @@ public class DeckView extends Group implements Observer {
         rt2.setByAngle(-90);
 
         TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), this);
-        tt.setByZ(Controller.CARD_THICK * childrenSize / 2);
+        tt.setToZ(-CardView.CARD_THICK * childrenSize);
 
         st.getChildren().addAll(rt, pt, timeline2, pt2, rt2, tt);
 
@@ -134,7 +130,7 @@ public class DeckView extends Group implements Observer {
             imageView.setSmooth(true);
             imageView.setFitHeight(CardView.CARD_HEIGHT);
             imageView.setFitWidth(CardView.CARD_WIDTH);
-            imageView.setTranslateZ(-getChildren().size() * Controller.CARD_THICK);
+            imageView.setTranslateZ(-getChildren().size() * CardView.CARD_THICK);
 
             getChildren().add(imageView);
         }
