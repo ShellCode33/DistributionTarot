@@ -193,49 +193,38 @@ public class Controller extends Application {
 
     private void recursiveDealingSequence(int playerIndex, Duration delay, ParallelTransition st){
 
-        Animation animation;
+        if(board.getDeck().size() <= 0)
+            return;
 
-        if(playerIndex == -1) {
-            board.getDeck().deal(board.getDog());
-            animation = boardView.getDealACardAnimation(boardView.getDogView());
-        }
-        else{
-            board.getDeck().deal(board.getPlayer(playerIndex));
-            Animation firstAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            firstAnimation.setDelay(Duration.millis(0));
-
-            board.getDeck().deal(board.getPlayer(playerIndex));
-            Animation secondAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            secondAnimation.setDelay(Duration.millis(150));
-
-            board.getDeck().deal(board.getPlayer(playerIndex));
-            Animation thirdAnimation = boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex));
-            thirdAnimation.setDelay(Duration.millis(300));
-
-            animation = new ParallelTransition();
-            ((ParallelTransition) animation).getChildren().addAll(
-                    firstAnimation, secondAnimation, thirdAnimation
-            );
-        }
-
+        ParallelTransition animation = new ParallelTransition();
+        animation.setCycleCount(1);
         animation.setDelay(delay);
 
-        animation.setCycleCount(1);
-        st.getChildren().add(animation);
-        if(board.getDeck().size() > 0){
+        board.getDeck().deal(board.getPlayer(playerIndex));
+        animation.getChildren().add(boardView.getDealACardAnimation(boardView.getPlayerView(playerIndex)));
 
-            int nextHand = playerIndex + 1;
-            if(nextHand == PLAYER_COUNT)
-                nextHand = -1;
+        int nextHand = playerIndex;
+        int i = 0;
+        if(board.getPlayer(playerIndex).getCardCount()%3 == 0) {
+            nextHand = (playerIndex + 1) % PLAYER_COUNT;
 
-            Duration nextDelay;
-            if(nextHand == -1)
-                nextDelay = Duration.millis(delay.toMillis()+150);
-            else
-                nextDelay = Duration.millis(delay.toMillis() + 450);
+            while(board.getDog().getCardCount() < 6
+                    && board.getDeck().size() > 0
+                    && (Math.random() < 0.15 || board.getDeck().size() - 3 == 6 - board.getDog().getCardCount())){
 
-            recursiveDealingSequence(nextHand, nextDelay,st);
+                board.getDeck().deal(board.getDog());
+                Animation tmp = boardView.getDealACardAnimation(boardView.getDogView());
+                tmp.setDelay(Duration.millis(i*170));
+                animation.getChildren().add(tmp);
+
+                i++;
+            }
         }
+
+        Duration nextDelay = Duration.millis(delay.toMillis() + (i+1)*170);
+
+        st.getChildren().add(animation);
+        recursiveDealingSequence(nextHand, nextDelay,st);
     }
 
     private void reset() {

@@ -165,7 +165,7 @@ public class BoardView extends Group {
 
         Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
 
-        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.4), cardView);
+        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);
         translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
         translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
         translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
@@ -174,13 +174,13 @@ public class BoardView extends Group {
         translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
         translateTransition1.setCycleCount(1);
 
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.4), cardView);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.5), cardView);
         rotateTransition.setAxis(Rotate.Z_AXIS);
         rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
         rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
         rotateTransition.setCycleCount(1);
 
-        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.2), cardView);
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.3), cardView);
         translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
         translateTransition2.setToZ(destination.getZ());
         translateTransition2.setCycleCount(1);
