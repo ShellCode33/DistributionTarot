@@ -3,27 +3,42 @@ package fr.iut.etu.layouts;
 import fr.iut.etu.Controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * Created by shellcode on 11/7/16.
  */
-public class Menu extends Scene {
+public class Menu extends StackPane {
 
     private Button playButton, settingsButton, exitButton;
 
     private Controller controller;
 
     public Menu(Controller controller) throws IOException {
-        super(FXMLLoader.load(controller.getClass().getResource("layouts/menu.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         this.controller = controller;
 
-        playButton = (Button)lookup("#playButton");
-        settingsButton = (Button)lookup("#settingsButton");
-        exitButton = (Button)lookup("#exitButton");
+        setAlignment(Pos.CENTER);
+        getStylesheets().add("file:res/style.css");
+        getStyleClass().add("background-menu");
+
+        playButton = new Button("PLAY");
+        settingsButton = new Button("SETTINGS");
+        exitButton = new Button("EXIT");
+
+        Font font = new Font(30 * Controller.SCALE_COEFF);
+        playButton.setFont(font);
+        settingsButton.setFont(font);
+        exitButton.setFont(font);
 
 
         double buttonWidth = Controller.SCREEN_WIDTH / 5;
@@ -44,28 +59,28 @@ public class Menu extends Scene {
         exitButton.setMaxWidth(buttonWidth);
         exitButton.setMaxHeight(buttonHeight);
 
-        playButton.setTranslateX((Controller.SCREEN_WIDTH - buttonWidth) / 2);
-        settingsButton.setTranslateX((Controller.SCREEN_WIDTH - buttonWidth) / 2);
-        exitButton.setTranslateX((Controller.SCREEN_WIDTH - buttonWidth) / 2);
-
-        playButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2 - 150);
-        settingsButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2);
-        exitButton.setTranslateY(Controller.Y_SCREEN_START + (Controller.SCREEN_HEIGHT - buttonHeight) / 2 + 150);
-
         playButton.setOnAction(this::buttonClicked);
         settingsButton.setOnAction(this::buttonClicked);
         exitButton.setOnAction(this::buttonClicked);
+
+        VBox hbox = new VBox();
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setSpacing(50);
+        hbox.getChildren().addAll(playButton, settingsButton, exitButton);
+        getChildren().add(hbox);
     }
 
     private void buttonClicked(ActionEvent e) {
         Button button = (Button)e.getSource();
 
         try {
-            if (button == playButton)
-                controller.setScene(new UserInput(controller));
+            if (button == playButton) {
+                controller.setLayout(new UserInput(controller));
+
+            }
 
             else if (button == settingsButton)
-                controller.setScene(new Settings(controller));
+                controller.setLayout(new Settings(controller));
 
             else if (button == exitButton) {
                 System.exit(0);

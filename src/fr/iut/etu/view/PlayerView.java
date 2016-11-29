@@ -1,13 +1,17 @@
 package fr.iut.etu.view;
 
+import com.sun.javafx.tk.FontLoader;
+import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -17,19 +21,25 @@ import javafx.util.Duration;
  */
 public class PlayerView extends HandView {
 
+    HBox header;
+    Label usernameLabel;
 
     public PlayerView(Player player) {
         super(player);
 
-        Label usernameLabel = new Label();
+        header = new HBox();
+        header.setSpacing(20);
+        header.setTranslateY(-75);
+
+        usernameLabel = new Label();
         usernameLabel.setText(player.getName());
-        usernameLabel.setTranslateY(-68);
-        usernameLabel.setTranslateX(55);
-        usernameLabel.setTranslateZ(-1);
         usernameLabel.setTextFill(Color.WHITE);
         usernameLabel.setFont(new Font(30 * Controller.SCALE_COEFF));
 
-        getChildren().add(usernameLabel);
+        header.getChildren().add(usernameLabel);
+        header.setTranslateX(-50 * Controller.SCALE_COEFF / 2);
+        getChildren().add(header);
+
     }
 
     @Override
@@ -40,6 +50,7 @@ public class PlayerView extends HandView {
 
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
             translateTransition.setByX(-i*GAP_BETWEEN_CARDS +  cardViews.size()*GAP_BETWEEN_CARDS/2);
+            translateTransition.setByZ(-i*0.3);
             translateTransition.setCycleCount(1);
 
             pt.getChildren().add(translateTransition);
@@ -49,13 +60,11 @@ public class PlayerView extends HandView {
         return pt;
     }
 
-    public void setAvatar(Image image) {
-        ImageView avatar = new ImageView(image);
+    public void setAvatar(Image img) {
+        ImageView avatar = new ImageView(img);
         avatar.setFitHeight(50 * Controller.SCALE_COEFF);
         avatar.setFitWidth(50 * Controller.SCALE_COEFF);
-        avatar.setTranslateY(-75);
-        avatar.setTranslateZ(-1);
-        getChildren().add(avatar);
+        header.getChildren().setAll(avatar, usernameLabel);
     }
 
 

@@ -1,13 +1,22 @@
 package fr.iut.etu.view;
 
+import com.sun.javafx.tk.FontLoader;
+import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Card;
+import fr.iut.etu.model.Fool;
+import fr.iut.etu.model.Trump;
 import javafx.animation.*;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
@@ -23,10 +32,14 @@ public class BoardView extends Group {
     private DeckView deckView;
     private DogView dogView;
     private Animation bringDeckOnBoardAnimation;
+    private Button doneButton;
+    private Label hint;
+    private Board board;
 
     public BoardView(Board board, Image backgroundCustom) {
-
         super();
+
+        this.board = board;
 
         ImageView backgroundCustomView = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
 
@@ -39,6 +52,28 @@ public class BoardView extends Group {
             playerViews.add(playerView);
             getChildren().add(playerView);
         }
+
+        doneButton = new Button();
+        doneButton.setText("Done");
+        doneButton.setFont(new Font(30*Controller.SCALE_COEFF));
+        doneButton.getStylesheets().add("file:res/style.css");
+        doneButton.getStyleClass().add("button");
+        doneButton.setMaxWidth(Controller.SCREEN_WIDTH / 5);
+        doneButton.setPrefWidth(Controller.SCREEN_WIDTH / 5);
+        doneButton.setMaxHeight(Controller.SCREEN_HEIGHT / 12);
+        doneButton.setPrefHeight(Controller.SCREEN_HEIGHT / 12);
+        doneButton.setTranslateX((Controller.SCREEN_WIDTH - Controller.SCREEN_WIDTH / 5) / 2);
+        doneButton.setTranslateY((Controller.SCREEN_HEIGHT - Controller.SCREEN_HEIGHT / 12) / 2);
+        doneButton.setTranslateZ(-1);
+
+        hint = new Label();
+        hint.setFont(new Font(30*Controller.SCALE_COEFF));
+        hint.setTextFill(Color.WHITE);
+        hint.setText("Please choose 6 cards to exclude");
+        FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
+        hint.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
+        hint.setTranslateY((Controller.SCREEN_HEIGHT - hint.getHeight()) / 2);
+        hint.setTranslateZ(-1);
 
 
         deckView = new DeckView(board.getDeck());
@@ -70,7 +105,7 @@ public class BoardView extends Group {
         playerView = getPlayerView(0);
         playerView.getTransforms().addAll(
                 new Translate(
-                    Controller.SCREEN_WIDTH/2,
+                        (Controller.SCREEN_WIDTH - CardView.CARD_WIDTH)/2,
                     Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
                     -1),
                 new Rotate(
@@ -200,5 +235,96 @@ public class BoardView extends Group {
         sequentialTransition.getChildren().addAll(parallelTransition, translateTransition2);
 
         return sequentialTransition;
+    }
+
+    public void handleGap() { //Gestion de l'écart
+        getChildren().add(hint);
+
+        ArrayList<CardView> trumps = new ArrayList<>();
+        ArrayList<CardView> allowed_cards = new ArrayList<>();
+
+        for (CardView cardView : getPlayerView(0).getCardViews())
+            if(cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) //On exclut les bouts
+                trumps.add(cardView);
+            else if(cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) //On exclut les rois et l'excuse
+                allowed_cards.add(cardView);
+
+        int nb_allowed_trumps = 0;
+
+        if(allowed_cards.size() < 6) {
+            nb_allowed_trumps = 6 - allowed_cards.size(); //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
+            allowed_cards.addAll(trumps);
+        }
+
+        ArrayList<CardView> gap = new ArrayList<>(6);
+
+        doneButton.setOnAction(actionEvent2 -> {
+            System.out.println("6 cards will be removed");
+
+            getChildren().remove(doneButton);
+
+            ParallelTransition pt = new ParallelTransition();
+
+            for(CardView cardView : gap) {
+                SequentialTransition st = new SequentialTransition();
+
+                if(cardView.getCard() instanceof Trump) {
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
+                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
+                    st.getChildren().add(tt);
+                }
+
+                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
+                ft.setDelay(Duration.seconds(1));
+                ft.setToValue(0);
+                st.getChildren().add(ft);
+                pt.getChildren().add(st);
+            }
+
+            pt.setOnFinished(workerStateEvent -> {
+                gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
+                getPlayerView(0).getSortAnimation().play();
+            });
+
+            pt.play();
+        });
+
+        final int[] nb_trump_played = {0};
+
+        int finalNb_allowed_trumps = nb_allowed_trumps;
+        for (CardView cardView : allowed_cards) {
+            cardView.setOnMouseClicked(mouseEvent -> {
+
+                if (cardView.isSelected()) {
+
+                    if(gap.size() == 6) {
+                        getChildren().remove(doneButton);
+                        getChildren().add(hint);
+                    }
+
+                    if(cardView.getCard() instanceof Trump)
+                        nb_trump_played[0]--;
+
+                    gap.remove(cardView);
+                    cardView.setSelect(!cardView.isSelected());
+
+
+                }
+
+                else if(gap.size() < 6) {
+
+                    //On s'assure que le nombre d'atouts dans l'écart est respecté
+                    if(!(cardView.getCard() instanceof Trump) || nb_trump_played[0] < finalNb_allowed_trumps) {
+                        gap.add(cardView);
+                        cardView.setSelect(!cardView.isSelected());
+
+                        if (gap.size() == 6) {
+                            getChildren().remove(hint);
+                            getChildren().add(doneButton);
+                        }
+                    }
+                }
+            });
+        }
     }
 }

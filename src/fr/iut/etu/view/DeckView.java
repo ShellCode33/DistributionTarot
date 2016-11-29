@@ -100,7 +100,7 @@ public class DeckView extends Group implements Observer {
         rt2.setByAngle(-90);
 
         TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), this);
-        tt.setToZ(-CardView.CARD_THICK * childrenSize);
+        tt.setByZ(CardView.CARD_THICK * childrenSize / 2);
 
         st.getChildren().addAll(rt, pt, timeline2, pt2, rt2, tt);
 

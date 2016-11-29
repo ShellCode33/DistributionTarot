@@ -107,6 +107,7 @@ public abstract class HandView extends Group implements Observer {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
             tt.setFromY(-y_translate);
             tt.setToY(0);
+            tt.setToZ(-0.2);
             pt.getChildren().add(tt);
 
             handView.addCard(cardView); //Local coordinates change here

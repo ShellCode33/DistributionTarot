@@ -3,6 +3,7 @@ package fr.iut.etu.layouts;
 import fr.iut.etu.Controller;
 import fr.iut.etu.view.CardView;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,27 +12,56 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * Created by shellcode on 11/19/16.
  */
-class Settings extends Scene {
+class Settings extends StackPane {
 
     private ImageView selectedBackground = null;
     private ImageView selectedBackCard = null;
 
     public Settings(Controller controller) throws IOException {
-        super(FXMLLoader.load(controller.getClass().getResource("layouts/settings.fxml")), Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
 
-        VBox vbox = (VBox)lookup("#vbox-userinput");
-        vbox.setTranslateX((Controller.SCREEN_WIDTH - vbox.getWidth()) / 2);
+        setAlignment(Pos.CENTER);
+        getStylesheets().add("file:res/style.css");
+        getStyleClass().add("background-menu");
 
-        HBox backgroundsContainer = (HBox)lookup("#backgrounds-container");
-        HBox backcardsContainer = (HBox)lookup("#backcards-container");
+        VBox vbox = new VBox();
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setSpacing(50);
+        vbox.getStyleClass().add("background-settings");
+
+        Font font = new Font(30 * Controller.SCALE_COEFF);
+        Label label1 = new Label("Board background :");
+        Label label2 = new Label("Back cards :");
+        label1.getStyleClass().add("textMenu");
+        label2.getStyleClass().add("textMenu");
+        label1.setFont(font);
+        label2.setFont(font);
+
+
+        HBox backgroundsContainer = new HBox();
+        HBox backcardsContainer = new HBox();
+        HBox sliderContainer = new HBox();
+        HBox buttonsContainer = new HBox();
+
+        backgroundsContainer.setAlignment(Pos.CENTER);
+        backcardsContainer.setAlignment(Pos.CENTER);
+        sliderContainer.setAlignment(Pos.CENTER);
+        buttonsContainer.setAlignment(Pos.CENTER);
+
+        backgroundsContainer.setSpacing(50);
+        backcardsContainer.setSpacing(50);
+        sliderContainer.setSpacing(50);
+        buttonsContainer.setSpacing(50);
 
         Image image;
         ImageView imageView;
@@ -98,8 +128,12 @@ class Settings extends Scene {
 
         } while(!image.isError()); //On charge toutes les images du répertoire de 0 à n
 
-        Slider slider = (Slider)lookup("#slider");
-        Label sliderLabel = (Label)lookup("#slider-label");
+        Slider slider = new Slider();
+        slider.setValue(50);
+        Label sliderLabel = new Label("50 %");
+        sliderLabel.getStyleClass().add("textMenu");
+        sliderLabel.setFont(font);
+        sliderContainer.getChildren().addAll(slider, sliderLabel);
 
         slider.valueProperty().addListener((observableValue, number, t1) -> {
             sliderLabel.setText("" + (int)slider.getValue() + " %");
@@ -107,15 +141,21 @@ class Settings extends Scene {
         });
 
 
-        Button saveButton = (Button)lookup("#saveButton");
-        Button cancelButton = (Button)lookup("#cancelButton");
+        Button saveButton = new Button("Save");
+        Button cancelButton = new Button("Cancel");
+        buttonsContainer.getChildren().addAll(saveButton, cancelButton);
+        saveButton.getStyleClass().add("button");
+        cancelButton.getStyleClass().add("button");
 
         saveButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());
             controller.setBackCardImage(selectedBackCard.getImage());
-            controller.setScene(controller.getMenu());
+            controller.setLayout(controller.getMenu());
         });
 
-        cancelButton.setOnAction(actionEvent -> controller.setScene(controller.getMenu()));
+        cancelButton.setOnAction(actionEvent -> controller.setLayout(controller.getMenu()));
+
+        vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, buttonsContainer);
+        getChildren().addAll(vbox);
     }
 }
