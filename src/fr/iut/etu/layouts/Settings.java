@@ -39,13 +39,12 @@ class Settings extends StackPane {
         vbox.setSpacing(50);
         vbox.getStyleClass().add("background-settings");
 
-        Font font = new Font(30 * Controller.SCALE_COEFF);
         Label label1 = new Label("Board background :");
         Label label2 = new Label("Back cards :");
         label1.getStyleClass().add("textMenu");
         label2.getStyleClass().add("textMenu");
-        label1.setFont(font);
-        label2.setFont(font);
+        label1.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        label2.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
 
         HBox backgroundsContainer = new HBox();
@@ -80,8 +79,8 @@ class Settings extends StackPane {
                     selectedBackground.setEffect(border);
                 }
 
-                imageView.setFitWidth(100);
-                imageView.setFitHeight(100);
+                imageView.setFitWidth(100 * Controller.SCALE_COEFF);
+                imageView.setFitHeight(100 * Controller.SCALE_COEFF);
 
                 ImageView finalImageView = imageView;
                 int finalI = i - 1;
@@ -132,7 +131,7 @@ class Settings extends StackPane {
         slider.setValue(50);
         Label sliderLabel = new Label("50 %");
         sliderLabel.getStyleClass().add("textMenu");
-        sliderLabel.setFont(font);
+        sliderLabel.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         sliderContainer.getChildren().addAll(slider, sliderLabel);
 
         slider.valueProperty().addListener((observableValue, number, t1) -> {
@@ -146,6 +145,8 @@ class Settings extends StackPane {
         buttonsContainer.getChildren().addAll(saveButton, cancelButton);
         saveButton.getStyleClass().add("button");
         cancelButton.getStyleClass().add("button");
+        saveButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        cancelButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         saveButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());

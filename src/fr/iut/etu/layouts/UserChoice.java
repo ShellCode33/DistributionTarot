@@ -42,15 +42,15 @@ public class UserChoice extends VBox {
         setMaxHeight(Controller.SCREEN_HEIGHT / 2);
         setTranslateX(Controller.SCREEN_WIDTH / 4);
         setTranslateY(Controller.SCREEN_HEIGHT / 4);
+        setScaleX(Controller.SCALE_COEFF);
+        setScaleY(Controller.SCALE_COEFF);
 
         double buttonWidth = Controller.SCREEN_WIDTH / 5;
         double buttonHeight = Controller.SCREEN_HEIGHT / 12;
 
-        Font font = new Font(30 * Controller.SCALE_COEFF);
-
         Label label = new Label("Make your choice :");
         label.getStyleClass().add("textMenu");
-        label.setFont(font);
+        label.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         button1.getStyleClass().add("button");
         button2.getStyleClass().add("button");
@@ -61,25 +61,25 @@ public class UserChoice extends VBox {
         button1.setPrefHeight(buttonHeight);
         button1.setMaxWidth(buttonWidth);
         button1.setMaxHeight(buttonHeight);
-        button1.setFont(font);
+        button1.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         button2.setPrefWidth(buttonWidth);
         button2.setPrefHeight(buttonHeight);
         button2.setMaxWidth(buttonWidth);
         button2.setMaxHeight(buttonHeight);
-        button2.setFont(font);
+        button2.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         button3.setPrefWidth(buttonWidth);
         button3.setPrefHeight(buttonHeight);
         button3.setMaxWidth(buttonWidth);
         button3.setMaxHeight(buttonHeight);
-        button3.setFont(font);
+        button3.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         button4.setPrefWidth(buttonWidth);
         button4.setPrefHeight(buttonHeight);
         button4.setMaxWidth(buttonWidth);
         button4.setMaxHeight(buttonHeight);
-        button4.setFont(font);
+        button4.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
 
         button1.setOnMouseClicked(mouseEvent -> buttonClicked(button1));

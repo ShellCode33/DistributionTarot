@@ -16,7 +16,7 @@ import java.util.Observer;
  */
 public class CardView extends Group implements Observer, Comparable<CardView> {
 
-    public static final double CARD_THICK = 2;
+    public static double CARD_THICK = 2;
     public static double CARD_WIDTH = 120;
     public static double CARD_HEIGHT = 212;
 

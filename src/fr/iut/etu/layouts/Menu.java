@@ -35,10 +35,9 @@ public class Menu extends StackPane {
         settingsButton = new Button("SETTINGS");
         exitButton = new Button("EXIT");
 
-        Font font = new Font(30 * Controller.SCALE_COEFF);
-        playButton.setFont(font);
-        settingsButton.setFont(font);
-        exitButton.setFont(font);
+        playButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        settingsButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        exitButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
 
         double buttonWidth = Controller.SCREEN_WIDTH / 5;

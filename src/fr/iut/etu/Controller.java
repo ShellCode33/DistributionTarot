@@ -82,6 +82,7 @@ public class Controller extends Application {
         SCALE_COEFF = SCREEN_WIDTH / 1920;
         CardView.CARD_WIDTH *= SCALE_COEFF;
         CardView.CARD_HEIGHT *= SCALE_COEFF;
+        CardView.CARD_THICK *= SCALE_COEFF;
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
 
         menu = new Menu(this);

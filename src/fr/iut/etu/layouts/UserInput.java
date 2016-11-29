@@ -67,23 +67,21 @@ class UserInput extends StackPane {
         gridLayout.setVgap(10);
         gridLayout.setHgap(10);
 
-        Font font = new Font(30 * Controller.SCALE_COEFF);
-
         userInput = new TextField();
-        userInput.setFont(font);
+        userInput.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         userInput.getStyleClass().add("textField");
 
 
         Button submitButton = new Button("Ok");
-        submitButton.setFont(font);
+        submitButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         submitButton.getStyleClass().add("button");
 
         Label label1 = new Label("Pick an avatar :");
         Label label2 = new Label("Choose a username :");
         label1.getStyleClass().add("textMenu");
         label2.getStyleClass().add("textMenu");
-        label1.setFont(font);
-        label2.setFont(font);
+        label1.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        label2.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         DropShadow border = new DropShadow( 30, Color.BLACK );
 
