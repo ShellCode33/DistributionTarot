@@ -4,7 +4,6 @@ import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.*;
@@ -192,47 +191,47 @@ public class BoardView extends Group {
 
         CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
 
-        Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
-        Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
-
-        cardView.setRotationAxis(Rotate.Z_AXIS);
-        cardView.setRotate(270 - handViewRotate.getAngle());
-
-        Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
-
         TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);
-        translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
-        translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
-        translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
-        translateTransition1.setToX(destination.getX());
-        translateTransition1.setToY(destination.getY());
-        translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
-        translateTransition1.setCycleCount(1);
-
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.5), cardView);
-        rotateTransition.setAxis(Rotate.Z_AXIS);
-        rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
-        rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
-        rotateTransition.setCycleCount(1);
-
         TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.3), cardView);
-        translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
-        translateTransition2.setToZ(destination.getZ());
-        translateTransition2.setCycleCount(1);
 
-        SequentialTransition sequentialTransition = new SequentialTransition();
+        Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
+        firstAnimation.setOnFinished(event -> {
 
-        //Execution de cette transition au début de l'animation afin de réduire le deck avant le "vrai" début de l'animation
-        Transition voidAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
-        voidAnimation.setOnFinished(event -> {
             handView.addCard(cardView);
             deckView.removeImageViewOnTop();
+
+            Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
+            Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
+
+            Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
+
+            cardView.setRotationAxis(Rotate.Z_AXIS);
+            cardView.setRotate(270 - handViewRotate.getAngle());
+
+            translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
+            translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
+            translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition1.setToX(destination.getX());
+            translateTransition1.setToY(destination.getY());
+            translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition1.setCycleCount(1);
+
+            rotateTransition.setAxis(Rotate.Z_AXIS);
+            rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
+            rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
+            rotateTransition.setCycleCount(1);
+
+            translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition2.setToZ(destination.getZ());
+            translateTransition2.setCycleCount(1);
         });
 
         ParallelTransition parallelTransition = new ParallelTransition();
-        parallelTransition.getChildren().addAll(voidAnimation, translateTransition1, rotateTransition);
+        parallelTransition.getChildren().addAll(translateTransition1, rotateTransition);
 
-        sequentialTransition.getChildren().addAll(parallelTransition, translateTransition2);
+        SequentialTransition sequentialTransition = new SequentialTransition();
+        sequentialTransition.getChildren().addAll(firstAnimation, parallelTransition, translateTransition2);
 
         return sequentialTransition;
     }

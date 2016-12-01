@@ -1,13 +1,10 @@
 package fr.iut.etu.view;
 
-import com.sun.javafx.tk.FontLoader;
-import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -44,6 +41,7 @@ public class PlayerView extends HandView {
 
     @Override
     public Animation getDispatchAnimation() {
+
         ParallelTransition pt = new ParallelTransition();
 
         for (int i = cardViews.size() - 1; i >= 0; i--) {
@@ -54,7 +52,6 @@ public class PlayerView extends HandView {
             translateTransition.setCycleCount(1);
 
             pt.getChildren().add(translateTransition);
-
         }
 
         return pt;

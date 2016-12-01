@@ -1,7 +1,6 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
@@ -31,7 +30,6 @@ public class DogView extends HandView{
             translateTransition.setCycleCount(1);
 
             pt.getChildren().add(translateTransition);
-
         }
 
         return pt;
