@@ -3,9 +3,7 @@ package fr.iut.etu.view;
 import fr.iut.etu.Controller;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.util.Duration;
@@ -19,9 +17,10 @@ import java.util.Observer;
  * Created by Sylvain DUPOUY on 11/18/16.
  */
 public abstract class HandView extends Group implements Observer {
-    private final Hand hand;
-    final ArrayList<CardView> cardViews = new ArrayList<>();
+    protected final Hand hand;
+    protected final ArrayList<CardView> cardViews = new ArrayList<>();
     private final LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
+    private final LinkedList<CardView> cardViewsWaitingToBeTransfered = new LinkedList<>();
 
     static final int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
@@ -50,6 +49,18 @@ public abstract class HandView extends Group implements Observer {
         if(o == Notifications.CARD_ADDED) {
             cardViewsWaitingToBeDealt.push(new CardView(hand.getLastCardAdded()));
         }
+        else if(o == Notifications.CARD_TRANSFERED){
+
+            CardView cardView = null;
+            for (CardView cv : cardViews) {
+                if(cv.getCard() == hand.getLastCardTransfered()){
+                    cardView = cv;
+                    break;
+                }
+            }
+
+            cardViewsWaitingToBeTransfered.push(cardView);
+        }
         else if(o == Notifications.CARD_DELETED){
 
             CardView relatedImageView = null;
@@ -64,7 +75,10 @@ public abstract class HandView extends Group implements Observer {
     }
 
     public Animation getSortAnimation() {
+
         ParallelTransition pt = new ParallelTransition();
+
+        cardViews.sort(CardView::compareTo);
 
         for (int i = 0; i < cardViews.size(); i++) {
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), cardViews.get(i));
@@ -74,11 +88,8 @@ public abstract class HandView extends Group implements Observer {
             pt.getChildren().add(translateTransition);
         }
 
-        return pt;
-    }
 
-    public void sort() {
-        cardViews.sort(CardView::compareTo);
+        return pt;
     }
 
     public void addCard(CardView cardView) {
@@ -90,33 +101,37 @@ public abstract class HandView extends Group implements Observer {
         return cardViews;
     }
 
-    public Animation transferCardViewsTo(HandView handView) {
+    public Animation transferCardViewTo(HandView handView) {
 
         ParallelTransition pt = new ParallelTransition();
 
-        Bounds boundsPlayer = handView.localToParent(handView.getBoundsInLocal());
-        System.out.println("player: " + boundsPlayer);
+        CardView cardView = cardViewsWaitingToBeTransfered.poll();
+        TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
 
-        for(CardView cardView : cardViews) {
+        Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
+        firstAnimation.setOnFinished(event -> {
 
+            handView.addCard(cardView);
+            cardViews.remove(cardView);
+
+            Bounds boundsPlayer = handView.localToParent(handView.getBoundsInLocal());
             Bounds boundsCard = localToParent(cardView.localToParent(cardView.getBoundsInLocal()));
-            System.out.println("card: " + boundsCard);
             double x_translate = boundsPlayer.getMinX() - boundsCard.getMinX();
             double y_translate = boundsPlayer.getMinY() - boundsCard.getMinY();
 
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
             tt.setFromY(-y_translate);
             tt.setToY(0);
             tt.setToZ(-0.2);
             pt.getChildren().add(tt);
 
-            handView.addCard(cardView); //Local coordinates change here
             cardView.setTranslateX(-x_translate - boundsPlayer.getWidth() / 2);
-        }
+        });
 
-        cardViews.clear();
 
-        return pt;
+        SequentialTransition st = new SequentialTransition();
+        st.getChildren().addAll(firstAnimation, tt);
+
+        return st;
     }
 
     public LinkedList<CardView> getCardViewsWaitingToBeDealt() {

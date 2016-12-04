@@ -3,7 +3,6 @@ package fr.iut.etu;
 import fr.iut.etu.layouts.Menu;
 import fr.iut.etu.layouts.UserChoice;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.view.BoardView;
 import fr.iut.etu.view.CardView;
@@ -25,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.InvalidObjectException;
 
 public class Controller extends Application {
 
@@ -207,87 +207,41 @@ public class Controller extends Application {
 
         sequentialTransition.play();
 
-
-//        Animation bringDeckOnBoardAnimation = boardView.getBringDeckOnBoardAnimation();
-//        Animation cutAnim = boardView.getDeckView().getCutAnimation();
-//        ParallelTransition dealingAnimation = new ParallelTransition();
-//        ParallelTransition dispatchAllCardsAnimation = new ParallelTransition();
-//
-//        bringDeckOnBoardAnimation.setOnFinished(event -> {
-//            board.getDeck().cut((int) (Math.random()*(board.getDeck().size()-8) + 4));
-//            cutAnim.play();
-//        });
-//
-//        cutAnim.setOnFinished(event -> {
-//            recursiveDealingSequence(0, Duration.ZERO, dealingAnimation);
-//            dealingAnimation.play();
-//        });
-//
-//        dealingAnimation.setOnFinished(event -> {
-//            dispatchAllCardsAnimation.getChildren().add(boardView.getDogView().getDispatchAnimation());
-//
-//            for(int i = 0; i < PLAYER_COUNT; i++)
-//                dispatchAllCardsAnimation.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
-//
-//            dispatchAllCardsAnimation.play();
-//        });
-//
-//        dispatchAllCardsAnimation.setOnFinished(event -> {
-//            Animation flipAllCardViewsAnimation = boardView.getPlayerView(0).getFlipAllCardViewsAnimation();
-//            flipAllCardViewsAnimation.setOnFinished(event1 -> askUserChoice());
-//            flipAllCardViewsAnimation.play();
-//        });
-//
-//        bringDeckOnBoardAnimation.play();
     }
 
-    private void reset() {
-        //TODO : repenser l'usage de cette fonction
-        board = new Board(PLAYER_COUNT);
-        boardView = new BoardView(board, boardImage);
-    }
     public void processUserChoice(Player.UserChoice userChoice) {
         boardView.getChildren().remove(boardView.getChildren().size()-1); //Remove UserChoice GUI
         board.getPlayer(0).setChoice(userChoice);
 
         if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
-            Animation animFlip = boardView.getDogView().getFlipAllCardViewsAnimation();
-            animFlip.setOnFinished(actionEvent -> {
-                System.out.println("Transfert dog to player");
-                board.getDog().transferCardsTo(board.getPlayer(0));
-                Animation transferAnim  = boardView.getDogView().transferCardViewsTo(boardView.getPlayerView(0));
-                transferAnim.setDelay(Duration.seconds(1.5));
 
-                transferAnim.setOnFinished(actionEvent12 -> {
-                    boardView.getPlayerView(0).sort();
-                    Animation sortAnim = boardView.getPlayerView(0).getSortAnimation();
+            SequentialTransition sequentialTransition = new SequentialTransition();
+            sequentialTransition.getChildren().add(boardView.getDogView().getFlipAllCardViewsAnimation());
 
-                    sortAnim.setOnFinished(actionEvent1 -> {
-                        boardView.handleGap();
-                    });
+            ParallelTransition parallelTransition = new ParallelTransition();
 
-                    sortAnim.play();
-                });
+            //transfer all cards from dog to player 0
+            while(!board.getDog().getCards().isEmpty()){
+                try {
+                    board.getDog().transferCardTo(board.getPlayer(0), board.getDog().getCards().get(0));
+                    parallelTransition.getChildren().add(boardView.getDogView().transferCardViewTo(boardView.getPlayerView(0)));
+                } catch (InvalidObjectException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                transferAnim.play();
+            sequentialTransition.getChildren().add(parallelTransition);
+
+            sequentialTransition.setOnFinished(event -> {
+                boardView.getPlayerView(0).getSortAnimation().play();
+                boardView.handleGap();
             });
 
-            animFlip.play();
+            sequentialTransition.play();
         }
-
         else {
-
-            Animation explodeAnimation = boardView.getDogView().createExplodeAnimation();
-
-            explodeAnimation.setOnFinished(actionEvent -> {
-                for(Card card : board.getDog().getCards())
-                    board.getDog().removeCard(card);
-            });
-
-            explodeAnimation.play();
+            boardView.getDogView().createExplodeAnimation().play();
         }
-
-        System.out.println("user choice set");
     }
 
     public void setLayout(Parent root) {

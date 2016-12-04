@@ -11,21 +11,21 @@ import javafx.util.Duration;
 /**
  * Created by shellcode on 11/14/16.
  */
-public class DogView extends HandView{
+public class DogView extends HandView {
 
     public DogView(Hand dog) {
         super(dog);
     }
 
     @Override
-    public Animation getDispatchAnimation(){
+    public Animation getDispatchAnimation() {
 
         ParallelTransition pt = new ParallelTransition();
 
         for (int i = cardViews.size() - 1; i >= 0; i--) {
 
             TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), cardViews.get(i));
-            translateTransition.setByX(-i*CardView.CARD_WIDTH-i*GAP_BETWEEN_CARDS / 2);
+            translateTransition.setByX(-i * CardView.CARD_WIDTH - i * GAP_BETWEEN_CARDS / 2);
             translateTransition.setToZ(-1);
             translateTransition.setCycleCount(1);
 
@@ -39,9 +39,9 @@ public class DogView extends HandView{
     public Animation getFlipAllCardViewsAnimation() {
         ParallelTransition pt = new ParallelTransition();
 
-        for (int i =0; i < cardViews.size(); i++) {
+        for (int i = 0; i < cardViews.size(); i++) {
             Animation flipAnimation = cardViews.get(i).getFlipAnimation();
-            flipAnimation.setDelay(Duration.millis(i*300));
+            flipAnimation.setDelay(Duration.millis(i * 300));
 
             pt.getChildren().add(flipAnimation);
         }
@@ -53,7 +53,7 @@ public class DogView extends HandView{
 
         ParallelTransition pt = new ParallelTransition();
 
-        for(int i = 0; i < cardViews.size(); i++) {
+        for (int i = 0; i < cardViews.size(); i++) {
             CardView cardView = cardViews.get(i);
             SequentialTransition st = new SequentialTransition();
 
@@ -62,7 +62,7 @@ public class DogView extends HandView{
             st.getChildren().add(ttz);
 
             TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
-            tt.setToX(Controller.SCREEN_WIDTH / 2 - 4* Controller.SCREEN_WIDTH/6 - CardView.CARD_WIDTH / 2);
+            tt.setToX(Controller.SCREEN_WIDTH / 2 - 4 * Controller.SCREEN_WIDTH / 6 - CardView.CARD_WIDTH / 2);
             st.getChildren().add(tt);
 
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(1), cardView);
@@ -73,6 +73,8 @@ public class DogView extends HandView{
 
             pt.getChildren().add(st);
         }
+
+        pt.setOnFinished(event -> hand.getCards().clear());
 
         return pt;
     }

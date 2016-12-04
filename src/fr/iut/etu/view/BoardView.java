@@ -326,4 +326,9 @@ public class BoardView extends Group {
             });
         }
     }
+
+    public Animation getTransferAnimation(HandView src, HandView dest) {
+
+        return null;
+    }
 }

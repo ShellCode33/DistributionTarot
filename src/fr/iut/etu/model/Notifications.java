@@ -7,5 +7,5 @@ public enum Notifications {
     CARD_DELETED, //notifies that all the cards are deleted
     CARD_DEALT,
     SHUFFLED,
-    CARD_ADDED, CUT
+    CARD_ADDED, CARD_TRANSFERED, CUT
 }
