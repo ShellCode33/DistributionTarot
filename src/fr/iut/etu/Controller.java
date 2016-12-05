@@ -161,7 +161,7 @@ public class Controller extends Application {
     private void deal(){
 
         SequentialTransition sequentialTransition = new SequentialTransition();
-        sequentialTransition.getChildren().addAll(dealStart(), dealMid());
+        sequentialTransition.getChildren().addAll(dealStart(), dealSequence());
 
 
         sequentialTransition.setOnFinished(event -> {
@@ -182,10 +182,9 @@ public class Controller extends Application {
         });
 
         sequentialTransition.play();
-
     }
 
-    private ParallelTransition dealMid() {
+    private ParallelTransition dealSequence() {
         int currentPlayerIndex = 0;
         ParallelTransition dealSequence = new ParallelTransition();
 
