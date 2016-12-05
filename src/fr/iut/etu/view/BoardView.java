@@ -7,10 +7,14 @@ import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,7 +24,9 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
+import javax.smartcardio.Card;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
@@ -34,17 +40,22 @@ public class BoardView extends Group {
     private Button doneButton;
     private Label hint;
     private Board board;
+    private Canvas particlesCanvas;
+    private AnimationTimer particleLoop;
+    private ArrayList<CardView> cardViewsWithParticles = new ArrayList<>();
+    ImageView background;
+    private static Image backgroundCustom = null;
 
-    public BoardView(Board board, Image backgroundCustom) {
+    public BoardView(Board board) {
         super();
 
         this.board = board;
 
-        ImageView backgroundCustomView = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
+        background = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
 
-        backgroundCustomView.setFitWidth(Controller.SCREEN_WIDTH);
-        backgroundCustomView.setFitHeight(Controller.SCREEN_HEIGHT);
-        getChildren().add(backgroundCustomView);
+        background.setFitWidth(Controller.SCREEN_WIDTH);
+        background.setFitHeight(Controller.SCREEN_HEIGHT);
+        getChildren().add(background);
 
         for (int i = 0; i < board.getPlayerCount(); i++) {
             PlayerView playerView = new PlayerView(board.getPlayer(i));
@@ -83,7 +94,53 @@ public class BoardView extends Group {
         placeHandViews();
         createBringDeckOnBoardAnimation();
 
+        //-------------------------Particles stuff-------------------------
+        particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        particlesCanvas.setTranslateZ(-1);
+        getChildren().add(particlesCanvas);
 
+        ParticleView.createTexture();
+
+        particleLoop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+
+                synchronized(this) {
+                    for (CardView cardView : cardViewsWithParticles) {
+
+                        // remove all particles that aren't visible anymore
+                        Iterator<ParticleView> iter = cardView.getParticles().iterator();
+                        while (iter.hasNext()) {
+                            ParticleView particle = iter.next();
+
+                            if (particle.isDead()) {
+                                CardView.getAllParticles().remove(particle);
+                                iter.remove();
+                            }
+                        }
+
+                        if (cardView.isMoving()) {
+                            for (int i = 0; i < 5; i++)
+                                cardView.addParticle();
+                        }
+                    }
+                }
+
+                particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+
+                // move sprite: apply acceleration, calculate velocity and location
+                CardView.getAllParticles().stream().parallel().forEach(ParticleView::move);
+
+                // draw all particles
+                CardView.getAllParticles().stream().forEach(particle -> particle.draw(particlesCanvas.getGraphicsContext2D()));
+
+                // life span of particle
+                CardView.getAllParticles().stream().parallel().forEach(ParticleView::decreaseLifeSpan);
+            }
+        };
+
+        particleLoop.start();
+        //-----------------------------------------------------------------
     }
 
     private void placeHandViews(){
@@ -198,6 +255,9 @@ public class BoardView extends Group {
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
 
+            addParticlesToCard(cardView);
+            cardView.setMoving(true);
+
             handView.addCardView(cardView);
             deckView.removeImageViewOnTop();
 
@@ -227,6 +287,11 @@ public class BoardView extends Group {
             translateTransition2.setCycleCount(1);
         });
 
+        translateTransition2.setOnFinished(actionEvent -> {
+            cardView.setMoving(false);
+            removeParticlesOfCard(cardView);
+        });
+
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(translateTransition1, rotateTransition);
 
@@ -234,6 +299,14 @@ public class BoardView extends Group {
         sequentialTransition.getChildren().addAll(firstAnimation, parallelTransition, translateTransition2);
 
         return sequentialTransition;
+    }
+
+    public synchronized void addParticlesToCard(CardView cardView) {
+        cardViewsWithParticles.add(cardView);
+    }
+
+    public synchronized void removeParticlesOfCard(CardView cardView) {
+        cardViewsWithParticles.remove(cardView);
     }
 
     public void handleGap() { //Gestion de l'écart
@@ -327,8 +400,14 @@ public class BoardView extends Group {
         }
     }
 
-    public Animation getTransferAnimation(HandView src, HandView dest) {
+    public void setBackgroundCustom(Image image) {
+        backgroundCustom = image;
 
-        return null;
+        getChildren().remove(background);
+        background = new ImageView(image);
+        background.setFitWidth(Controller.SCREEN_WIDTH);
+        background.setFitHeight(Controller.SCREEN_HEIGHT);
+        getChildren().add(background);
+
     }
 }

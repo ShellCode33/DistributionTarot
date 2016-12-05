@@ -1,11 +1,11 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
+import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Hand;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 /**
@@ -40,10 +40,25 @@ public class DogView extends HandView {
         ParallelTransition pt = new ParallelTransition();
 
         for (int i = 0; i < cardViews.size(); i++) {
-            Animation flipAnimation = cardViews.get(i).getFlipAnimation();
-            flipAnimation.setDelay(Duration.millis(i * 300));
+            CardView currentCardView = cardViews.get(i);
+            SequentialTransition st = new SequentialTransition();
 
-            pt.getChildren().add(flipAnimation);
+            //onStart
+            Transition useless = new Transition() {@Override protected void interpolate(double frac) {}};
+            useless.setDelay(Duration.millis(i * 300));
+
+            useless.setOnFinished(actionEvent -> {//onStart du flipAnimation
+                currentCardView.setMoving(true);
+            });
+
+
+            Animation flipAnimation = currentCardView.getFlipAnimation();
+            flipAnimation.setOnFinished(actionEvent -> {
+                currentCardView.setMoving(false);
+            });
+
+            st.getChildren().addAll(useless, flipAnimation);
+            pt.getChildren().add(st);
         }
 
         return pt;
@@ -74,7 +89,10 @@ public class DogView extends HandView {
             pt.getChildren().add(st);
         }
 
-        pt.setOnFinished(event -> hand.getCards().clear());
+        pt.setOnFinished(event -> {
+            hand.getCards().clear();
+            cardViews.parallelStream().forEach(cardView -> cardView.setMoving(false));
+        });
 
         return pt;
     }

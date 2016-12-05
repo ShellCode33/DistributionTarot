@@ -1,15 +1,18 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Card;
+import fr.iut.etu.model.Vector2D;
 import javafx.animation.*;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
@@ -25,6 +28,12 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     private final Card card;
     private Animation flipAnimation;
     private boolean selected = false;
+
+    private static Random random = new Random();
+    private ArrayList<ParticleView> myParticles = new ArrayList<>();
+    private static ArrayList<ParticleView> allParticles = new ArrayList<>();
+
+    private boolean moving = false;
 
     public CardView(Card card) {
 
@@ -64,7 +73,24 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         createFlipAnimation();
     }
 
+    public void addParticle() {
 
+        //Particles go to this position slowly (but never reach it because of the lifespan)
+        Point2D origin = new Point2D(Controller.SCREEN_WIDTH / 2, Controller.SCREEN_HEIGHT / 2);
+
+        // random location
+        Point2D point = getParent().localToParent(localToParent(random.nextDouble() * CARD_WIDTH, random.nextDouble() * CARD_HEIGHT));
+        Vector2D location = new Vector2D(point.getX(), point.getY());
+
+        // random velocity
+        double vx = random.nextGaussian() * 0.05 * (origin.getX() - point.getX());
+        double vy = random.nextGaussian() * 0.05 * (origin.getY() - point.getY());
+        Vector2D velocity = new Vector2D(vx, vy);
+
+        ParticleView particle = new ParticleView(location, velocity);
+        myParticles.add(particle);
+        allParticles.add(particle);
+    }
 
     private void createFlipAnimation() {
 
@@ -133,5 +159,21 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
 
     public Card getCard() {
         return card;
+    }
+
+    public static ArrayList<ParticleView> getAllParticles() {
+        return allParticles;
+    }
+
+    public ArrayList<ParticleView> getParticles() {
+        return myParticles;
+    }
+
+    public void setMoving(boolean value) {
+        moving = value;
+    }
+
+    public boolean isMoving() {
+        return moving;
     }
 }

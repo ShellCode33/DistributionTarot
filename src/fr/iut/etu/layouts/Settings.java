@@ -127,12 +127,15 @@ class Settings extends StackPane {
 
         } while(!image.isError()); //On charge toutes les images du répertoire de 0 à n
 
+        Label labelVol = new Label("Volume : ");
+        labelVol.getStyleClass().add("textMenu");
+        labelVol.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         Slider slider = new Slider();
         slider.setValue(50);
         Label sliderLabel = new Label("50 %");
         sliderLabel.getStyleClass().add("textMenu");
         sliderLabel.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
-        sliderContainer.getChildren().addAll(slider, sliderLabel);
+        sliderContainer.getChildren().addAll(labelVol, slider, sliderLabel);
 
         slider.valueProperty().addListener((observableValue, number, t1) -> {
             sliderLabel.setText("" + (int)slider.getValue() + " %");

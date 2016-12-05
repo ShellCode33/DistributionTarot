@@ -10,6 +10,8 @@ import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
@@ -38,7 +40,6 @@ public class Controller extends Application {
 
     private Board board;
     private BoardView boardView;
-    private Image boardImage = null;
 
     private Menu menu;
 
@@ -97,6 +98,9 @@ public class Controller extends Application {
                     setLayout(menu);
                     board = null;
                     boardView = null;
+                    board = new Board(PLAYER_COUNT);
+                    boardView = new BoardView(board);
+                    boardView.setDepthTest(DepthTest.ENABLE);
                     break;
             }
         });
@@ -124,21 +128,18 @@ public class Controller extends Application {
         }
 
         CardView.backCard = new Image("file:./res/cards/back0.jpg");
+
+        board = new Board(PLAYER_COUNT);
+        boardView = new BoardView(board);
+        boardView.setDepthTest(DepthTest.ENABLE);
     }
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
-        initModel(myPlayerUsername);
-        initView(selectedImage);
 
-        camera.setRotate(15);
-        setLayout(boardView);
+        board.getPlayer(0).setName(myPlayerUsername);
 
-        deal();
-    }
-
-    private void initView(Image selectedImage) {
-        boardView = new BoardView(board, boardImage);
-        boardView.setDepthTest(DepthTest.ENABLE);
+        for(int i = 1; i < PLAYER_COUNT; i++)
+            board.getPlayer(i).setName("#computer"+i);
 
         Image defaultImage = new Image("file:res/avatars/avatar_default.png");
         boardView.getPlayerView(0).setAvatar(selectedImage != null ? selectedImage : defaultImage);
@@ -146,16 +147,12 @@ public class Controller extends Application {
         for(int i = 1; i < board.getPlayerCount(); i++)
             boardView.getPlayerView(i).setAvatar(defaultImage);
 
+        camera.setRotate(15);
+        setLayout(boardView);
+
         boardView.setTranslateY(Y_SCREEN_START);
-    }
 
-    private void initModel(String myPlayerUsername) {
-        board = new Board(PLAYER_COUNT);
-
-        board.getPlayer(0).setName(myPlayerUsername);
-
-        for(int i = 1; i < PLAYER_COUNT; i++)
-            board.getPlayer(i).setName("#computer"+i);
+        deal();
     }
 
     private void deal(){
@@ -168,14 +165,34 @@ public class Controller extends Application {
 
             ParallelTransition parallelTransition = new ParallelTransition();
 
-            parallelTransition.getChildren().add(boardView.getDogView().getDispatchAnimation());
+            Animation dogDispatchAnim = boardView.getDogView().getDispatchAnimation();
+            parallelTransition.getChildren().add(dogDispatchAnim);
+            boardView.getDogView().getCardViews().forEach(cardView -> {
+                boardView.addParticlesToCard(cardView);
+                cardView.setMoving(true);
+            });
+
+            dogDispatchAnim.setOnFinished(actionEvent -> {
+                boardView.getDogView().getCardViews().forEach(cardView -> boardView.removeParticlesOfCard(cardView));
+                boardView.getDogView().getCardViews().forEach(cardView -> cardView.setMoving(false));
+            });
+
             for(int i = 0; i < PLAYER_COUNT; i++)
                 parallelTransition.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
 
             parallelTransition.setOnFinished(event1 -> {
                 Animation flipAllCardViewsAnimation = boardView.getPlayerView(0).getFlipAllCardViewsAnimation();
 
-                flipAllCardViewsAnimation.setOnFinished(event2 -> askUserChoice());
+                flipAllCardViewsAnimation.setOnFinished(event2 -> {
+                    boardView.getDogView().getCardViews().forEach(cardView -> boardView.removeParticlesOfCard(cardView));
+                    boardView.getPlayerView(0).getCardViews().forEach(cardView -> cardView.setMoving(false));
+                    askUserChoice();
+                });
+
+                boardView.getPlayerView(0).getCardViews().forEach(cardView -> {
+                    cardView.setMoving(true);
+                    boardView.addParticlesToCard(cardView);
+                });
                 flipAllCardViewsAnimation.play();
             });
             parallelTransition.play();
@@ -202,7 +219,7 @@ public class Controller extends Application {
 
                 while(board.getDog().getCardCount() < 6
                         && board.getDeck().size() > 0
-                        && (Math.random() < 0.3 || board.getDeck().size() - 3 == 6 - board.getDog().getCardCount())){
+                        && (Math.random() < 0.25 || board.getDeck().size() - 3 == 6 - board.getDog().getCardCount())){
 
                     board.getDeck().deal(board.getDog());
                     animation = boardView.getDealACardAnimation(boardView.getDogView());
@@ -219,7 +236,7 @@ public class Controller extends Application {
         SequentialTransition sequentialTransition = new SequentialTransition();
 
         board.getDeck().refill();
-        board.getDeck().shuffle();
+        board.getDeck().shuffle(); //En théorie il ne faudrait pas mélanger, mais les cartes étant générées dans l'ordre en début de partie, il faut les mélanger en plus de couper
         board.getDeck().cut(new Random().nextInt(60)+9);
 
         sequentialTransition.getChildren().add(boardView.getBringDeckOnBoardAnimation());
@@ -233,13 +250,29 @@ public class Controller extends Application {
 
         if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE)
             keepOrTake();
-        else
+        else {
+            boardView.getDogView().getCardViews().forEach(cardView -> {
+                cardView.setMoving(true);
+                boardView.addParticlesToCard(cardView);
+            });
+
             boardView.getDogView().createExplodeAnimation().play();
+        }
     }
 
     private void keepOrTake() {
         SequentialTransition sequentialTransition = new SequentialTransition();
-        sequentialTransition.getChildren().add(boardView.getDogView().getFlipAllCardViewsAnimation());
+        Animation flipAllCardViewsAnimation = boardView.getDogView().getFlipAllCardViewsAnimation();
+        sequentialTransition.getChildren().add(flipAllCardViewsAnimation);
+
+        boardView.getDogView().getCardViews().forEach(cardView -> {
+            boardView.addParticlesToCard(cardView);
+        });
+
+        //Lorsque les cartes ont terminé de se retourner, on les remet en mouvement afin de préparer le déplacement vers la playerview
+        flipAllCardViewsAnimation.setOnFinished(actionEvent -> {
+            boardView.getDogView().getCardViews().forEach(cardView -> cardView.setMoving(true));
+        });
 
         ParallelTransition parallelTransition = new ParallelTransition();
 
@@ -256,6 +289,10 @@ public class Controller extends Application {
         sequentialTransition.getChildren().add(parallelTransition);
 
         sequentialTransition.setOnFinished(event -> {
+            boardView.getPlayerView(0).getCardViews().forEach(cardView -> {
+                cardView.setMoving(false);
+                boardView.removeParticlesOfCard(cardView);
+            });
             boardView.getPlayerView(0).getSortAnimation().play();
             boardView.handleGap();
         });
@@ -275,8 +312,8 @@ public class Controller extends Application {
         CardView.backCard = image;
     }
 
-    public void setBoardImage(Image imageView) {
-        boardImage = imageView;
+    public void setBoardImage(Image image) {
+        boardView.setBackgroundCustom(image);
     }
 
     public MediaPlayer getMusicPlayer() {

@@ -31,6 +31,8 @@ public class Player extends Hand{
 
     public void setName(String name) {
         this.name = name;
+        setChanged();
+        notifyObservers(Notifications.USERNAME_CHANGED);
     }
 
     public void setChoice(UserChoice choice) {

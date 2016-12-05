@@ -1,6 +1,7 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
+import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
@@ -13,6 +14,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.util.Observable;
+
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
  */
@@ -20,9 +23,11 @@ public class PlayerView extends HandView {
 
     HBox header;
     Label usernameLabel;
+    Player player;
 
     public PlayerView(Player player) {
         super(player);
+        this.player = player;
 
         header = new HBox();
         header.setSpacing(20);
@@ -64,5 +69,11 @@ public class PlayerView extends HandView {
         header.getChildren().setAll(avatar, usernameLabel);
     }
 
+    @Override
+    public void update(Observable observable, Object o) {
+        super.update(observable, o);
 
+        if(o == Notifications.USERNAME_CHANGED)
+            usernameLabel.setText(player.getName());
+    }
 }

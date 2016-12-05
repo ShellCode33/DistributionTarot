@@ -51,24 +51,9 @@ public class Hand extends Observable{
         return lastCardTransfered;
     }
 
-    public static void transferCard(Hand source, Hand destination, Card card) throws InvalidObjectException {
-
-        if(!source.cards.contains(card))
-            throw new InvalidObjectException("Source hand doesn't contains this card !");
-
-        destination.cards.add(card);
-        destination.lastCardTransfered = card;
-        source.cards.remove(card);
-
-        source.setChanged();
-        destination.setChanged();
-
-        destination.notifyObservers(Notifications.CARD_TRANSFERED);
-    }
-
     public void transferCardTo(Hand hand, Card card) throws InvalidObjectException {
         if(!cards.contains(card))
-            throw new InvalidObjectException("Source hand doesn't contains this card !");
+            throw new InvalidObjectException("Source hand doesn't contain this card !");
 
         hand.cards.add(card);
         lastCardTransfered = card;
