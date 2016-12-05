@@ -198,7 +198,7 @@ public class BoardView extends Group {
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
 
-            handView.addCard(cardView);
+            handView.addCardView(cardView);
             deckView.removeImageViewOnTop();
 
             Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);

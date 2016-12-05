@@ -92,7 +92,7 @@ public abstract class HandView extends Group implements Observer {
         return pt;
     }
 
-    public void addCard(CardView cardView) {
+    public void addCardView(CardView cardView) {
         getChildren().add(cardView);
         cardViews.add(cardView);
     }
@@ -111,20 +111,18 @@ public abstract class HandView extends Group implements Observer {
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
 
-            handView.addCard(cardView);
+            Bounds boundsInParent = cardView.getBoundsInParent();
+            Bounds bounds = handView.parentToLocal(localToParent(boundsInParent));
+
+            handView.addCardView(cardView);
             cardViews.remove(cardView);
 
-            Bounds boundsPlayer = handView.localToParent(handView.getBoundsInLocal());
-            Bounds boundsCard = localToParent(cardView.localToParent(cardView.getBoundsInLocal()));
-            double x_translate = boundsPlayer.getMinX() - boundsCard.getMinX();
-            double y_translate = boundsPlayer.getMinY() - boundsCard.getMinY();
-
-            tt.setFromY(-y_translate);
+            tt.setFromX(bounds.getMinX());
+            tt.setFromY(bounds.getMinY());
+            tt.setToX(0);
             tt.setToY(0);
             tt.setToZ(-0.2);
             pt.getChildren().add(tt);
-
-            cardView.setTranslateX(-x_translate - boundsPlayer.getWidth() / 2);
         });
 
 
