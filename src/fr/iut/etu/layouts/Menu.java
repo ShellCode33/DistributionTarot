@@ -24,8 +24,14 @@ public class Menu extends StackPane {
 
     private Controller controller;
 
+    private Settings settings = null;
+    private UserInput userInput = null;
+
     public Menu(Controller controller) throws IOException {
         this.controller = controller;
+
+        settings = new Settings(controller);
+        userInput = new UserInput(controller);
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -72,22 +78,13 @@ public class Menu extends StackPane {
     private void buttonClicked(ActionEvent e) {
         Button button = (Button)e.getSource();
 
-        try {
-            if (button == playButton) {
-                controller.setLayout(new UserInput(controller));
+        if (button == playButton)
+            controller.setLayout(userInput);
 
-            }
+        else if (button == settingsButton)
+            controller.setLayout(settings);
 
-            else if (button == settingsButton)
-                controller.setLayout(new Settings(controller));
-
-            else if (button == exitButton) {
-                System.exit(0);
-            }
-        }
-
-        catch(IOException e1) {
-            e1.printStackTrace();
-        }
+        else if (button == exitButton)
+            System.exit(0);
     }
 }

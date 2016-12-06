@@ -84,7 +84,7 @@ public class Controller extends Application {
 
         menu = new Menu(this);
 
-        Scene scene = new Scene(menu, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(menu, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.DISABLED); //Anti aliasing bug with some versions of jdk
         scene.setFill(Color.BLACK);
 
         camera = new PerspectiveCamera(false);
@@ -126,8 +126,6 @@ public class Controller extends Application {
         catch(MediaException e) {
             System.out.println("Your OS doesn't support music player : might be a javafx issue");
         }
-
-        CardView.backCard = new Image("file:./res/cards/back0.jpg");
 
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
@@ -306,10 +304,6 @@ public class Controller extends Application {
 
     public Menu getMenu() {
         return menu;
-    }
-
-    public void setBackCardImage(Image image) {
-        CardView.backCard = image;
     }
 
     public void setBoardImage(Image image) {

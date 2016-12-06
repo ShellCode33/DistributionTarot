@@ -1,6 +1,7 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
+import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Vector2D;
 import javafx.animation.*;
@@ -23,8 +24,6 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     public static double CARD_WIDTH = 120;
     public static double CARD_HEIGHT = 212;
 
-    public static Image backCard = null;
-
     private final Card card;
     private Animation flipAnimation;
     private boolean selected = false;
@@ -40,10 +39,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         this.card = card;
         this.card.addObserver(this);
 
-        if(backCard == null)
-            backCard = new Image("file:./res/cards/back0.jpg");
-
-        ImageView back = new ImageView(backCard);
+        ImageView back = new ImageView(Settings.getBackCardImage());
         back.setSmooth(true);
         back.setFitHeight(CARD_HEIGHT);
         back.setFitWidth(CARD_WIDTH);

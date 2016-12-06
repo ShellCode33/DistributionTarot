@@ -3,6 +3,7 @@ package fr.iut.etu.view;
 import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
+import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
@@ -44,14 +45,13 @@ public class BoardView extends Group {
     private AnimationTimer particleLoop;
     private ArrayList<CardView> cardViewsWithParticles = new ArrayList<>();
     ImageView background;
-    private static Image backgroundCustom = null;
 
     public BoardView(Board board) {
         super();
 
         this.board = board;
 
-        background = new ImageView(backgroundCustom == null ? new Image("file:res/backgrounds/background_board0.jpg") : backgroundCustom);
+        background = new ImageView(Settings.getBackgroundImage());
 
         background.setFitWidth(Controller.SCREEN_WIDTH);
         background.setFitHeight(Controller.SCREEN_HEIGHT);
@@ -401,13 +401,10 @@ public class BoardView extends Group {
     }
 
     public void setBackgroundCustom(Image image) {
-        backgroundCustom = image;
-
         getChildren().remove(background);
         background = new ImageView(image);
         background.setFitWidth(Controller.SCREEN_WIDTH);
         background.setFitHeight(Controller.SCREEN_HEIGHT);
         getChildren().add(background);
-
     }
 }

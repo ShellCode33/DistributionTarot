@@ -11,9 +11,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -23,10 +21,11 @@ import java.io.IOException;
 /**
  * Created by shellcode on 11/19/16.
  */
-class Settings extends StackPane {
+public class Settings extends StackPane {
 
-    private ImageView selectedBackground = null;
-    private ImageView selectedBackCard = null;
+    private static ImageView selectedBackground = new ImageView(new Image("file:./res/cards/back0.jpg"));;
+    private static ImageView selectedBackCard = new ImageView(new Image("file:./res/cards/back0.jpg"));
+    private static int volume = 50;
 
     public Settings(Controller controller) throws IOException {
 
@@ -38,6 +37,8 @@ class Settings extends StackPane {
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(50);
         vbox.getStyleClass().add("background-settings");
+
+        vbox.setBackground(new Background(new BackgroundImage(selectedBackground.getImage(), null, null, null, null)));
 
         Label label1 = new Label("Board background :");
         Label label2 = new Label("Back cards :");
@@ -143,23 +144,29 @@ class Settings extends StackPane {
         });
 
 
-        Button saveButton = new Button("Save");
-        Button cancelButton = new Button("Cancel");
-        buttonsContainer.getChildren().addAll(saveButton, cancelButton);
-        saveButton.getStyleClass().add("button");
-        cancelButton.getStyleClass().add("button");
-        saveButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
-        cancelButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        Button okButton = new Button("OK");
+        buttonsContainer.getChildren().add(okButton);
+        okButton.getStyleClass().add("button");
+        okButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
-        saveButton.setOnAction(actionEvent -> {
+        okButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());
-            controller.setBackCardImage(selectedBackCard.getImage());
             controller.setLayout(controller.getMenu());
         });
 
-        cancelButton.setOnAction(actionEvent -> controller.setLayout(controller.getMenu()));
-
         vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, buttonsContainer);
-        getChildren().addAll(vbox);
+        getChildren().add(vbox);
+    }
+
+    public static Image getBackgroundImage() {
+        return selectedBackground.getImage();
+    }
+
+    public static Image getBackCardImage() {
+        return selectedBackCard.getImage();
+    }
+
+    public static int getVolume() {
+        return volume;
     }
 }

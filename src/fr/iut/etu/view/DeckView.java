@@ -1,5 +1,6 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Deck;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
@@ -126,7 +127,7 @@ public class DeckView extends Group implements Observer {
             return;
 
         if (o == Notifications.CARD_ADDED) {
-            ImageView imageView = new ImageView(CardView.backCard);
+            ImageView imageView = new ImageView(Settings.getBackCardImage());
             imageView.setSmooth(true);
             imageView.setFitHeight(CardView.CARD_HEIGHT);
             imageView.setFitWidth(CardView.CARD_WIDTH);
