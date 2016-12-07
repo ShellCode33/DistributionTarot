@@ -28,14 +28,19 @@ public class DeckView extends Group implements Observer {
         deck.addObserver(this);
     }
 
+    //Animation de coupe
     public Animation getCutAnimation() {
 
         SequentialTransition st = new SequentialTransition();
 
+        //On tourne le deck à 90°
         RotateTransition rt = new RotateTransition(Duration.seconds(0.5), this);
         rt.setAxis(Rotate.Z_AXIS);
         rt.setByAngle(90);
 
+        //On va déplacer deux partitions du deck à l'opposé l'une de l'autre
+        //Faire passer celle du dessous au-dessus
+        //Et les re rassembler
         ParallelTransition pt = new ParallelTransition();
         ParallelTransition pt2 = new ParallelTransition();
 
@@ -44,7 +49,6 @@ public class DeckView extends Group implements Observer {
         Timeline timeline = new Timeline();
 
         for (int i = 0; i < childrenSize / 2; i++) {
-
             KeyFrame cut = new KeyFrame(Duration.seconds(0.5),
                     new KeyValue(getChildren().get(i).translateXProperty(), -CardView.CARD_WIDTH / 2 - 10));
 
@@ -107,16 +111,17 @@ public class DeckView extends Group implements Observer {
 
         return st;
     }
-
+    //Retirer l'imageView du dessus du deck
     public void removeImageViewOnTop(){
+        //On récupère uniquement les imageView
         FilteredList<Node> imageViews = getChildren().filtered(i -> i instanceof ImageView);
         if(imageViews.isEmpty())
             throw new NoSuchElementException("No ImageView to remove in deckView");
-
+        //On les trie en fonction de leurs hauteurs
         ArrayList<Node> imageViewsSorted = new ArrayList<>();
         imageViewsSorted.addAll(imageViews);
         imageViewsSorted.sort((node, t1) -> (int) (node.getBoundsInParent().getMaxZ() - t1.getBoundsInParent().getMaxZ()));
-
+        //On supprime celle tout en haut
         getChildren().remove(imageViewsSorted.get(0));
         Tooltip.install(this, new Tooltip(getChildren().size() + " cards!"));
     }
@@ -126,6 +131,7 @@ public class DeckView extends Group implements Observer {
         if (o == null)
             return;
 
+        //Si on a jouté une carte dans  le model, alors on rajoute une imageView sur le dessus du deck
         if (o == Notifications.CARD_ADDED) {
             ImageView imageView = new ImageView(Settings.getBackCardImage());
             imageView.setSmooth(true);

@@ -32,25 +32,23 @@ public class BoardView extends Group {
     private final ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
     private DogView dogView;
-    private Animation bringDeckOnBoardAnimation;
+
     private Button doneButton;
     private Label hint;
     private Board board;
+
     private Canvas particlesCanvas;
-    private AnimationTimer particleLoop;
     private ArrayList<CardView> cardViewsWithParticles = new ArrayList<>();
-    ImageView background;
+    private ImageView background;
+
+    //L'animation de l'arrivée du deck ne sera pas générée à la volée donc on peut la stocker
+    private Animation bringDeckOnBoardAnimation;
 
     public BoardView(Board board) {
         super();
 
         this.board = board;
 
-        background = new ImageView(Settings.getBackgroundImage());
-
-        background.setFitWidth(Controller.SCREEN_WIDTH);
-        background.setFitHeight(Controller.SCREEN_HEIGHT);
-        getChildren().add(background);
 
         deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
@@ -63,15 +61,64 @@ public class BoardView extends Group {
             getChildren().add(playerView);
         }
 
+        //Positionnement des vues des joueurs et du chien
         placeHandViews();
+
+        initBackground();
+        initParticleHandling();
 
         initDoneButton();
         initHintLabel();
-        initParticleHandling();
 
         createBringDeckOnBoardAnimation();
     }
+    //Initialisation du background
+    private void initBackground() {
+        background = new ImageView(Settings.getBackgroundImage());
+        background.setFitWidth(Controller.SCREEN_WIDTH);
+        background.setFitHeight(Controller.SCREEN_HEIGHT);
+        getChildren().add(background);
+    }
+    //Initialisation de la gestion des particles
+    private void initParticleHandling() {
+        particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        particlesCanvas.setTranslateZ(-1);
+        getChildren().add(particlesCanvas);
 
+        ParticleView.createTexture();
+
+        //Timer permettant la mise à jour des particules
+        AnimationTimer particleLoop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                //synchronized pour éviter les accès concurrents à la list de CardViews
+                synchronized (this) {
+                    for (CardView cardView : cardViewsWithParticles) {
+                        //On supprime toutes les particles "mortes"
+                        cardView.getParticles().removeIf(ParticleView::isDead);
+                        CardView.getAllParticles().removeIf(ParticleView::isDead);
+                        //Tant que la CardView est en mouvement, on lui ajoute des particules
+                        if (cardView.isMoving()) {
+                            for (int i = 0; i < 5; i++)
+                                cardView.addParticle();
+                        }
+                    }
+                }
+
+                particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+
+                // move sprite: apply acceleration, calculate velocity and location
+                //On dessine toutes les particules
+                //On diminue la durée de vie des  particules
+                CardView.getAllParticles().stream().parallel().forEach(ParticleView::move);
+                CardView.getAllParticles().stream().forEach(particle -> particle.draw(particlesCanvas.getGraphicsContext2D()));
+                CardView.getAllParticles().stream().parallel().forEach(ParticleView::decreaseLifeSpan);
+            }
+        };
+
+        particleLoop.start();
+    }
+    //Initialisation du label d'incation pour l'utilisateur
     private void initHintLabel() {
         hint = new Label();
         hint.setFont(new Font(30* Controller.SCALE_COEFF));
@@ -82,7 +129,7 @@ public class BoardView extends Group {
         hint.setTranslateY((Controller.SCREEN_HEIGHT - hint.getHeight()) / 2);
         hint.setTranslateZ(-1);
     }
-
+    //Initialisation du boutton de fin de constituion de l'écart
     private void initDoneButton() {
         doneButton = new Button();
         doneButton.setText("Done");
@@ -97,47 +144,7 @@ public class BoardView extends Group {
         doneButton.setTranslateY((Controller.SCREEN_HEIGHT - Controller.SCREEN_HEIGHT / 12) / 2);
         doneButton.setTranslateZ(-1);
     }
-
-    private void initParticleHandling() {
-        particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
-        particlesCanvas.setTranslateZ(-1);
-        getChildren().add(particlesCanvas);
-
-        ParticleView.createTexture();
-
-        particleLoop = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-
-                synchronized(this) {
-                    for (CardView cardView : cardViewsWithParticles) {
-
-                        cardView.getParticles().removeIf(p -> p.isDead());
-                        CardView.getAllParticles().removeIf(p -> p.isDead());
-
-                        if (cardView.isMoving()) {
-                            for (int i = 0; i < 5; i++)
-                                cardView.addParticle();
-                        }
-                    }
-                }
-
-                particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
-
-                // move sprite: apply acceleration, calculate velocity and location
-                CardView.getAllParticles().stream().parallel().forEach(ParticleView::move);
-
-                // draw all particles
-                CardView.getAllParticles().stream().forEach(particle -> particle.draw(particlesCanvas.getGraphicsContext2D()));
-
-                // life span of particle
-                CardView.getAllParticles().stream().parallel().forEach(ParticleView::decreaseLifeSpan);
-            }
-        };
-
-        particleLoop.start();
-    }
-
+    //Placement des playerViews et de la dogView (attention, cela ne vaut que pour 4 joueurs)
     private void placeHandViews(){
 
         dogView.getTransforms().addAll(
@@ -201,7 +208,7 @@ public class BoardView extends Group {
         );
 
     }
-
+    //Création de l'animation d'arrivée du deck
     private void createBringDeckOnBoardAnimation() {
         RotateTransition rotate = new RotateTransition(Duration.seconds(2), deckView);
         rotate.setAxis(Rotate.Z_AXIS);
@@ -220,47 +227,40 @@ public class BoardView extends Group {
         bringDeckOnBoardAnimation = st;
     }
 
-    public DeckView getDeckView() {
-        return deckView;
-    }
-
-    public DogView getDogView() {
-        return dogView;
-    }
-
-    public PlayerView getPlayerView(int i) {
-        return playerViews.get(i);
-    }
-
-    public Animation getBringDeckOnBoardAnimation() {
-        return bringDeckOnBoardAnimation;
-    }
-
+    //Animation de distribution d'une carte du deck vers une PlayerView ou DogView
     public Animation getDealACardAnimation(HandView handView) {
-
+        //Il faut qu'une carte ait été distribué dans le model
         if(handView.getCardViewsWaitingToBeDealt().isEmpty())
             throw new UnsupportedOperationException("No card was dealt in the model");
 
         CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
 
+        //Translation jusqu'à la handview
         TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);
+        //Rotation pour être dans le même sens que la handView
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.5), cardView);
+        //Ajustement de la hauteur à laquelle doit se trouver la cardView
         TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.3), cardView);
 
+        //Cette animation "vide" sert uniquement à avoir un evenement onStart
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
-
+            //Ajout des particules
             addParticlesToCard(cardView);
             cardView.setMoving(true);
 
+            //Ajout de la cardView dans la handView et réduction de la deckView
             handView.addCardView(cardView);
             deckView.removeImageViewOnTop();
 
+            //On récupère l'angle de rotation de la handView
+            //ainsi que les bounds de la deckView dans référentiel de la handView
             Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
             Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
-
+            //On détermine la position d'arrivée de la cardView
             Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
 
+            //On peut maintenant définir les différentes animations
             cardView.setRotationAxis(Rotate.Z_AXIS);
             cardView.setRotate(270 - handViewRotate.getAngle());
 
@@ -282,20 +282,22 @@ public class BoardView extends Group {
             translateTransition2.setCycleCount(1);
         });
 
-        translateTransition2.setOnFinished(actionEvent -> {
-            cardView.setMoving(false);
-            removeParticlesOfCard(cardView);
-        });
-
+        //Séquençage des animations
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(translateTransition1, rotateTransition);
 
         SequentialTransition sequentialTransition = new SequentialTransition();
         sequentialTransition.getChildren().addAll(firstAnimation, parallelTransition, translateTransition2);
 
+        //A la fin de l'animation on enlève les particules sur la carte
+        sequentialTransition.setOnFinished(actionEvent -> {
+            cardView.setMoving(false);
+            removeParticlesOfCard(cardView);
+        });
+
         return sequentialTransition;
     }
-
+    //Etalement des playerView et dogView
     public Animation getDispatchAllViewsAnimation(){
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().add(dogView.getDispatchAnimation());
@@ -305,93 +307,48 @@ public class BoardView extends Group {
 
         return parallelTransition;
     }
-
+    //Ajout et suppression de particules à une cardView
     public synchronized void addParticlesToCard(CardView cardView) {
         cardViewsWithParticles.add(cardView);
     }
-
     public synchronized void removeParticlesOfCard(CardView cardView) {
         cardViewsWithParticles.remove(cardView);
     }
 
-    public void handleGap() { //Gestion de l'écart
+    //Constitution de l'écart
+    public void handleGap() {
+        //On affiche l'indication
         getChildren().add(hint);
 
+        //Il faut d'abord définir les cartes que l'on peut jeter
         ArrayList<CardView> trumps = new ArrayList<>();
-        ArrayList<CardView> allowed_cards = new ArrayList<>();
+        ArrayList<CardView> allowedCards = new ArrayList<>();
 
-        for (CardView cardView : getPlayerView(0).getCardViews())
-            if(cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) //On exclut les bouts
-                trumps.add(cardView);
-            else if(cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) //On exclut les rois et l'excuse
-                allowed_cards.add(cardView);
-
-        int nb_allowed_trumps = 0;
-
-        if(allowed_cards.size() < 6) {
-            nb_allowed_trumps = 6 - allowed_cards.size(); //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
-            allowed_cards.addAll(trumps);
-        }
+        int nbAllowedTrumps = defineCardsWichCanBeExcluded(trumps, allowedCards);
 
         ArrayList<CardView> gap = new ArrayList<>(6);
 
-        doneButton.setOnAction(actionEvent2 -> {
-            System.out.println("6 cards will be removed");
 
-            getChildren().remove(doneButton);
-
-            ParallelTransition pt = new ParallelTransition();
-
-            for(CardView cardView : gap) {
-                SequentialTransition st = new SequentialTransition();
-
-                if(cardView.getCard() instanceof Trump) {
-                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
-                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
-                    st.getChildren().add(tt);
-                }
-
-                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
-                ft.setDelay(Duration.seconds(1));
-                ft.setToValue(0);
-                st.getChildren().add(ft);
-                pt.getChildren().add(st);
-            }
-
-            pt.setOnFinished(workerStateEvent -> {
-                gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
-                getPlayerView(0).getSortAnimation().play();
-            });
-
-            pt.play();
-        });
-
-        final int[] nb_trump_played = {0};
-
-        int finalNb_allowed_trumps = nb_allowed_trumps;
-        for (CardView cardView : allowed_cards) {
+        final int[] nbTrumpPlayed = {0};
+        //Pour toutes les cartes autorisées il faut définir onMouseClicked
+        for (CardView cardView : allowedCards) {
             cardView.setOnMouseClicked(mouseEvent -> {
-
+                //Si la carte était déjà sélectionnée
                 if (cardView.isSelected()) {
-
                     if(gap.size() == 6) {
                         getChildren().remove(doneButton);
                         getChildren().add(hint);
                     }
-
-                    if(cardView.getCard() instanceof Trump)
-                        nb_trump_played[0]--;
+                    if(cardView.getCard() instanceof Trump) {
+                        nbTrumpPlayed[0]--;
+                    }
 
                     gap.remove(cardView);
                     cardView.setSelect(!cardView.isSelected());
-
-
                 }
-
                 else if(gap.size() < 6) {
-
                     //On s'assure que le nombre d'atouts dans l'écart est respecté
-                    if(!(cardView.getCard() instanceof Trump) || nb_trump_played[0] < finalNb_allowed_trumps) {
+                    if(!(cardView.getCard() instanceof Trump) || nbTrumpPlayed[0] < nbAllowedTrumps) {
                         gap.add(cardView);
                         cardView.setSelect(!cardView.isSelected());
 
@@ -403,13 +360,83 @@ public class BoardView extends Group {
                 }
             });
         }
+        //Une fois que l'on a cliqué sur le bouton
+        doneButton.setOnAction(actionEvent2 -> {
+            getChildren().remove(doneButton);
+
+            SequentialTransition st = new SequentialTransition();
+            for(CardView cardView : gap) {
+
+                //Si c'est un atout on le déplace à la vue de tous
+                if(cardView.getCard() instanceof Trump) {
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
+                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
+                    st.getChildren().add(tt);
+                }
+
+                //Les cardView disparaisse petit à petit
+                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
+                ft.setDelay(Duration.seconds(1));
+                ft.setToValue(0);
+                st.getChildren().add(ft);
+            }
+
+            //On supprme les cartes du model
+            //On retri les cartes
+            st.setOnFinished(event -> {
+                gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
+                getPlayerView(0).getSortAnimation().play();
+            });
+
+            st.play();
+
+        });
+    }
+    //Définition des cartes qu'il est possible de jeter
+    private int defineCardsWichCanBeExcluded(ArrayList<CardView> trumps, ArrayList<CardView> allowedCards) {
+        //On exclut les bouts
+        //et on exclut les rois et l'excuse
+        for (CardView cardView : getPlayerView(0).getCardViews()) {
+            if (cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) {
+                trumps.add(cardView);
+            }
+            else if (cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) {
+                allowedCards.add(cardView);
+            }
+        }
+
+        int nbAllowedTrumps = 0;
+
+        //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
+        if(allowedCards.size() < 6) {
+            nbAllowedTrumps = 6 - allowedCards.size();
+            allowedCards.addAll(trumps);
+        }
+        return nbAllowedTrumps;
     }
 
-    public void setBackgroundCustom(Image image) {
+    public void setBackground(Image image) {
         getChildren().remove(background);
         background = new ImageView(image);
         background.setFitWidth(Controller.SCREEN_WIDTH);
         background.setFitHeight(Controller.SCREEN_HEIGHT);
         getChildren().add(background);
+    }
+
+
+    public DeckView getDeckView() {
+        return deckView;
+    }
+
+    public DogView getDogView() {
+        return dogView;
+    }
+
+    public PlayerView getPlayerView(int i) {
+        return playerViews.get(i);
+    }
+
+    public Animation getBringDeckOnBoardAnimation() {
+        return bringDeckOnBoardAnimation;
     }
 }
