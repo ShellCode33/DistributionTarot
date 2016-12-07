@@ -39,6 +39,8 @@ public class BoardView extends Group {
 
     private Canvas particlesCanvas;
     private ArrayList<CardView> cardViewsWithParticles = new ArrayList<>();
+    private AnimationTimer particlesLoop;
+
     private ImageView background;
 
     //L'animation de l'arrivée du deck ne sera pas générée à la volée donc on peut la stocker
@@ -65,7 +67,7 @@ public class BoardView extends Group {
         placeHandViews();
 
         initBackground();
-        initParticleHandling();
+        initParticlesHandling();
 
         initDoneButton();
         initHintLabel();
@@ -80,7 +82,7 @@ public class BoardView extends Group {
         getChildren().add(background);
     }
     //Initialisation de la gestion des particles
-    private void initParticleHandling() {
+    private void initParticlesHandling() {
         particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         particlesCanvas.setTranslateZ(-1);
         getChildren().add(particlesCanvas);
@@ -88,15 +90,14 @@ public class BoardView extends Group {
         ParticleView.createTexture();
 
         //Timer permettant la mise à jour des particules
-        AnimationTimer particleLoop = new AnimationTimer() {
+        particlesLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 //synchronized pour éviter les accès concurrents à la list de CardViews
                 synchronized (this) {
                     for (CardView cardView : cardViewsWithParticles) {
-                        //On supprime toutes les particles "mortes"
-                        cardView.getParticles().removeIf(ParticleView::isDead);
-                        CardView.getAllParticles().removeIf(ParticleView::isDead);
+                        cardView.removeDeadParticles();
+
                         //Tant que la CardView est en mouvement, on lui ajoute des particules
                         if (cardView.isMoving()) {
                             for (int i = 0; i < 5; i++)
@@ -116,7 +117,7 @@ public class BoardView extends Group {
             }
         };
 
-        particleLoop.start();
+        particlesLoop.start();
     }
     //Initialisation du label d'incation pour l'utilisateur
     private void initHintLabel() {
@@ -385,10 +386,10 @@ public class BoardView extends Group {
             //On retri les cartes
             st.setOnFinished(event -> {
                 gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
-                getPlayerView(0).getSortAnimation().play();
+                Controller.playAnimation(getPlayerView(0).getSortAnimation());
             });
 
-            st.play();
+            Controller.playAnimation(st);
 
         });
     }
@@ -438,5 +439,22 @@ public class BoardView extends Group {
 
     public Animation getBringDeckOnBoardAnimation() {
         return bringDeckOnBoardAnimation;
+    }
+
+    public void reset() {
+        playerViews.clear();
+        deckView = null;
+        dogView = null;
+
+        doneButton = null;
+        hint = null;
+        board = null;
+
+        particlesLoop.stop();
+        cardViewsWithParticles.clear();
+        cardViewsWithParticles = null;
+        particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        particlesCanvas = null;
+        background = null;
     }
 }
