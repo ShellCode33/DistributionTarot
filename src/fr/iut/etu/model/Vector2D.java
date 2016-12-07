@@ -32,7 +32,7 @@ public class Vector2D {
         this.y += y;
     }
 
-    public void multiply(double n) {
+    public void mul(double n) {
         x *= n;
         y *= n;
     }
@@ -52,7 +52,7 @@ public class Vector2D {
     public void limit(double max) {
         if (magnitude() > max) {
             normalize();
-            multiply(max);
+            mul(max);
         }
     }
 

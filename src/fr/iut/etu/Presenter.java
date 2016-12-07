@@ -240,14 +240,10 @@ public class Presenter extends Application {
         boardView.getChildren().remove(boardView.getChildren().size()-1); //Remove UserChoice GUI
         board.getPlayer(0).setChoice(userChoice);
 
-        if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE)
+        if(userChoice == Player.UserChoice.KEEP || userChoice == Player.UserChoice.TAKE) {
             keepOrTake();
+        }
         else {
-            boardView.getDogView().getCardViews().forEach(cardView -> {
-                cardView.setMoving(true);
-                boardView.addParticlesToCard(cardView);
-            });
-
             boardView.getDogView().createExplodeAnimation().play();
         }
     }

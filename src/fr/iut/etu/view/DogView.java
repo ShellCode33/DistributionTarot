@@ -3,6 +3,7 @@ package fr.iut.etu.view;
 import fr.iut.etu.Presenter;
 import fr.iut.etu.model.Hand;
 import javafx.animation.*;
+import javafx.scene.Parent;
 import javafx.util.Duration;
 
 /**
@@ -100,9 +101,23 @@ public class DogView extends HandView {
             pt.getChildren().add(st);
         }
 
+        Parent parent = getParent();
+
+        cardViews.forEach(cardView -> {
+            if(parent instanceof BoardView)
+                ((BoardView) parent).addParticlesToCard(cardView);
+
+            cardView.setMoving(true);
+        });
+
         pt.setOnFinished(event -> {
             hand.getCards().clear();
-            cardViews.parallelStream().forEach(cardView -> cardView.setMoving(false));
+            cardViews.parallelStream().forEach(cardView -> {
+                if(parent instanceof BoardView)
+                    ((BoardView) parent).addParticlesToCard(cardView);
+
+                cardView.setMoving(false);
+            });
         });
 
         return pt;
