@@ -335,7 +335,7 @@ public class Controller extends Application {
     }
 
     public void setBoardImage(Image image) {
-        boardView.setBackgroundCustom(image);
+        boardView.setBackground(image);
     }
 
     public MediaPlayer getMusicPlayer() {
