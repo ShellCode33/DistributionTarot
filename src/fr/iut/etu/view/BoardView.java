@@ -442,6 +442,7 @@ public class BoardView extends Group {
     }
 
     public void reset() {
+        getChildren().clear();
         playerViews.clear();
         deckView = null;
         dogView = null;

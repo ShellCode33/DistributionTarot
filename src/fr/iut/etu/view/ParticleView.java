@@ -25,7 +25,7 @@ public class ParticleView extends Region {
     static int lifeSpanMax = 30;
     int lifeSpan = lifeSpanMax;
 
-    static Image particleImage[];
+    static Image particleImages[] = null;
 
     public ParticleView(Vector2D location, Vector2D velocity) {
         this.location = location;
@@ -38,7 +38,7 @@ public class ParticleView extends Region {
 
         System.out.println("Creating particles textures");
 
-        particleImage = new Image[lifeSpanMax];
+        particleImages = new Image[lifeSpanMax];
 
         Circle circle = new Circle(width / 2);
         circle.setFill(Color.YELLOW);
@@ -51,13 +51,13 @@ public class ParticleView extends Region {
             parameters.setFill(Color.TRANSPARENT);
             WritableImage wi = new WritableImage(width, height);
             circle.snapshot(parameters, wi);
-            particleImage[i] = wi;
+            particleImages[i] = wi;
         }
     }
 
     public void draw(GraphicsContext gc) {
         if(lifeSpan > 0)
-            gc.drawImage(particleImage[lifeSpan-1], location.x - width / 2, location.y - height / 2);
+            gc.drawImage(particleImages[lifeSpan-1], location.x - width / 2, location.y - height / 2);
     }
 
     public void move() {

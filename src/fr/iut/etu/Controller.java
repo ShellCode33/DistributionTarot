@@ -334,8 +334,8 @@ public class Controller extends Application {
         return menu;
     }
 
-    public void setBoardImage(Image image) {
-        boardView.setBackground(image);
+    public void setBoardImage(Image image) { //à cause du bug javafx le paramètre ne sert plus à rien, mais nous gardons espoir qu'un jour une mise à jour de javafx corrige le problème
+        resetModelAndView(); //Il y a un bug javafx qui fait que si on change d'image à la volée (comme c'était fait intialement) des bugs graphiques (notamment sur les particules) apparaissent, nous sommes donc obligés de tout reset lorsque l'on change de background
     }
 
     public MediaPlayer getMusicPlayer() {
