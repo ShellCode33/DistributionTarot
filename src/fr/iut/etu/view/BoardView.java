@@ -2,20 +2,17 @@ package fr.iut.etu.view;
 
 import com.sun.javafx.tk.FontLoader;
 import com.sun.javafx.tk.Toolkit;
-import fr.iut.etu.Controller;
+import fr.iut.etu.Presenter;
 import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Board;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,9 +22,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
-import javax.smartcardio.Card;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Sylvain DUPOUY on 25/10/16.
@@ -53,9 +48,14 @@ public class BoardView extends Group {
 
         background = new ImageView(Settings.getBackgroundImage());
 
-        background.setFitWidth(Controller.SCREEN_WIDTH);
-        background.setFitHeight(Controller.SCREEN_HEIGHT);
+        background.setFitWidth(Presenter.SCREEN_WIDTH);
+        background.setFitHeight(Presenter.SCREEN_HEIGHT);
         getChildren().add(background);
+
+        deckView = new DeckView(board.getDeck());
+        getChildren().add(deckView);
+        dogView = new DogView(board.getDog());
+        getChildren().add(dogView);
 
         for (int i = 0; i < board.getPlayerCount(); i++) {
             PlayerView playerView = new PlayerView(board.getPlayer(i));
@@ -63,39 +63,43 @@ public class BoardView extends Group {
             getChildren().add(playerView);
         }
 
-        doneButton = new Button();
-        doneButton.setText("Done");
-        doneButton.setFont(new Font(30*Controller.SCALE_COEFF));
-        doneButton.getStylesheets().add("file:res/style.css");
-        doneButton.getStyleClass().add("button");
-        doneButton.setMaxWidth(Controller.SCREEN_WIDTH / 5);
-        doneButton.setPrefWidth(Controller.SCREEN_WIDTH / 5);
-        doneButton.setMaxHeight(Controller.SCREEN_HEIGHT / 12);
-        doneButton.setPrefHeight(Controller.SCREEN_HEIGHT / 12);
-        doneButton.setTranslateX((Controller.SCREEN_WIDTH - Controller.SCREEN_WIDTH / 5) / 2);
-        doneButton.setTranslateY((Controller.SCREEN_HEIGHT - Controller.SCREEN_HEIGHT / 12) / 2);
-        doneButton.setTranslateZ(-1);
+        placeHandViews();
 
+        initDoneButton();
+        initHintLabel();
+        initParticleHandling();
+
+        createBringDeckOnBoardAnimation();
+    }
+
+    private void initHintLabel() {
         hint = new Label();
-        hint.setFont(new Font(30*Controller.SCALE_COEFF));
+        hint.setFont(new Font(30* Presenter.SCALE_COEFF));
         hint.setTextFill(Color.WHITE);
         hint.setText("Please choose 6 cards to exclude");
         FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
-        hint.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
-        hint.setTranslateY((Controller.SCREEN_HEIGHT - hint.getHeight()) / 2);
+        hint.setTranslateX((Presenter.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
+        hint.setTranslateY((Presenter.SCREEN_HEIGHT - hint.getHeight()) / 2);
         hint.setTranslateZ(-1);
+    }
 
+    private void initDoneButton() {
+        doneButton = new Button();
+        doneButton.setText("Done");
+        doneButton.setFont(new Font(30* Presenter.SCALE_COEFF));
+        doneButton.getStylesheets().add("file:res/style.css");
+        doneButton.getStyleClass().add("button");
+        doneButton.setMaxWidth(Presenter.SCREEN_WIDTH / 5);
+        doneButton.setPrefWidth(Presenter.SCREEN_WIDTH / 5);
+        doneButton.setMaxHeight(Presenter.SCREEN_HEIGHT / 12);
+        doneButton.setPrefHeight(Presenter.SCREEN_HEIGHT / 12);
+        doneButton.setTranslateX((Presenter.SCREEN_WIDTH - Presenter.SCREEN_WIDTH / 5) / 2);
+        doneButton.setTranslateY((Presenter.SCREEN_HEIGHT - Presenter.SCREEN_HEIGHT / 12) / 2);
+        doneButton.setTranslateZ(-1);
+    }
 
-        deckView = new DeckView(board.getDeck());
-        getChildren().add(deckView);
-        dogView = new DogView(board.getDog());
-        getChildren().add(dogView);
-
-        placeHandViews();
-        createBringDeckOnBoardAnimation();
-
-        //-------------------------Particles stuff-------------------------
-        particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+    private void initParticleHandling() {
+        particlesCanvas = new Canvas(Presenter.SCREEN_WIDTH, Presenter.SCREEN_HEIGHT);
         particlesCanvas.setTranslateZ(-1);
         getChildren().add(particlesCanvas);
 
@@ -108,16 +112,8 @@ public class BoardView extends Group {
                 synchronized(this) {
                     for (CardView cardView : cardViewsWithParticles) {
 
-                        // remove all particles that aren't visible anymore
-                        Iterator<ParticleView> iter = cardView.getParticles().iterator();
-                        while (iter.hasNext()) {
-                            ParticleView particle = iter.next();
-
-                            if (particle.isDead()) {
-                                CardView.getAllParticles().remove(particle);
-                                iter.remove();
-                            }
-                        }
+                        cardView.getParticles().removeIf(p -> p.isDead());
+                        CardView.getAllParticles().removeIf(p -> p.isDead());
 
                         if (cardView.isMoving()) {
                             for (int i = 0; i < 5; i++)
@@ -126,7 +122,7 @@ public class BoardView extends Group {
                     }
                 }
 
-                particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+                particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Presenter.SCREEN_WIDTH, Presenter.SCREEN_HEIGHT);
 
                 // move sprite: apply acceleration, calculate velocity and location
                 CardView.getAllParticles().stream().parallel().forEach(ParticleView::move);
@@ -140,15 +136,14 @@ public class BoardView extends Group {
         };
 
         particleLoop.start();
-        //-----------------------------------------------------------------
     }
 
     private void placeHandViews(){
 
         dogView.getTransforms().addAll(
                 new Translate(
-                        4*Controller.SCREEN_WIDTH/6,
-                        (Controller.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2,
+                        4* Presenter.SCREEN_WIDTH/6,
+                        (Presenter.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2,
                         -1),
                 new Rotate(
                         0,
@@ -161,8 +156,8 @@ public class BoardView extends Group {
         playerView = getPlayerView(0);
         playerView.getTransforms().addAll(
                 new Translate(
-                        (Controller.SCREEN_WIDTH - CardView.CARD_WIDTH)/2,
-                    Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
+                        (Presenter.SCREEN_WIDTH - CardView.CARD_WIDTH)/2,
+                    Presenter.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
                     -1),
                 new Rotate(
                         0,
@@ -173,7 +168,7 @@ public class BoardView extends Group {
         playerView = getPlayerView(1);
         playerView.getTransforms().addAll(
                 new Translate(CardView.CARD_HEIGHT,
-                        Controller.SCREEN_HEIGHT/2,
+                        Presenter.SCREEN_HEIGHT/2,
                         -1),
                 new Rotate(
                         90,
@@ -184,7 +179,7 @@ public class BoardView extends Group {
         playerView = getPlayerView(2);
         playerView.getTransforms().addAll(
                 new Translate(
-                        Controller.SCREEN_WIDTH/2,
+                        Presenter.SCREEN_WIDTH/2,
                         CardView.CARD_HEIGHT/2,
                         -1),
                 new Rotate(
@@ -196,8 +191,8 @@ public class BoardView extends Group {
         playerView = getPlayerView(3);
         playerView.getTransforms().addAll(
                 new Translate(
-                        Controller.SCREEN_WIDTH - CardView.CARD_HEIGHT,
-                        Controller.SCREEN_HEIGHT/2,
+                        Presenter.SCREEN_WIDTH - CardView.CARD_HEIGHT,
+                        Presenter.SCREEN_HEIGHT/2,
                         -1),
                 new Rotate(
                         270,
@@ -215,8 +210,8 @@ public class BoardView extends Group {
         rotate.setCycleCount(1);
 
         TranslateTransition translate = new TranslateTransition(Duration.seconds(2), deckView);
-        translate.setToX((Controller.SCREEN_WIDTH-CardView.CARD_WIDTH)/2);
-        translate.setToY((Controller.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2);
+        translate.setToX((Presenter.SCREEN_WIDTH-CardView.CARD_WIDTH)/2);
+        translate.setToY((Presenter.SCREEN_HEIGHT-CardView.CARD_HEIGHT)/2);
         translate.setCycleCount(1);
 
         ParallelTransition st = new ParallelTransition();
@@ -301,6 +296,16 @@ public class BoardView extends Group {
         return sequentialTransition;
     }
 
+    public Animation getDispatchAllViewsAnimation(){
+        ParallelTransition parallelTransition = new ParallelTransition();
+        parallelTransition.getChildren().add(dogView.getDispatchAnimation());
+
+        for(PlayerView pv : playerViews)
+            parallelTransition.getChildren().add(pv.getDispatchAnimation());
+
+        return parallelTransition;
+    }
+
     public synchronized void addParticlesToCard(CardView cardView) {
         cardViewsWithParticles.add(cardView);
     }
@@ -342,7 +347,7 @@ public class BoardView extends Group {
 
                 if(cardView.getCard() instanceof Trump) {
                     TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
-                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
+                    tt.setByY(-Presenter.SCREEN_HEIGHT / 2);
                     st.getChildren().add(tt);
                 }
 
@@ -403,8 +408,8 @@ public class BoardView extends Group {
     public void setBackgroundCustom(Image image) {
         getChildren().remove(background);
         background = new ImageView(image);
-        background.setFitWidth(Controller.SCREEN_WIDTH);
-        background.setFitHeight(Controller.SCREEN_HEIGHT);
+        background.setFitWidth(Presenter.SCREEN_WIDTH);
+        background.setFitHeight(Presenter.SCREEN_HEIGHT);
         getChildren().add(background);
     }
 }

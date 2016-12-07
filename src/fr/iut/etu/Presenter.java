@@ -10,8 +10,6 @@ import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
@@ -26,10 +24,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.Random;
 
-public class Controller extends Application {
+public class Presenter extends Application {
 
     public static final int PLAYER_COUNT = 4;
     public static double SCREEN_WIDTH;
@@ -57,6 +56,69 @@ public class Controller extends Application {
 
         stage = primaryStage;
 
+        keepScreenRatio();
+        Scene menuScene = initSceneWithMenu();
+        initStage(primaryStage, menuScene);
+        initMusic();
+        initModelAndView();
+    }
+
+    private void initModelAndView() {
+        board = new Board(PLAYER_COUNT);
+        boardView = new BoardView(board);
+        boardView.setDepthTest(DepthTest.ENABLE);
+    }
+
+    private void initStage(Stage primaryStage, Scene menuScene) {
+        primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
+        primaryStage.setScene(menuScene);
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //Disable Esc to exit fullscreen
+        primaryStage.setFullScreen(true);
+        primaryStage.setY(Y_SCREEN_START);
+        primaryStage.setHeight(SCREEN_HEIGHT);
+        primaryStage.setWidth(SCREEN_WIDTH);
+        primaryStage.show();
+    }
+
+    private Scene initSceneWithMenu() throws IOException {
+        Scene scene;
+        menu = new Menu(this);
+        scene = new Scene(menu, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.DISABLED); //Anti aliasing bug with some versions of jdk
+        scene.setFill(Color.BLACK);
+
+        camera = new PerspectiveCamera(false);
+        camera.setRotationAxis(Rotate.X_AXIS);
+        scene.setCamera(camera);
+
+        scene.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
+                case ESCAPE:
+                    camera.setRotate(0);
+                    setLayout(menu);
+                    board = null;
+                    boardView = null;
+                    initModelAndView();
+                    break;
+            }
+        });
+        return scene;
+    }
+
+    private void initMusic() {
+        Media music = new Media(new File("res/audio/main.wav").toURI().toString());
+
+        try {
+            musicPlayer = new MediaPlayer(music);
+            musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            musicPlayer.setVolume(0.5);
+            musicPlayer.play();
+        }
+        catch(MediaException e) {
+            System.out.println("Your OS doesn't support music player : might be a javafx issue");
+        }
+    }
+
+    private void keepScreenRatio() {
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
@@ -71,69 +133,28 @@ public class Controller extends Application {
             System.out.println("New screen height : " + SCREEN_HEIGHT);
             System.out.println("New Y start : " + Y_SCREEN_START);
         }
-
         else {
             System.out.println("Your display is 16/9 : " + SCREEN_WIDTH + "x" + SCREEN_HEIGHT);
         }
-
         SCALE_COEFF = SCREEN_WIDTH / 1920;
+
         CardView.CARD_WIDTH *= SCALE_COEFF;
         CardView.CARD_HEIGHT *= SCALE_COEFF;
         CardView.CARD_THICK *= SCALE_COEFF;
-        primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-
-        menu = new Menu(this);
-
-        Scene scene = new Scene(menu, SCREEN_WIDTH, SCREEN_HEIGHT, true, SceneAntialiasing.DISABLED); //Anti aliasing bug with some versions of jdk
-        scene.setFill(Color.BLACK);
-
-        camera = new PerspectiveCamera(false);
-        camera.setRotationAxis(Rotate.X_AXIS);
-        scene.setCamera(camera);
-
-        scene.setOnKeyReleased(event -> {
-            switch (event.getCode()) {
-                case ESCAPE:
-                    camera.setRotate(0);
-                    setLayout(menu);
-                    board = null;
-                    boardView = null;
-                    board = new Board(PLAYER_COUNT);
-                    boardView = new BoardView(board);
-                    boardView.setDepthTest(DepthTest.ENABLE);
-                    break;
-            }
-        });
-
-        primaryStage.setScene(scene);
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //Disable Esc to exit fullscreen
-        primaryStage.setFullScreen(true);
-        primaryStage.setY(Y_SCREEN_START);
-        primaryStage.setHeight(SCREEN_HEIGHT);
-        primaryStage.setWidth(SCREEN_WIDTH);
-        primaryStage.show();
-
-
-        Media music = new Media(new File("res/audio/main.wav").toURI().toString());
-
-        try {
-            musicPlayer = new MediaPlayer(music);
-            musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            musicPlayer.setVolume(0.5);
-            musicPlayer.play();
-        }
-
-        catch(MediaException e) {
-            System.out.println("Your OS doesn't support music player : might be a javafx issue");
-        }
-
-        board = new Board(PLAYER_COUNT);
-        boardView = new BoardView(board);
-        boardView.setDepthTest(DepthTest.ENABLE);
     }
 
     public void startGame(String myPlayerUsername, Image selectedImage) {
 
+        initPlayersModelAndView(myPlayerUsername, selectedImage);
+
+        camera.setRotate(15);
+        setLayout(boardView);
+        boardView.setTranslateY(Y_SCREEN_START);
+
+        deal();
+    }
+
+    private void initPlayersModelAndView(String myPlayerUsername, Image selectedImage) {
         board.getPlayer(0).setName(myPlayerUsername);
 
         for(int i = 1; i < PLAYER_COUNT; i++)
@@ -142,61 +163,46 @@ public class Controller extends Application {
         Image defaultImage = new Image("file:res/avatars/avatar_default.png");
         boardView.getPlayerView(0).setAvatar(selectedImage != null ? selectedImage : defaultImage);
 
-        for(int i = 1; i < board.getPlayerCount(); i++)
+        for(int i = 1; i < PLAYER_COUNT; i++)
             boardView.getPlayerView(i).setAvatar(defaultImage);
-
-        camera.setRotate(15);
-        setLayout(boardView);
-
-        boardView.setTranslateY(Y_SCREEN_START);
-
-        deal();
     }
 
     private void deal(){
 
         SequentialTransition sequentialTransition = new SequentialTransition();
-        sequentialTransition.getChildren().addAll(dealStart(), dealSequence());
-
+        sequentialTransition.getChildren().addAll(deckArrival(), dealSequence());
 
         sequentialTransition.setOnFinished(event -> {
 
-            ParallelTransition parallelTransition = new ParallelTransition();
+            Animation dispatchAllViewsAnimation = boardView.getDispatchAllViewsAnimation();
 
-            Animation dogDispatchAnim = boardView.getDogView().getDispatchAnimation();
-            parallelTransition.getChildren().add(dogDispatchAnim);
-            boardView.getDogView().getCardViews().forEach(cardView -> {
-                boardView.addParticlesToCard(cardView);
-                cardView.setMoving(true);
+            dispatchAllViewsAnimation.setOnFinished(event1 -> {
+                SequentialTransition st = new SequentialTransition();
+
+                st.getChildren().add(boardView.getPlayerView(0).getFlipAllCardViewsAnimation());
+                st.getChildren().add(boardView.getPlayerView(0).getSortAnimation());
+
+                st.setOnFinished(event2 -> askUserChoice());
+
+                st.play();
             });
 
-            dogDispatchAnim.setOnFinished(actionEvent -> {
-                boardView.getDogView().getCardViews().forEach(cardView -> boardView.removeParticlesOfCard(cardView));
-                boardView.getDogView().getCardViews().forEach(cardView -> cardView.setMoving(false));
-            });
-
-            for(int i = 0; i < PLAYER_COUNT; i++)
-                parallelTransition.getChildren().add(boardView.getPlayerView(i).getDispatchAnimation());
-
-            parallelTransition.setOnFinished(event1 -> {
-                Animation flipAllCardViewsAnimation = boardView.getPlayerView(0).getFlipAllCardViewsAnimation();
-
-                flipAllCardViewsAnimation.setOnFinished(event2 -> {
-                    boardView.getDogView().getCardViews().forEach(cardView -> boardView.removeParticlesOfCard(cardView));
-                    boardView.getPlayerView(0).getCardViews().forEach(cardView -> cardView.setMoving(false));
-                    askUserChoice();
-                });
-
-                boardView.getPlayerView(0).getCardViews().forEach(cardView -> {
-                    cardView.setMoving(true);
-                    boardView.addParticlesToCard(cardView);
-                });
-                flipAllCardViewsAnimation.play();
-            });
-            parallelTransition.play();
+            dispatchAllViewsAnimation.play();
         });
 
         sequentialTransition.play();
+    }
+
+    private SequentialTransition deckArrival() {
+        SequentialTransition sequentialTransition = new SequentialTransition();
+
+        board.getDeck().refill();
+        board.getDeck().shuffle(); //En théorie il ne faudrait pas mélanger, mais les cartes étant générées dans l'ordre en début de partie, il faut les mélanger en plus de couper
+        board.getDeck().cut(new Random().nextInt(60)+9);
+
+        sequentialTransition.getChildren().add(boardView.getBringDeckOnBoardAnimation());
+        sequentialTransition.getChildren().add(boardView.getDeckView().getCutAnimation());
+        return sequentialTransition;
     }
 
     private ParallelTransition dealSequence() {
@@ -228,18 +234,6 @@ public class Controller extends Application {
             }
         }
         return dealSequence;
-    }
-
-    private SequentialTransition dealStart() {
-        SequentialTransition sequentialTransition = new SequentialTransition();
-
-        board.getDeck().refill();
-        board.getDeck().shuffle(); //En théorie il ne faudrait pas mélanger, mais les cartes étant générées dans l'ordre en début de partie, il faut les mélanger en plus de couper
-        board.getDeck().cut(new Random().nextInt(60)+9);
-
-        sequentialTransition.getChildren().add(boardView.getBringDeckOnBoardAnimation());
-        sequentialTransition.getChildren().add(boardView.getDeckView().getCutAnimation());
-        return sequentialTransition;
     }
 
     public void processUserChoice(Player.UserChoice userChoice) {

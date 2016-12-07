@@ -1,11 +1,8 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Controller;
-import fr.iut.etu.model.Card;
+import fr.iut.etu.Presenter;
 import fr.iut.etu.model.Hand;
 import javafx.animation.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 /**
@@ -31,6 +28,20 @@ public class DogView extends HandView {
 
             pt.getChildren().add(translateTransition);
         }
+
+        cardViews.forEach(cardView -> {
+            if(getParent() instanceof BoardView)
+                ((BoardView) getParent()).addParticlesToCard(cardView);
+
+            cardView.setMoving(true);
+        });
+
+        pt.setOnFinished(actionEvent -> {
+            if(getParent() instanceof BoardView)
+                cardViews.forEach(cardView -> ((BoardView) getParent()).removeParticlesOfCard(cardView));
+
+            cardViews.forEach(cardView -> cardView.setMoving(false));
+        });
 
         return pt;
     }
@@ -77,13 +88,13 @@ public class DogView extends HandView {
             st.getChildren().add(ttz);
 
             TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
-            tt.setToX(Controller.SCREEN_WIDTH / 2 - 4 * Controller.SCREEN_WIDTH / 6 - CardView.CARD_WIDTH / 2);
+            tt.setToX(Presenter.SCREEN_WIDTH / 2 - 4 * Presenter.SCREEN_WIDTH / 6 - CardView.CARD_WIDTH / 2);
             st.getChildren().add(tt);
 
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(1), cardView);
             tt2.setDelay(Duration.seconds(1.5));
-            tt2.setToX(2000 * Controller.SCALE_COEFF * Math.cos(i * Math.PI / cardViews.size() * 2));
-            tt2.setToY(2000 * Controller.SCALE_COEFF * Math.sin(i * Math.PI / cardViews.size() * 2));
+            tt2.setToX(2000 * Presenter.SCALE_COEFF * Math.cos(i * Math.PI / cardViews.size() * 2));
+            tt2.setToY(2000 * Presenter.SCALE_COEFF * Math.sin(i * Math.PI / cardViews.size() * 2));
             st.getChildren().add(tt2);
 
             pt.getChildren().add(st);

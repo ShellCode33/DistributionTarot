@@ -1,18 +1,12 @@
 package fr.iut.etu.layouts;
 
-import fr.iut.etu.Controller;
+import fr.iut.etu.Presenter;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -22,16 +16,16 @@ public class Menu extends StackPane {
 
     private Button playButton, settingsButton, exitButton;
 
-    private Controller controller;
+    private Presenter presenter;
 
     private Settings settings = null;
     private UserInput userInput = null;
 
-    public Menu(Controller controller) throws IOException {
-        this.controller = controller;
+    public Menu(Presenter presenter) throws IOException {
+        this.presenter = presenter;
 
-        settings = new Settings(controller);
-        userInput = new UserInput(controller);
+        settings = new Settings(presenter);
+        userInput = new UserInput(presenter);
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -41,13 +35,13 @@ public class Menu extends StackPane {
         settingsButton = new Button("SETTINGS");
         exitButton = new Button("EXIT");
 
-        playButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
-        settingsButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
-        exitButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        playButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        settingsButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        exitButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
 
 
-        double buttonWidth = Controller.SCREEN_WIDTH / 5;
-        double buttonHeight = Controller.SCREEN_HEIGHT / 12;
+        double buttonWidth = Presenter.SCREEN_WIDTH / 5;
+        double buttonHeight = Presenter.SCREEN_HEIGHT / 12;
 
         playButton.setPrefWidth(buttonWidth);
         playButton.setPrefHeight(buttonHeight);
@@ -79,10 +73,10 @@ public class Menu extends StackPane {
         Button button = (Button)e.getSource();
 
         if (button == playButton)
-            controller.setLayout(userInput);
+            presenter.setLayout(userInput);
 
         else if (button == settingsButton)
-            controller.setLayout(settings);
+            presenter.setLayout(settings);
 
         else if (button == exitButton)
             System.exit(0);
