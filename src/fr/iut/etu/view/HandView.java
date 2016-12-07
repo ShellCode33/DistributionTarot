@@ -1,6 +1,6 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
@@ -23,7 +23,7 @@ public abstract class HandView extends Group implements Observer {
     private final LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
     private final LinkedList<CardView> cardViewsWaitingToBeTransfered = new LinkedList<>();
 
-    static final int GAP_BETWEEN_CARDS = (int) (40 * Presenter.SCALE_COEFF);
+    static final int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
     HandView(Hand hand) {
         super();
@@ -36,23 +36,20 @@ public abstract class HandView extends Group implements Observer {
     public Animation getFlipAllCardViewsAnimation() {
         ParallelTransition pt = new ParallelTransition();
 
-        for (CardView cardView : cardViews) {
-            pt.getChildren().add(cardView.getFlipAnimation());
-        }
-
         Parent parent = getParent();
 
-        cardViews.forEach(cardView -> {
-            if(parent instanceof BoardView) {
-                ((BoardView) parent).addParticlesToCard(cardView);
-            }
-            cardView.setMoving(true);
-        });
+        for (CardView cardView : cardViews) {
+            pt.getChildren().add(cardView.getFlipAnimation());
 
+            if(parent instanceof BoardView)
+                ((BoardView) parent).addParticlesToCard(cardView);
+
+            cardView.setMoving(true);
+        }
 
         pt.setOnFinished(event2 -> {
             if(parent instanceof BoardView)
-                ((BoardView) parent).getDogView().getCardViews().forEach(((BoardView) parent)::removeParticlesOfCard);
+                cardViews.forEach(((BoardView) parent)::removeParticlesOfCard);
 
             cardViews.forEach(cardView -> cardView.setMoving(false));
         });

@@ -1,6 +1,6 @@
 package fr.iut.etu.layouts;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -16,16 +16,16 @@ public class Menu extends StackPane {
 
     private Button playButton, settingsButton, exitButton;
 
-    private Presenter presenter;
+    private Controller controller;
 
     private Settings settings = null;
     private UserInput userInput = null;
 
-    public Menu(Presenter presenter) throws IOException {
-        this.presenter = presenter;
+    public Menu(Controller controller) throws IOException {
+        this.controller = controller;
 
-        settings = new Settings(presenter);
-        userInput = new UserInput(presenter);
+        settings = new Settings(controller);
+        userInput = new UserInput(controller);
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -35,13 +35,13 @@ public class Menu extends StackPane {
         settingsButton = new Button("SETTINGS");
         exitButton = new Button("EXIT");
 
-        playButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
-        settingsButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
-        exitButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        playButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        settingsButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        exitButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
 
-        double buttonWidth = Presenter.SCREEN_WIDTH / 5;
-        double buttonHeight = Presenter.SCREEN_HEIGHT / 12;
+        double buttonWidth = Controller.SCREEN_WIDTH / 5;
+        double buttonHeight = Controller.SCREEN_HEIGHT / 12;
 
         playButton.setPrefWidth(buttonWidth);
         playButton.setPrefHeight(buttonHeight);
@@ -73,10 +73,10 @@ public class Menu extends StackPane {
         Button button = (Button)e.getSource();
 
         if (button == playButton)
-            presenter.setLayout(userInput);
+            controller.setLayout(userInput);
 
         else if (button == settingsButton)
-            presenter.setLayout(settings);
+            controller.setLayout(settings);
 
         else if (button == exitButton)
             System.exit(0);

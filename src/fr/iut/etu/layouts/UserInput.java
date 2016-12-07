@@ -1,6 +1,6 @@
 package fr.iut.etu.layouts;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,25 +25,25 @@ class UserInput extends StackPane {
     private TextField userInput;
     private ImageView selectedImage = null;
 
-    private Presenter presenter;
+    private Controller controller;
 
-    public UserInput(Presenter presenter) throws IOException {
-        this.presenter = presenter;
+    public UserInput(Controller controller) throws IOException {
+        this.controller = controller;
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
         getStyleClass().add("background-menu");
 
         // Les éléments de la VBox auront leur taille callée en fonction de la largeur et la hauteur des boutons
-        double buttonWidth = Presenter.SCREEN_WIDTH / 5;
-        double buttonHeight = Presenter.SCREEN_HEIGHT / 12;
+        double buttonWidth = Controller.SCREEN_WIDTH / 5;
+        double buttonHeight = Controller.SCREEN_HEIGHT / 12;
 
         VBox vbox = new VBox();
         vbox.getStyleClass().add("vboxStyle");
         vbox.setAlignment(Pos.TOP_CENTER);
         vbox.setSpacing(50);
         vbox.setPadding(new Insets(20));
-        vbox.setScaleX(Presenter.SCALE_COEFF);
-        vbox.setScaleY(Presenter.SCALE_COEFF);
+        vbox.setScaleX(Controller.SCALE_COEFF);
+        vbox.setScaleY(Controller.SCALE_COEFF);
 
         //Par défaut la vbox prend toute la place du StackPack, en définissant ses dimensions à 0 elle va s'adapter à la taille de ses fils
         vbox.setPrefWidth(0);
@@ -57,20 +57,20 @@ class UserInput extends StackPane {
         gridLayout.setHgap(10);
 
         userInput = new TextField();
-        userInput.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        userInput.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         userInput.getStyleClass().add("textField");
 
 
         Button submitButton = new Button("Ok");
-        submitButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        submitButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         submitButton.getStyleClass().add("button");
 
         Label label1 = new Label("Pick an avatar :");
         Label label2 = new Label("Choose a username :");
         label1.getStyleClass().add("textMenu");
         label2.getStyleClass().add("textMenu");
-        label1.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
-        label2.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        label1.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        label2.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         DropShadow border = new DropShadow( 30, Color.BLACK );
 
@@ -122,6 +122,6 @@ class UserInput extends StackPane {
         if(userInput.getText().isEmpty())
             userInput.setText("User42");
 
-        presenter.startGame(userInput.getText(), selectedImage.getImage());
+        controller.prepareDeal(userInput.getText(), selectedImage.getImage());
     }
 }

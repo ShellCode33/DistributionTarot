@@ -1,6 +1,6 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Vector2D;
@@ -71,7 +71,7 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
     public void addParticle() {
 
         //Particles go to this position slowly (but never reach it because of the lifespan)
-        Point2D origin = new Point2D(Presenter.SCREEN_WIDTH / 2, Presenter.SCREEN_HEIGHT / 2);
+        Point2D origin = new Point2D(Controller.SCREEN_WIDTH / 2, Controller.SCREEN_HEIGHT / 2);
 
         // random location
         Point2D point = getParent().localToParent(localToParent(random.nextDouble() * CARD_WIDTH, random.nextDouble() * CARD_HEIGHT));

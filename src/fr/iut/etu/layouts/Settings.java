@@ -1,6 +1,6 @@
 package fr.iut.etu.layouts;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import fr.iut.etu.view.CardView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -23,7 +23,7 @@ public class Settings extends StackPane {
     private static ImageView selectedBackCard = new ImageView(new Image("file:./res/cards/back0.jpg"));
     private static int volume = 50;
 
-    public Settings(Presenter presenter) throws IOException {
+    public Settings(Controller controller) throws IOException {
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -40,8 +40,8 @@ public class Settings extends StackPane {
         Label label2 = new Label("Back cards :");
         label1.getStyleClass().add("textMenu");
         label2.getStyleClass().add("textMenu");
-        label1.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
-        label2.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        label1.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        label2.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
 
         HBox backgroundsContainer = new HBox();
@@ -76,8 +76,8 @@ public class Settings extends StackPane {
                     selectedBackground.setEffect(border);
                 }
 
-                imageView.setFitWidth(100 * Presenter.SCALE_COEFF);
-                imageView.setFitHeight(100 * Presenter.SCALE_COEFF);
+                imageView.setFitWidth(100 * Controller.SCALE_COEFF);
+                imageView.setFitHeight(100 * Controller.SCALE_COEFF);
 
                 ImageView finalImageView = imageView;
                 int finalI = i - 1;
@@ -126,28 +126,28 @@ public class Settings extends StackPane {
 
         Label labelVol = new Label("Volume : ");
         labelVol.getStyleClass().add("textMenu");
-        labelVol.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        labelVol.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         Slider slider = new Slider();
         slider.setValue(50);
         Label sliderLabel = new Label("50 %");
         sliderLabel.getStyleClass().add("textMenu");
-        sliderLabel.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        sliderLabel.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         sliderContainer.getChildren().addAll(labelVol, slider, sliderLabel);
 
         slider.valueProperty().addListener((observableValue, number, t1) -> {
             sliderLabel.setText("" + (int)slider.getValue() + " %");
-            presenter.getMusicPlayer().setVolume(slider.getValue() / 100);
+            controller.getMusicPlayer().setVolume(slider.getValue() / 100);
         });
 
 
         Button okButton = new Button("OK");
         buttonsContainer.getChildren().add(okButton);
         okButton.getStyleClass().add("button");
-        okButton.setStyle("-fx-font-size: " + 30 * Presenter.SCALE_COEFF + "px;");
+        okButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
         okButton.setOnAction(actionEvent -> {
-            presenter.setBoardImage(selectedBackground.getImage());
-            presenter.setLayout(presenter.getMenu());
+            controller.setBoardImage(selectedBackground.getImage());
+            controller.setLayout(controller.getMenu());
         });
 
         vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, buttonsContainer);

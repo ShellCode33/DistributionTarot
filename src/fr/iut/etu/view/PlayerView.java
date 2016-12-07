@@ -1,6 +1,6 @@
 package fr.iut.etu.view;
 
-import fr.iut.etu.Presenter;
+import fr.iut.etu.Controller;
 import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
@@ -36,10 +36,10 @@ public class PlayerView extends HandView {
         usernameLabel = new Label();
         usernameLabel.setText(player.getName());
         usernameLabel.setTextFill(Color.WHITE);
-        usernameLabel.setFont(new Font(30 * Presenter.SCALE_COEFF));
+        usernameLabel.setFont(new Font(30 * Controller.SCALE_COEFF));
 
         header.getChildren().add(usernameLabel);
-        header.setTranslateX(-50 * Presenter.SCALE_COEFF / 2);
+        header.setTranslateX(-50 * Controller.SCALE_COEFF / 2);
         getChildren().add(header);
 
     }
@@ -64,8 +64,8 @@ public class PlayerView extends HandView {
 
     public void setAvatar(Image img) {
         ImageView avatar = new ImageView(img);
-        avatar.setFitHeight(50 * Presenter.SCALE_COEFF);
-        avatar.setFitWidth(50 * Presenter.SCALE_COEFF);
+        avatar.setFitHeight(50 * Controller.SCALE_COEFF);
+        avatar.setFitWidth(50 * Controller.SCALE_COEFF);
         header.getChildren().setAll(avatar, usernameLabel);
     }
 
