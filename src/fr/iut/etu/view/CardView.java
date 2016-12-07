@@ -160,15 +160,16 @@ public class CardView extends Group implements Observer, Comparable<CardView> {
         return allParticles;
     }
 
-    public ArrayList<ParticleView> getParticles() {
-        return myParticles;
-    }
-
     public void setMoving(boolean value) {
         moving = value;
     }
 
     public boolean isMoving() {
         return moving;
+    }
+
+    public void removeDeadParticles() {
+        myParticles.removeIf(p -> p.isDead());
+        allParticles.removeIf(p -> p.isDead());
     }
 }

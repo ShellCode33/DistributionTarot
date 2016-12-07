@@ -29,7 +29,7 @@ import java.util.ArrayList;
  */
 public class BoardView extends Group {
 
-    private final ArrayList<PlayerView> playerViews = new ArrayList<>();
+    private ArrayList<PlayerView> playerViews = new ArrayList<>();
     private DeckView deckView;
     private DogView dogView;
     private Animation bringDeckOnBoardAnimation;
@@ -43,6 +43,8 @@ public class BoardView extends Group {
 
     public BoardView(Board board) {
         super();
+
+        System.out.println("BoardView Constructor called");
 
         this.board = board;
 
@@ -67,7 +69,7 @@ public class BoardView extends Group {
 
         initDoneButton();
         initHintLabel();
-        initParticleHandling();
+        initParticlesHandling();
 
         createBringDeckOnBoardAnimation();
     }
@@ -98,7 +100,7 @@ public class BoardView extends Group {
         doneButton.setTranslateZ(-1);
     }
 
-    private void initParticleHandling() {
+    private void initParticlesHandling() {
         particlesCanvas = new Canvas(Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         particlesCanvas.setTranslateZ(-1);
         getChildren().add(particlesCanvas);
@@ -112,8 +114,7 @@ public class BoardView extends Group {
                 synchronized(this) {
                     for (CardView cardView : cardViewsWithParticles) {
 
-                        cardView.getParticles().removeIf(p -> p.isDead());
-                        CardView.getAllParticles().removeIf(p -> p.isDead());
+                        cardView.removeDeadParticles();
 
                         if (cardView.isMoving()) {
                             for (int i = 0; i < 5; i++)
@@ -360,10 +361,10 @@ public class BoardView extends Group {
 
             pt.setOnFinished(workerStateEvent -> {
                 gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
-                getPlayerView(0).getSortAnimation().play();
+                Controller.playAnimation(getPlayerView(0).getSortAnimation());
             });
 
-            pt.play();
+            Controller.playAnimation(pt);
         });
 
         final int[] nb_trump_played = {0};
@@ -411,5 +412,21 @@ public class BoardView extends Group {
         background.setFitWidth(Controller.SCREEN_WIDTH);
         background.setFitHeight(Controller.SCREEN_HEIGHT);
         getChildren().add(background);
+    }
+
+    public void reset() {
+        getChildren().clear();
+        playerViews.clear();
+        deckView = null;
+        dogView = null;
+        hint = null;
+        board = null;
+        cardViewsWithParticles.clear();
+        cardViewsWithParticles = null;
+        particleLoop.stop();
+        particleLoop = null;
+        particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
+        particlesCanvas = null;
+        background = null;
     }
 }

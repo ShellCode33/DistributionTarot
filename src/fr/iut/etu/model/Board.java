@@ -7,10 +7,11 @@ import java.util.ArrayList;
  */
 public class Board {
 
-    private final ArrayList<Player> players = new ArrayList<>();
-    private final Hand dog = new Hand();
-    private final Deck deck = new Deck();
+    private ArrayList<Player> players = new ArrayList<>();
+    private Hand dog = new Hand();
+    private Deck deck = new Deck();
 
+    //Même si le jeu n'est qu'à 4 joueurs, le modèle a été partiellement prévu pour une potentielle évolution à plusieurs joueurs
     public Board(int playerCount){
 
         if(playerCount < 3 || playerCount > 5)
@@ -40,4 +41,10 @@ public class Board {
         return players.size();
     }
 
+    public void reset() {
+        players.clear();
+        players = null;
+        dog = null;
+        deck = null;
+    }
 }

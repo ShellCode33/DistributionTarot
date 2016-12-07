@@ -10,6 +10,7 @@ import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
@@ -26,6 +27,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
 import java.util.Random;
 
 /*
@@ -57,6 +59,8 @@ public class Controller extends Application {
     private MediaPlayer musicPlayer;
 
     private PerspectiveCamera camera;
+
+    private static ArrayList<Animation> animationsUsed = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -116,11 +120,9 @@ public class Controller extends Application {
         scene.setOnKeyReleased(event -> {
             switch (event.getCode()) {
                 case ESCAPE:
-                    camera.setRotate(0);
+                    camera.setRotate(0); //On enlève l'inclinaison de la caméra dans le menu
                     setLayout(menu);
-                    board = null;
-                    boardView = null;
-                    initModelAndView();
+                    resetModelAndView();
                     break;
             }
         });
@@ -156,6 +158,18 @@ public class Controller extends Application {
         board = new Board(PLAYER_COUNT);
         boardView = new BoardView(board);
         boardView.setDepthTest(DepthTest.ENABLE);
+    }
+
+    //Reset de la partie si le joueur fait "ECHAP"
+    private void resetModelAndView() {
+
+        //On stop toutes les animations au cas où il en resterait en cours...
+        animationsUsed.forEach(Animation::stop);
+        animationsUsed.clear();
+
+        boardView.reset();
+        board.reset();
+        initModelAndView();
     }
 
     //Lancement de la distribution !
@@ -206,10 +220,10 @@ public class Controller extends Application {
             //ensuite, on demande le pari au joueur
             st.setOnFinished(event2 -> askUserChoice());
 
-            st.play();
+            playAnimation(st);
         });
 
-        sequentialTransition.play();
+        playAnimation(sequentialTransition);
     }
     //Arrivée du deck
     private SequentialTransition deckArrival() {
@@ -279,7 +293,7 @@ public class Controller extends Application {
             keepOrTake();
         }
         else {
-            boardView.getDogView().createExplodeAnimation().play();
+            playAnimation(boardView.getDogView().createExplodeAnimation());
         }
     }
     //Si le joueur a choisi de prendre ou de garder
@@ -304,11 +318,11 @@ public class Controller extends Application {
 
         //Ensuite, on peut retrier les cartes du joueur 0 et constituer l'écart
         sequentialTransition.setOnFinished(event -> {
-            boardView.getPlayerView(0).getSortAnimation().play();
+            playAnimation(boardView.getPlayerView(0).getSortAnimation());
             boardView.handleGap();
         });
 
-        sequentialTransition.play();
+        playAnimation(sequentialTransition);
     }
 
 
@@ -328,4 +342,9 @@ public class Controller extends Application {
         return musicPlayer;
     }
 
+    //Toutes les animations sont lancées à partir de cette methode statique afin de pouvoir les arrêter proprement si le joueur fait "ECHAP" alors que des animations sont encore en cours
+    public static void playAnimation(Animation animation) {
+        animationsUsed.add(animation);
+        animation.play();
+    }
 }

@@ -69,5 +69,4 @@ public class Vector2D {
     public String toString() {
         return "Vector2D: [" + x + ";" + y + "]";
     }
-
 }

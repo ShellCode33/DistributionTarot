@@ -6,6 +6,7 @@ import fr.iut.etu.model.Player;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,6 +31,7 @@ public class PlayerView extends HandView {
         this.player = player;
 
         header = new HBox();
+        header.setAlignment(Pos.CENTER);
         header.setSpacing(20);
         header.setTranslateY(-75);
 
