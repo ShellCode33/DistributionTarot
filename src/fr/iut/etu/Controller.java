@@ -282,7 +282,6 @@ public class Controller extends Application {
             boardView.getDogView().createExplodeAnimation().play();
         }
     }
-
     //Si le joueur a choisi de prendre ou de garder
     private void keepOrTake() {
         SequentialTransition sequentialTransition = new SequentialTransition();
@@ -311,6 +310,7 @@ public class Controller extends Application {
 
         sequentialTransition.play();
     }
+
 
     public void setLayout(Parent root) {
         stage.getScene().setRoot(root);
