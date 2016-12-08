@@ -2,6 +2,7 @@ package fr.iut.etu.layouts;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.view.CardView;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -9,10 +10,13 @@ import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by shellcode on 11/19/16.
@@ -21,6 +25,7 @@ public class Settings extends StackPane {
 
     private static ImageView selectedBackground = new ImageView(new Image("file:./res/cards/back0.jpg"));;
     private static ImageView selectedBackCard = new ImageView(new Image("file:./res/cards/back0.jpg"));
+    private static Color particleColor = Color.YELLOW;
     private static int volume = 50;
 
     public Settings(Controller controller) throws IOException {
@@ -48,16 +53,19 @@ public class Settings extends StackPane {
         HBox backcardsContainer = new HBox();
         HBox sliderContainer = new HBox();
         HBox buttonsContainer = new HBox();
+        HBox colorsContainer = new HBox();
 
         backgroundsContainer.setAlignment(Pos.CENTER);
         backcardsContainer.setAlignment(Pos.CENTER);
         sliderContainer.setAlignment(Pos.CENTER);
         buttonsContainer.setAlignment(Pos.CENTER);
+        colorsContainer.setAlignment(Pos.CENTER);
 
         backgroundsContainer.setSpacing(50);
         backcardsContainer.setSpacing(50);
         sliderContainer.setSpacing(50);
         buttonsContainer.setSpacing(50);
+        colorsContainer.setSpacing(50);
 
         Image image;
         ImageView imageView;
@@ -139,6 +147,19 @@ public class Settings extends StackPane {
             controller.getMusicPlayer().setVolume(slider.getValue() / 100);
         });
 
+        Label labelColor = new Label("Choose particles color");
+        labelColor.getStyleClass().add("textMenu");
+        labelColor.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+
+        colorsContainer.getChildren().add(labelColor);
+
+        Color colors[] = new Color[] {Color.YELLOW, Color.PINK, Color.BLUE, Color.WHITE, Color.VIOLET, Color.AQUA};
+
+        for(Color color : colors) {
+            Rectangle rectangle = new Rectangle(100, 100, color);
+            rectangle.setOnMouseClicked(event -> particleColor = color);
+            colorsContainer.getChildren().add(rectangle);
+        }
 
         Button okButton = new Button("OK");
         buttonsContainer.getChildren().add(okButton);
@@ -150,7 +171,8 @@ public class Settings extends StackPane {
             controller.setLayout(controller.getMenu());
         });
 
-        vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, buttonsContainer);
+
+        vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, colorsContainer, buttonsContainer);
         getChildren().add(vbox);
     }
 
@@ -164,5 +186,9 @@ public class Settings extends StackPane {
 
     public static int getVolume() {
         return volume;
+    }
+
+    public static Color getParticleColor() {
+        return particleColor;
     }
 }

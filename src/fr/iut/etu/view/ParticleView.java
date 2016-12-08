@@ -1,5 +1,6 @@
 package fr.iut.etu.view;
 
+import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Vector2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
@@ -41,7 +42,7 @@ public class ParticleView extends Region {
         particleImages = new Image[lifeSpanMax];
 
         Circle circle = new Circle(width / 2);
-        circle.setFill(Color.YELLOW);
+        circle.setFill(Settings.getParticleColor());
 
         // create images
         for(int i = 0; i < lifeSpanMax; i++) {
