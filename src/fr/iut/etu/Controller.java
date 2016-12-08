@@ -317,12 +317,16 @@ public class Controller extends Application {
         //Ensuite, on peut trier les cartes du joueur 0 et constituer l'écart
         sequentialTransition.setOnFinished(event -> {
             playAnimation(boardView.getPlayerView(0).sortCardViews());
-            boardView.handleGap();
+            boardView.getPlayerView(0).handleGap(this);
         });
 
         playAnimation(sequentialTransition);
     }
-
+    //Une fois que l'écart est constitué
+    public void gapIsDone() {
+        boardView.getPlayerView(0).getGap().forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
+        Controller.playAnimation(boardView.getPlayerView(0).sortCardViews());
+    }
 
     public void setLayout(Parent root) {
         stage.getScene().setRoot(root);

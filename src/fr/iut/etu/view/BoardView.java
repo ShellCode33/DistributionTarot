@@ -5,8 +5,6 @@ import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Fool;
-import fr.iut.etu.model.Trump;
 import javafx.animation.*;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
@@ -244,103 +242,24 @@ public class BoardView extends Group {
         cardViewsWithParticles.remove(cardView);
     }
 
-    //Constitution de l'écart
-    public void handleGap() {
-        //On affiche l'indication
+    public void showHint(){
         getChildren().add(hint);
-
-        //Il faut d'abord définir les cartes que l'on peut jeter
-        ArrayList<CardView> allowedTrumps = new ArrayList<>();
-        ArrayList<CardView> allowedCards = new ArrayList<>();
-
-        int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
-
-        ArrayList<CardView> gap = new ArrayList<>(6);
-
-        final int[] nbTrumpPlayed = {0};
-        //Pour toutes les cartes autorisées il faut définir onMouseClicked
-        for (CardView cardView : allowedCards) {
-            cardView.setOnMouseClicked(mouseEvent -> {
-                //Si la carte était déjà sélectionnée
-                if (cardView.isSelected()) {
-                    if(gap.size() == 6) {
-                        getChildren().remove(doneButton);
-                        getChildren().add(hint);
-                    }
-                    if(cardView.getCard() instanceof Trump) {
-                        nbTrumpPlayed[0]--;
-                    }
-
-                    gap.remove(cardView);
-                    cardView.setSelect(!cardView.isSelected());
-                }
-                else if(gap.size() < 6) {
-                    //On s'assure que le nombre d'atouts dans l'écart est respecté
-                    if(!(cardView.getCard() instanceof Trump) || nbTrumpPlayed[0] < nbAllowedTrumps) {
-                        gap.add(cardView);
-                        cardView.setSelect(!cardView.isSelected());
-
-                        if (gap.size() == 6) {
-                            getChildren().remove(hint);
-                            getChildren().add(doneButton);
-                        }
-                    }
-                }
-            });
-        }
-        //Une fois que l'on a cliqué sur le bouton
-        doneButton.setOnAction(actionEvent2 -> {
-            getChildren().remove(doneButton);
-
-            ParallelTransition pt = new ParallelTransition();
-            for(CardView cardView : gap) {
-
-                //Si c'est un atout on le déplace à la vue de tous
-                if(cardView.getCard() instanceof Trump) {
-                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
-                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
-                    pt.getChildren().add(tt);
-                }
-
-                //Les cardView disparaisse petit à petit
-                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
-                ft.setDelay(Duration.seconds(1));
-                ft.setToValue(0);
-                pt.getChildren().add(ft);
-            }
-
-            //On supprime les cartes du model
-            //On retri les cartes
-            pt.setOnFinished(event -> {
-                gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
-                Controller.playAnimation(getPlayerView(0).sortCardViews());
-            });
-
-            Controller.playAnimation(pt);
-
-        });
     }
-    //Définition des cartes qu'il est possible d'écarter
-    private int defineCardsWichCanBeExcluded(ArrayList<CardView> allowedTrumps, ArrayList<CardView> allowedCards) {
-        //On récupère les atouts qui ne sont pas les bouts
-        //exclut les rois, les atouts et l'excuse des cartes qui sont autorisées à écarter
-        for (CardView cardView : getPlayerView(0).getCardViews()) {
-            if (cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) {
-                allowedTrumps.add(cardView);
-            }
-            else if (cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) {
-                allowedCards.add(cardView);
-            }
-        }
 
-        int nbAllowedTrumps = 0;
+    public void hideHint(){
+        getChildren().remove(hint);
+    }
 
-        //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
-        if(allowedCards.size() < 6) {
-            nbAllowedTrumps = 6 - allowedCards.size();
-            allowedCards.addAll(allowedTrumps);
-        }
-        return nbAllowedTrumps;
+    public void showDoneButton(){
+        getChildren().add(doneButton);
+    }
+
+    public void hideDoneButton(){
+        getChildren().remove(doneButton);
+    }
+
+    public Button getDoneButton() {
+        return doneButton;
     }
 
     public void setBackground(Image image) {

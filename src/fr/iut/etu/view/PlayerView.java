@@ -1,9 +1,12 @@
 package fr.iut.etu.view;
 
 import fr.iut.etu.Controller;
+import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
+import fr.iut.etu.model.Trump;
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
@@ -16,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
 /**
@@ -23,9 +27,10 @@ import java.util.Observable;
  */
 public class PlayerView extends HandView {
 
-    final HBox header;
-    final Label usernameLabel;
-    final Player player;
+    private final HBox header;
+    private final Label usernameLabel;
+    private final Player player;
+    private final ArrayList<CardView> gap = new ArrayList<>(6);
 
     public PlayerView(Player player) {
         super(player);
@@ -116,11 +121,114 @@ public class PlayerView extends HandView {
         header.getChildren().setAll(avatar, usernameLabel);
     }
 
+    //Constitution de l'écart
+    public void handleGap(Controller controller) {
+
+        BoardView parent = (BoardView) getParent();
+        //On affiche l'indication
+        parent.showHint();
+
+        //Il faut d'abord définir les cartes que l'on peut jeter
+        ArrayList<CardView> allowedTrumps = new ArrayList<>();
+        ArrayList<CardView> allowedCards = new ArrayList<>();
+
+        int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
+
+        final int[] nbTrumpPlayed = {0};
+        //Pour toutes les cartes autorisées il faut définir onMouseClicked
+        for (CardView cardView : allowedCards) {
+            cardView.setOnMouseClicked(mouseEvent -> {
+                //Si la carte était déjà sélectionnée
+                if (cardView.isSelected()) {
+                    if(gap.size() == 6) {
+                        parent.hideDoneButton();
+                        parent.showHint();
+                    }
+                    if(cardView.getCard() instanceof Trump) {
+                        nbTrumpPlayed[0]--;
+                    }
+
+                    gap.remove(cardView);
+                    cardView.setSelect(!cardView.isSelected());
+                }
+                else if(gap.size() < 6) {
+                    //On s'assure que le nombre d'atouts dans l'écart est respecté
+                    if(!(cardView.getCard() instanceof Trump) || nbTrumpPlayed[0] < nbAllowedTrumps) {
+                        gap.add(cardView);
+                        cardView.setSelect(!cardView.isSelected());
+
+                        if (gap.size() == 6) {
+                            parent.showDoneButton();
+                            parent.hideHint();
+                        }
+                    }
+                }
+            });
+        }
+        //Une fois que l'on a cliqué sur le bouton
+        parent.getDoneButton().setOnAction(actionEvent2 -> {
+            parent.hideDoneButton();
+
+            ParallelTransition pt = new ParallelTransition();
+            for (CardView cardView : gap) {
+
+                //Si c'est un atout on le déplace à la vue de tous
+                if (cardView.getCard() instanceof Trump) {
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
+                    tt.setByY(-Controller.SCREEN_HEIGHT / 2);
+                    pt.getChildren().add(tt);
+                }
+
+                //Les cardView disparaisse petit à petit
+                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
+                ft.setDelay(Duration.seconds(1));
+                ft.setToValue(0);
+                pt.getChildren().add(ft);
+            }
+
+            //On supprime les cartes du model
+            //On retri les cartes
+            pt.setOnFinished(event -> {
+                controller.gapIsDone();
+            });
+
+            Controller.playAnimation(pt);
+
+        });
+    }
+    //Définition des cartes qu'il est possible d'écarter
+    private int defineCardsWichCanBeExcluded(ArrayList<CardView> allowedTrumps, ArrayList<CardView> allowedCards) {
+        //On récupère les atouts qui ne sont pas les bouts
+        //exclut les rois, les atouts et l'excuse des cartes qui sont autorisées à écarter
+        for (CardView cardView : cardViews) {
+            if (cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) {
+                allowedTrumps.add(cardView);
+            }
+            else if (cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) {
+                allowedCards.add(cardView);
+            }
+        }
+
+        int nbAllowedTrumps = 0;
+
+        //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
+        if(allowedCards.size() < 6) {
+            nbAllowedTrumps = 6 - allowedCards.size();
+            allowedCards.addAll(allowedTrumps);
+        }
+        return nbAllowedTrumps;
+    }
+
+
     @Override
     public void update(Observable observable, Object o) {
         super.update(observable, o);
 
         if(o == Notifications.USERNAME_CHANGED)
             usernameLabel.setText(player.getName());
+    }
+
+    public ArrayList<CardView> getGap() {
+        return gap;
     }
 }
