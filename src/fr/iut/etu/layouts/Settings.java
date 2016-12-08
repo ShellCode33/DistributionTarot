@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.w3c.dom.css.Rect;
 
 import java.io.IOException;
 
@@ -23,6 +24,7 @@ public class Settings extends StackPane {
     private static ImageView selectedBackground = new ImageView(new Image("file:./res/cards/back0.jpg"));
     private static ImageView selectedBackCard = new ImageView(new Image("file:./res/cards/back0.jpg"));
     private static Color particleColor = Color.YELLOW;
+    private Rectangle lastRectangleClicked = null;
 
     public Settings(Controller controller) {
 
@@ -61,7 +63,7 @@ public class Settings extends StackPane {
         backcardsContainer.setSpacing(50);
         sliderContainer.setSpacing(50);
         buttonsContainer.setSpacing(50);
-        colorsContainer.setSpacing(50);
+        colorsContainer.setSpacing(20);
 
         Image image;
         ImageView imageView;
@@ -128,7 +130,7 @@ public class Settings extends StackPane {
 
         } while(!image.isError()); //On charge toutes les images du répertoire de 0 à n
 
-        Label labelVol = new Label("Volume : ");
+        Label labelVol = new Label("Music Volume : ");
         labelVol.getStyleClass().add("textMenu");
         labelVol.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
         Slider slider = new Slider();
@@ -143,17 +145,26 @@ public class Settings extends StackPane {
             controller.getMusicPlayer().setVolume(slider.getValue() / 100);
         });
 
-        Label labelColor = new Label("Choose particles color");
+        Label labelColor = new Label("Choose particles color :");
         labelColor.getStyleClass().add("textMenu");
         labelColor.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
 
-        colorsContainer.getChildren().add(labelColor);
-
-        Color colors[] = new Color[] {Color.YELLOW, Color.PINK, Color.BLUE, Color.WHITE, Color.VIOLET, Color.AQUA};
+        Color colors[] = new Color[] {Color.YELLOW, Color.HOTPINK, Color.DARKBLUE, Color.DARKRED, Color.WHITE, Color.BLACK, Color.DARKGREEN, Color.CYAN};
 
         for(Color color : colors) {
-            Rectangle rectangle = new Rectangle(100, 100, color);
-            rectangle.setOnMouseClicked(event -> particleColor = color);
+            Rectangle rectangle = new Rectangle(50, 50, color);
+
+            if(color == particleColor) {
+                rectangle.setEffect(border);
+                lastRectangleClicked = rectangle;
+            }
+
+            rectangle.setOnMouseClicked(event -> {
+                lastRectangleClicked.setEffect(null);
+                rectangle.setEffect(border);
+                particleColor = color;
+                lastRectangleClicked = rectangle;
+            });
             colorsContainer.getChildren().add(rectangle);
         }
 
@@ -161,6 +172,8 @@ public class Settings extends StackPane {
         buttonsContainer.getChildren().add(okButton);
         okButton.getStyleClass().add("button");
         okButton.setStyle("-fx-font-size: " + 30 * Controller.SCALE_COEFF + "px;");
+        okButton.setPrefWidth(Controller.SCREEN_WIDTH / 10);
+        okButton.setMaxWidth(Controller.SCREEN_WIDTH / 10);
 
         okButton.setOnAction(actionEvent -> {
             controller.setBoardImage(selectedBackground.getImage());
@@ -168,7 +181,7 @@ public class Settings extends StackPane {
         });
 
 
-        vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, colorsContainer, buttonsContainer);
+        vbox.getChildren().addAll(label1, backgroundsContainer, label2, backcardsContainer, sliderContainer, labelColor, colorsContainer, buttonsContainer);
         getChildren().add(vbox);
     }
 

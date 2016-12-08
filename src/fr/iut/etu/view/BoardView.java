@@ -31,6 +31,7 @@ public class BoardView extends Group {
 
     private Button doneButton;
     private Label hint;
+    private Label petitSecLabel;
     private Board board;
 
     private Canvas particlesCanvas;
@@ -66,7 +67,7 @@ public class BoardView extends Group {
         initParticlesHandling();
 
         initDoneButton();
-        initHintLabel();
+        initLabels();
 
         createBringDeckOnBoardAnimation();
     }
@@ -116,15 +117,21 @@ public class BoardView extends Group {
         particlesLoop.start();
     }
     //Initialisation du label d'incation pour l'utilisateur
-    private void initHintLabel() {
-        hint = new Label();
+    private void initLabels() {
+        hint = new Label("Please choose 6 cards to exclude");
         hint.setFont(new Font(30* Controller.SCALE_COEFF));
         hint.setTextFill(Color.WHITE);
-        hint.setText("Please choose 6 cards to exclude");
         FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
         hint.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
         hint.setTranslateY((Controller.SCREEN_HEIGHT - hint.getHeight()) / 2);
         hint.setTranslateZ(-1);
+
+        petitSecLabel = new Label("Petit Sec ! Dealing again...");
+        petitSecLabel.setTextFill(Color.WHITE);
+        petitSecLabel.setFont(new Font(30 * Controller.SCALE_COEFF));
+        petitSecLabel.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(petitSecLabel.getText(), petitSecLabel.getFont())) / 2);
+        petitSecLabel.setTranslateY(3 * Controller.SCREEN_HEIGHT / 4 - petitSecLabel.getHeight() / 2);
+        petitSecLabel.setTranslateZ(-1);
     }
     //Initialisation du boutton de fin de constituion de l'écart
     private void initDoneButton() {
@@ -290,6 +297,51 @@ public class BoardView extends Group {
         return bringDeckViewOnCenterAnimation;
     }
 
+    public Animation createPetitSecAnimation() {
+        SequentialTransition st = new SequentialTransition();
+        ParallelTransition pt = new ParallelTransition();
+
+        //onStart
+        Transition onStart = new Transition() {@Override protected void interpolate(double frac) {}};
+        onStart.setDelay(Duration.millis(1));
+
+        onStart.setOnFinished(actionEvent -> {
+            for(PlayerView playerView : playerViews) {
+                for (CardView cardView : playerView.getCardViews()) {
+                    cardView.setMoving(true);
+                    addParticlesToCard(cardView);
+                }
+            }
+        });
+
+        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(3), dogView);
+        translateTransition.setToX(-Controller.SCREEN_WIDTH-CardView.CARD_WIDTH);
+        translateTransition.setToY(-Controller.SCREEN_HEIGHT-CardView.CARD_HEIGHT);
+        pt.getChildren().add(translateTransition);
+
+        for(PlayerView playerView : playerViews) {
+            for(CardView cardView : playerView.getCardViews()) {
+                translateTransition = new TranslateTransition(Duration.seconds(3), cardView);
+                translateTransition.setToX(-Controller.SCREEN_WIDTH - CardView.CARD_WIDTH);
+                translateTransition.setToY(-Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT);
+                pt.getChildren().add(translateTransition);
+            }
+        }
+
+        pt.setOnFinished(actionEvent -> {
+            for(PlayerView playerView : playerViews) {
+                for (CardView cardView : playerView.getCardViews()) {
+                    cardView.setMoving(false);
+                    removeParticlesOfCard(cardView);
+                }
+            }
+        });
+
+        st.getChildren().addAll(onStart, pt);
+        st.setDelay(Duration.seconds(3));
+        return st;
+    }
+
     public void reset() {
         getChildren().clear();
         playerViews.clear();
@@ -306,5 +358,12 @@ public class BoardView extends Group {
         particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         particlesCanvas = null;
         background = null;
+    }
+
+    public void sayPetitSec(boolean value) {
+        if(value)
+            getChildren().add(petitSecLabel);
+        else
+            getChildren().remove(petitSecLabel);
     }
 }

@@ -121,7 +121,8 @@ class UserInput extends StackPane {
     {
         if(userInput.getText().isEmpty())
             userInput.setText("User42");
-
-        controller.prepareDeal(userInput.getText(), selectedImage.getImage());
+;
+        controller.initPlayersModelAndView(userInput.getText(), selectedImage.getImage());
+        controller.prepareDeal();
     }
 }

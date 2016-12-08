@@ -47,4 +47,23 @@ public class Board {
         dog = null;
         deck = null;
     }
+
+    //Retourne true si il y a petit sec
+    public boolean checkPetitSec() {
+
+        int sum = 0;
+
+        for(Player player : players) {
+            for (Card card : player.getCards())
+                if (card instanceof Trump || card instanceof Fool)
+                    sum += card.getValue();
+
+            if(sum == 1) //petit sec
+                return true;
+
+            sum = 0;
+        }
+
+        return false;
+    }
 }

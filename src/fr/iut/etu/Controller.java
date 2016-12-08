@@ -71,8 +71,8 @@ public class Controller extends Application {
         stage = primaryStage;
 
         keepScreenRatio();
-        Scene menuScene = initSceneWithMenu();
-        initStage(primaryStage, menuScene);
+        Scene scene = initSceneWithMenu();
+        initStage(primaryStage, scene);
         initMusic();
         initModelAndView();
     }
@@ -128,9 +128,9 @@ public class Controller extends Application {
         return scene;
     }
     //Initialisation de la fenêtre
-    private void initStage(Stage primaryStage, Scene menuScene) {
+    private void initStage(Stage primaryStage, Scene scene) {
         primaryStage.setTitle("Sylvain DUPOUY - Clément FLEURY S3D");
-        primaryStage.setScene(menuScene);
+        primaryStage.setScene(scene);
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //Disable Esc to exit fullscreen
         primaryStage.setFullScreen(true);
         primaryStage.setY(Y_SCREEN_START);
@@ -171,9 +171,7 @@ public class Controller extends Application {
     }
 
     //Lancement de la distribution !
-    public void prepareDeal(String myPlayerUsername, Image selectedImage) {
-
-        initPlayersModelAndView(myPlayerUsername, selectedImage);
+    public void prepareDeal() {
 
         //Changement de layout, ajustement de la caméra et du layout
         camera.setRotate(15);
@@ -184,7 +182,7 @@ public class Controller extends Application {
         deal();
     }
     //Initialisation des joueurs dans le model et dans la vue
-    private void initPlayersModelAndView(String myPlayerUsername, Image selectedImage) {
+    public void initPlayersModelAndView(String myPlayerUsername, Image selectedImage) {
         board.getPlayer(0).setName(myPlayerUsername);
 
         for(int i = 1; i < PLAYER_COUNT; i++)
@@ -215,8 +213,23 @@ public class Controller extends Application {
                     boardView.getPlayerView(0).flipAllCardViews(),
                     boardView.getPlayerView(0).sortCardViews());
 
-            //ensuite, on demande le contrat au joueur
-            st.setOnFinished(event2 -> askUserChoice());
+            //ensuite on vérifie s'il n'y a pas de petit sec, sinon on demande le contrat au joueur
+            st.setOnFinished(event2 -> {
+                if(!board.checkPetitSec()) { //TODO : changer le test du boolean (enlever !)
+
+                    boardView.sayPetitSec(true);
+
+                    Animation petitSecAnimation = boardView.createPetitSecAnimation();
+                    petitSecAnimation.setOnFinished(actionEvent -> {
+                        boardView.sayPetitSec(false);
+                        prepareDeal();
+                    });
+                    playAnimation(petitSecAnimation);
+                }
+
+                else
+                    askUserChoice();
+            });
 
             playAnimation(st);
         });
@@ -323,6 +336,7 @@ public class Controller extends Application {
 
         playAnimation(sequentialTransition);
     }
+
     //Une fois que l'écart est constitué
     public void gapIsDone() {
         boardView.getPlayerView(0).getGap().forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
@@ -352,5 +366,9 @@ public class Controller extends Application {
     public static void playAnimation(Animation animation) {
         animationsUsed.add(animation);
         animation.play();
+    }
+
+    public void setMyPlayerInformation(String username, Image image) {
+
     }
 }
