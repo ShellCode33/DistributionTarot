@@ -277,7 +277,6 @@ public class Controller extends Application {
 
     //Demande du contrat du joueur
     public void askUserChoice() {
-        System.out.println("Asking user...");
         UserChoice userChoice = new UserChoice(this);
         boardView.getChildren().add(userChoice);
     }
@@ -292,6 +291,8 @@ public class Controller extends Application {
         }
         else {
             playAnimation(boardView.getDogView().explode());
+            boardView.getHint().setText("Press esc to go back to main menu");
+            boardView.showHint();
         }
     }
     //Si le joueur a choisi de prendre ou de garder
@@ -326,6 +327,8 @@ public class Controller extends Application {
     public void gapIsDone() {
         boardView.getPlayerView(0).getGap().forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
         Controller.playAnimation(boardView.getPlayerView(0).sortCardViews());
+        boardView.getHint().setText("Press esc to go back to main menu");
+        boardView.showHint();
     }
 
     public void setLayout(Parent root) {

@@ -100,7 +100,6 @@ public class UserChoice extends VBox {
         else if(button == button4)
             choice = Player.UserChoice.KEEP_AGAINST_DOG;
 
-        System.out.println("User choose: " + (choice != null ? choice.toString() : null));
         controller.processUserChoice(choice);
     }
 }

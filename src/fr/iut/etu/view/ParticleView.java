@@ -37,8 +37,6 @@ public class ParticleView extends Region {
 
     public static void createTexture() {
 
-        System.out.println("Creating particles textures");
-
         particleImages = new Image[lifeSpanMax];
 
         Circle circle = new Circle(width / 2);

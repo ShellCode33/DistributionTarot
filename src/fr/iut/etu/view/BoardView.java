@@ -250,6 +250,10 @@ public class BoardView extends Group {
         getChildren().remove(hint);
     }
 
+    public Label getHint() {
+        return hint;
+    }
+
     public void showDoneButton(){
         getChildren().add(doneButton);
     }
