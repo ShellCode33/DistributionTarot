@@ -4,6 +4,8 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -120,6 +122,7 @@ public abstract class HandView extends Group implements Observer {
     public Animation transferCardViewTo(HandView handView) {
 
         ParallelTransition pt = new ParallelTransition();
+        Parent parent = getParent();
 
         CardView cardView = cardViewsWaitingToBeTransfered.poll();
         TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
@@ -127,20 +130,32 @@ public abstract class HandView extends Group implements Observer {
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
 
-            Bounds boundsInParent = cardView.getBoundsInParent();
-            Bounds bounds = handView.parentToLocal(localToParent(boundsInParent));
-
             handView.addCardView(cardView);
             cardViews.remove(cardView);
 
-            tt.setFromX(bounds.getMinX());
-            tt.setFromY(bounds.getMinY());
-            tt.setToX(0);
-            tt.setToY(0);
-            tt.setToZ(-0.2);
-            pt.getChildren().add(tt);
+            if(parent instanceof BoardView)
+                ((BoardView) parent).addParticlesToCard(cardView);
+
+            cardView.setMoving(true);
         });
 
+        Bounds boundsInParent = cardView.getBoundsInParent();
+        Bounds bounds = handView.parentToLocal(localToParent(boundsInParent));
+
+        tt.setFromX(bounds.getMinX());
+        tt.setFromY(bounds.getMinY());
+        tt.setToX(0);
+        tt.setToY(0);
+        tt.setToZ(-0.2);
+
+        pt.getChildren().add(tt);
+
+        tt.setOnFinished(actionEvent -> {
+            if(parent instanceof BoardView)
+                ((BoardView) parent).removeParticlesOfCard(cardView);
+
+            cardView.setMoving(false);
+        });
 
         SequentialTransition st = new SequentialTransition();
         st.getChildren().addAll(firstAnimation, tt);

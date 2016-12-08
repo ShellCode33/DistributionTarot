@@ -5,6 +5,7 @@ import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Board;
+import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.*;
@@ -322,10 +323,10 @@ public class BoardView extends Group {
         getChildren().add(hint);
 
         //Il faut d'abord définir les cartes que l'on peut jeter
-        ArrayList<CardView> trumps = new ArrayList<>();
+        ArrayList<CardView> allowedTrumps = new ArrayList<>();
         ArrayList<CardView> allowedCards = new ArrayList<>();
 
-        int nbAllowedTrumps = defineCardsWichCanBeExcluded(trumps, allowedCards);
+        int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
 
         ArrayList<CardView> gap = new ArrayList<>(6);
 
@@ -393,13 +394,13 @@ public class BoardView extends Group {
 
         });
     }
-    //Définition des cartes qu'il est possible de jeter
-    private int defineCardsWichCanBeExcluded(ArrayList<CardView> trumps, ArrayList<CardView> allowedCards) {
-        //On exclut les bouts
-        //et on exclut les rois et l'excuse
+    //Définition des cartes qu'il est possible d'écarter
+    private int defineCardsWichCanBeExcluded(ArrayList<CardView> allowedTrumps, ArrayList<CardView> allowedCards) {
+        //On récupère les atouts qui ne sont pas les bouts
+        //exclut les rois, les atouts et l'excuse des cartes qui sont autorisées à écarter
         for (CardView cardView : getPlayerView(0).getCardViews()) {
             if (cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) {
-                trumps.add(cardView);
+                allowedTrumps.add(cardView);
             }
             else if (cardView.getCard().getValue() != 14 && !(cardView.getCard() instanceof Trump) && !(cardView.getCard() instanceof Fool)) {
                 allowedCards.add(cardView);
@@ -411,7 +412,7 @@ public class BoardView extends Group {
         //Si aucune carte de la main n'est jouable, alors on a la possiblité de jouer ses atouts (mais ils doivent être montrés aux autres joueurs)
         if(allowedCards.size() < 6) {
             nbAllowedTrumps = 6 - allowedCards.size();
-            allowedCards.addAll(trumps);
+            allowedCards.addAll(allowedTrumps);
         }
         return nbAllowedTrumps;
     }

@@ -217,7 +217,7 @@ public class Controller extends Application {
                     boardView.getPlayerView(0).getFlipAllCardViewsAnimation(),
                     boardView.getPlayerView(0).getSortAnimation());
 
-            //ensuite, on demande le pari au joueur
+            //ensuite, on demande le contrat au joueur
             st.setOnFinished(event2 -> askUserChoice());
 
             playAnimation(st);
@@ -277,15 +277,15 @@ public class Controller extends Application {
         return dealSequence;
     }
 
-    //Demande du pari du joueur
+    //Demande du contrat du joueur
     public void askUserChoice() {
         System.out.println("Asking user...");
         UserChoice userChoice = new UserChoice(this);
         boardView.getChildren().add(userChoice);
     }
-    //Gestion du pari du joueur
+    //Gestion du contrat du joueur
     public void processUserChoice(Player.UserChoice userChoice) {
-        //Une fois que le joueur a choisi son pari, on enleve le layout du choix
+        //Une fois que le joueur a choisi son contrat, on enleve le layout du choix
         boardView.getChildren().remove(boardView.getChildren().size()-1);
         board.getPlayer(0).setChoice(userChoice);
 
@@ -316,7 +316,7 @@ public class Controller extends Application {
         sequentialTransition.getChildren().addAll(boardView.getDogView().getFlipAllCardViewsAnimation(),
                 parallelTransition);
 
-        //Ensuite, on peut retrier les cartes du joueur 0 et constituer l'écart
+        //Ensuite, on peut trier les cartes du joueur 0 et constituer l'écart
         sequentialTransition.setOnFinished(event -> {
             playAnimation(boardView.getPlayerView(0).getSortAnimation());
             boardView.handleGap();
@@ -336,6 +336,7 @@ public class Controller extends Application {
 
     public void setBoardImage(Image image) { //à cause du bug javafx le paramètre ne sert plus à rien, mais nous gardons espoir qu'un jour une mise à jour de javafx corrige le problème
         resetModelAndView(); //Il y a un bug javafx qui fait que si on change d'image à la volée (comme c'était fait intialement) des bugs graphiques (notamment sur les particules) apparaissent, nous sommes donc obligés de tout reset lorsque l'on change de background
+        //boardView.setBackground(image); //bug javafx
     }
 
     public MediaPlayer getMusicPlayer() {
