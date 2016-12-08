@@ -17,7 +17,7 @@ import java.util.*;
 public abstract class HandView extends Group implements Observer {
     protected final Hand hand;
     protected final ArrayList<CardView> cardViews = new ArrayList<>();
-    private final LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
+    private final LinkedList<CardView> cardViewsWaitingToBeAdded = new LinkedList<>();
 
     static final int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
@@ -29,8 +29,8 @@ public abstract class HandView extends Group implements Observer {
     }
     //L'animation d'étalement et de retournement des cartes seront différentes
     // suivant s'il s'agit d'une playerView ou d'une dogView
-    public abstract Animation getDispatchAnimation();
-    public abstract Animation getFlipAllCardViewsAnimation();
+    public abstract Animation dispatchAllCardViews();
+    public abstract Animation flipAllCardViews();
 
     @Override
     public void update(Observable observable, Object o) {
@@ -38,7 +38,7 @@ public abstract class HandView extends Group implements Observer {
             //Si une carte a été distribuée dans le model alors on sait qu'une cardView qui y correspond
             //peut être amenée à être distribuée dans la view
             CardView cardView = new CardView(hand.getLastCardAdded());
-            cardViewsWaitingToBeDealt.push(cardView);
+            cardViewsWaitingToBeAdded.push(cardView);
             CardView.getAllCardViewsDealt().add(cardView);
         }
         else if(o == Notifications.CARD_TRANSFERED){
@@ -52,7 +52,7 @@ public abstract class HandView extends Group implements Observer {
                 }
             }
 
-            cardViewsWaitingToBeDealt.push(cardView);
+            cardViewsWaitingToBeAdded.push(cardView);
         }
         else if(o == Notifications.CARD_DELETED){
             //Si une carte a été supprimée dans le model alors on peut directement la supprimer
@@ -75,13 +75,13 @@ public abstract class HandView extends Group implements Observer {
     //Animation de transfer d'une carte d'une handView à une autre
     public Animation transferCardViewTo(HandView handView) {
 
-        if(handView.cardViewsWaitingToBeDealt.isEmpty())
+        if(handView.cardViewsWaitingToBeAdded.isEmpty())
             throw new UnsupportedOperationException("No card was transfered to the model of this handview in the model");
 
         ParallelTransition pt = new ParallelTransition();
         Parent parent = getParent();
 
-        CardView cardView = handView.cardViewsWaitingToBeDealt.poll();
+        CardView cardView = handView.cardViewsWaitingToBeAdded.poll();
         TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
 
         //Cette animation ne sert qu'à avoir un événement onStart
@@ -131,7 +131,7 @@ public abstract class HandView extends Group implements Observer {
         return cardViews;
     }
 
-    public LinkedList<CardView> getCardViewsWaitingToBeDealt() {
-        return cardViewsWaitingToBeDealt;
+    public LinkedList<CardView> getCardViewsWaitingToBeAdded() {
+        return cardViewsWaitingToBeAdded;
     }
 }

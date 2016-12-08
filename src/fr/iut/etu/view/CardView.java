@@ -19,17 +19,18 @@ import java.util.*;
  */
 public class CardView extends Group implements Comparable<CardView> {
 
+    private static final Random random = new Random();
+
     public static double CARD_THICK = 2;
     public static double CARD_WIDTH = 120;
+
     public static double CARD_HEIGHT = 212;
 
     private static final ArrayList<CardView> allCardViewsDealt = new ArrayList<>();
-
     private final Card card;
     private Animation flipAnimation;
-    private boolean selected = false;
 
-    private static final Random random = new Random();
+    private boolean selected = false;
     private final ArrayList<ParticleView> myParticles = new ArrayList<>();
     private static final ArrayList<ParticleView> allParticles = new ArrayList<>();
 

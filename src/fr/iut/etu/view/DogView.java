@@ -16,7 +16,7 @@ public class DogView extends HandView {
     }
 
     @Override
-    public Animation getDispatchAnimation() {
+    public Animation dispatchAllCardViews() {
 
         ParallelTransition pt = new ParallelTransition();
 
@@ -48,7 +48,7 @@ public class DogView extends HandView {
     }
 
     @Override
-    public Animation getFlipAllCardViewsAnimation() {
+    public Animation flipAllCardViews() {
         ParallelTransition pt = new ParallelTransition();
 
         Parent parent = getParent();
@@ -85,7 +85,7 @@ public class DogView extends HandView {
     }
 
     //Animation d'explosion
-    public Animation createExplodeAnimation() {
+    public Animation explode() {
 
         ParallelTransition pt = new ParallelTransition();
 

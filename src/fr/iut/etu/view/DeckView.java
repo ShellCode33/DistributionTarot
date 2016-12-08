@@ -32,7 +32,7 @@ public class DeckView extends Group implements Observer {
     }
 
     //Animation de coupe
-    public Animation getCutAnimation() {
+    public Animation cut() {
 
         SequentialTransition st = new SequentialTransition();
 
@@ -129,12 +129,12 @@ public class DeckView extends Group implements Observer {
         Tooltip.install(this, new Tooltip(getChildren().size() + " cards!"));
     }
     //Animation de distribution d'une carte du deck vers une PlayerView ou DogView
-    public Animation getDealACardAnimation(HandView handView) {
+    public Animation dealACardViewTo(HandView handView) {
         //Il faut qu'une carte ait été distribué dans le model
-        if(handView.getCardViewsWaitingToBeDealt().isEmpty())
+        if(handView.getCardViewsWaitingToBeAdded().isEmpty())
             throw new UnsupportedOperationException("No card was dealt in the model to the hand of this handview");
 
-        CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
+        CardView cardView = handView.getCardViewsWaitingToBeAdded().poll();
 
         //Translation jusqu'à la handview
         TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);

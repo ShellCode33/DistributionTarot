@@ -48,7 +48,7 @@ public class PlayerView extends HandView {
     }
 
     @Override
-    public Animation getFlipAllCardViewsAnimation() {
+    public Animation flipAllCardViews() {
         ParallelTransition pt = new ParallelTransition();
 
         Parent parent = getParent();
@@ -74,7 +74,7 @@ public class PlayerView extends HandView {
     }
 
     @Override
-    public Animation getDispatchAnimation() {
+    public Animation dispatchAllCardViews() {
 
         ParallelTransition pt = new ParallelTransition();
 
@@ -91,7 +91,7 @@ public class PlayerView extends HandView {
         return pt;
     }
 
-    public Animation getSortAnimation() {
+    public Animation sortCardViews() {
 
         ParallelTransition pt = new ParallelTransition();
 

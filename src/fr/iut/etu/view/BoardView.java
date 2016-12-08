@@ -42,7 +42,7 @@ public class BoardView extends Group {
     private ImageView background;
 
     //L'animation de l'arrivée du deck ne sera pas générée à la volée donc on peut la stocker
-    private Animation bringDeckOnBoardAnimation;
+    private Animation bringDeckViewOnCenterAnimation;
 
     public BoardView(Board board) {
         super();
@@ -223,16 +223,16 @@ public class BoardView extends Group {
         ParallelTransition st = new ParallelTransition();
         st.getChildren().addAll(rotate, translate);
 
-        bringDeckOnBoardAnimation = st;
+        bringDeckViewOnCenterAnimation = st;
     }
 
     //Etalement des playerView et dogView
-    public Animation getDispatchAllViewsAnimation(){
+    public Animation dispatchAllHandViews(){
         ParallelTransition parallelTransition = new ParallelTransition();
-        parallelTransition.getChildren().add(dogView.getDispatchAnimation());
+        parallelTransition.getChildren().add(dogView.dispatchAllCardViews());
 
         for(PlayerView pv : playerViews)
-            parallelTransition.getChildren().add(pv.getDispatchAnimation());
+            parallelTransition.getChildren().add(pv.dispatchAllCardViews());
 
         return parallelTransition;
     }
@@ -313,7 +313,7 @@ public class BoardView extends Group {
             //On retri les cartes
             pt.setOnFinished(event -> {
                 gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
-                Controller.playAnimation(getPlayerView(0).getSortAnimation());
+                Controller.playAnimation(getPlayerView(0).sortCardViews());
             });
 
             Controller.playAnimation(pt);
@@ -363,8 +363,8 @@ public class BoardView extends Group {
         return playerViews.get(i);
     }
 
-    public Animation getBringDeckOnBoardAnimation() {
-        return bringDeckOnBoardAnimation;
+    public Animation getBringDeckViewOnCenterAnimation() {
+        return bringDeckViewOnCenterAnimation;
     }
 
     public void reset() {

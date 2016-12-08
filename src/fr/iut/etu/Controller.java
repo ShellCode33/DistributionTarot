@@ -211,9 +211,9 @@ public class Controller extends Application {
             //On retourne les cartes du joueur 0
             //On trie les cartes du joueur 0
 
-            st.getChildren().addAll(boardView.getDispatchAllViewsAnimation(),
-                    boardView.getPlayerView(0).getFlipAllCardViewsAnimation(),
-                    boardView.getPlayerView(0).getSortAnimation());
+            st.getChildren().addAll(boardView.dispatchAllHandViews(),
+                    boardView.getPlayerView(0).flipAllCardViews(),
+                    boardView.getPlayerView(0).sortCardViews());
 
             //ensuite, on demande le contrat au joueur
             st.setOnFinished(event2 -> askUserChoice());
@@ -235,8 +235,8 @@ public class Controller extends Application {
         board.getDeck().cut(new Random().nextInt(54)+12);
 
         //On amène le deck au centre du plateau et on le coupe
-        st.getChildren().addAll(boardView.getBringDeckOnBoardAnimation(),
-                boardView.getDeckView().getCutAnimation());
+        st.getChildren().addAll(boardView.getBringDeckViewOnCenterAnimation(),
+                boardView.getDeckView().cut());
         return st;
     }
     //La sequence de distribution en elle-même
@@ -248,7 +248,7 @@ public class Controller extends Application {
         while(board.getDeck().size() > 0){
 
             board.getDeck().deal(board.getPlayer(currentPlayerIndex));
-            Animation animation = boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(currentPlayerIndex));
+            Animation animation = boardView.getDeckView().dealACardViewTo(boardView.getPlayerView(currentPlayerIndex));
             animation.setDelay(Duration.millis(cardDealtCount*100));
             dealSequence.getChildren().add(animation);
             cardDealtCount++;
@@ -265,7 +265,7 @@ public class Controller extends Application {
                         && (Math.random() < 0.25 || board.getDeck().size() - 3 == 6 - board.getDog().getCardCount())){
 
                     board.getDeck().deal(board.getDog());
-                    animation = boardView.getDeckView().getDealACardAnimation(boardView.getDogView());
+                    animation = boardView.getDeckView().dealACardViewTo(boardView.getDogView());
                     animation.setDelay(Duration.millis(cardDealtCount*100));
                     dealSequence.getChildren().add(animation);
                     cardDealtCount++;
@@ -291,7 +291,7 @@ public class Controller extends Application {
             keepOrTake();
         }
         else {
-            playAnimation(boardView.getDogView().createExplodeAnimation());
+            playAnimation(boardView.getDogView().explode());
         }
     }
     //Si le joueur a choisi de prendre ou de garder
@@ -311,12 +311,12 @@ public class Controller extends Application {
         }
 
         //Mais avant on retourne toutes les cartes du chien
-        sequentialTransition.getChildren().addAll(boardView.getDogView().getFlipAllCardViewsAnimation(),
+        sequentialTransition.getChildren().addAll(boardView.getDogView().flipAllCardViews(),
                 parallelTransition);
 
         //Ensuite, on peut trier les cartes du joueur 0 et constituer l'écart
         sequentialTransition.setOnFinished(event -> {
-            playAnimation(boardView.getPlayerView(0).getSortAnimation());
+            playAnimation(boardView.getPlayerView(0).sortCardViews());
             boardView.handleGap();
         });
 
