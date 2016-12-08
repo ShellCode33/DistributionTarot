@@ -5,12 +5,9 @@ import com.sun.javafx.tk.Toolkit;
 import fr.iut.etu.Controller;
 import fr.iut.etu.layouts.Settings;
 import fr.iut.etu.model.Board;
-import fr.iut.etu.model.Card;
 import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Trump;
 import javafx.animation.*;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -229,76 +226,6 @@ public class BoardView extends Group {
         bringDeckOnBoardAnimation = st;
     }
 
-    //Animation de distribution d'une carte du deck vers une PlayerView ou DogView
-    public Animation getDealACardAnimation(HandView handView) {
-        //Il faut qu'une carte ait été distribué dans le model
-        if(handView.getCardViewsWaitingToBeDealt().isEmpty())
-            throw new UnsupportedOperationException("No card was dealt in the model");
-
-        CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
-
-        //Translation jusqu'à la handview
-        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);
-        //Rotation pour être dans le même sens que la handView
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.5), cardView);
-        //Ajustement de la hauteur à laquelle doit se trouver la cardView
-        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.3), cardView);
-
-        //Cette animation "vide" sert uniquement à avoir un evenement onStart
-        Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
-        firstAnimation.setOnFinished(event -> {
-            //Ajout des particules
-            addParticlesToCard(cardView);
-            cardView.setMoving(true);
-
-            //Ajout de la cardView dans la handView et réduction de la deckView
-            handView.addCardView(cardView);
-            deckView.removeImageViewOnTop();
-
-            //On récupère l'angle de rotation de la handView
-            //ainsi que les bounds de la deckView dans référentiel de la handView
-            Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
-            Bounds deckViewBoundsInHandView = handView.parentToLocal(deckView.getBoundsInParent());
-            //On détermine la position d'arrivée de la cardView
-            Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
-
-            //On peut maintenant définir les différentes animations
-            cardView.setRotationAxis(Rotate.Z_AXIS);
-            cardView.setRotate(270 - handViewRotate.getAngle());
-
-            translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
-            translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
-            translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
-            translateTransition1.setToX(destination.getX());
-            translateTransition1.setToY(destination.getY());
-            translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
-            translateTransition1.setCycleCount(1);
-
-            rotateTransition.setAxis(Rotate.Z_AXIS);
-            rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
-            rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
-            rotateTransition.setCycleCount(1);
-
-            translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
-            translateTransition2.setToZ(destination.getZ());
-            translateTransition2.setCycleCount(1);
-        });
-
-        //Séquençage des animations
-        ParallelTransition parallelTransition = new ParallelTransition();
-        parallelTransition.getChildren().addAll(translateTransition1, rotateTransition);
-
-        SequentialTransition sequentialTransition = new SequentialTransition();
-        sequentialTransition.getChildren().addAll(firstAnimation, parallelTransition, translateTransition2);
-
-        //A la fin de l'animation on enlève les particules sur la carte
-        sequentialTransition.setOnFinished(actionEvent -> {
-            cardView.setMoving(false);
-            removeParticlesOfCard(cardView);
-        });
-
-        return sequentialTransition;
-    }
     //Etalement des playerView et dogView
     public Animation getDispatchAllViewsAnimation(){
         ParallelTransition parallelTransition = new ParallelTransition();
@@ -329,7 +256,6 @@ public class BoardView extends Group {
         int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
 
         ArrayList<CardView> gap = new ArrayList<>(6);
-
 
         final int[] nbTrumpPlayed = {0};
         //Pour toutes les cartes autorisées il faut définir onMouseClicked
@@ -366,31 +292,31 @@ public class BoardView extends Group {
         doneButton.setOnAction(actionEvent2 -> {
             getChildren().remove(doneButton);
 
-            SequentialTransition st = new SequentialTransition();
+            ParallelTransition pt = new ParallelTransition();
             for(CardView cardView : gap) {
 
                 //Si c'est un atout on le déplace à la vue de tous
                 if(cardView.getCard() instanceof Trump) {
                     TranslateTransition tt = new TranslateTransition(Duration.seconds(1), cardView);
                     tt.setByY(-Controller.SCREEN_HEIGHT / 2);
-                    st.getChildren().add(tt);
+                    pt.getChildren().add(tt);
                 }
 
                 //Les cardView disparaisse petit à petit
                 FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
                 ft.setDelay(Duration.seconds(1));
                 ft.setToValue(0);
-                st.getChildren().add(ft);
+                pt.getChildren().add(ft);
             }
 
-            //On supprme les cartes du model
+            //On supprime les cartes du model
             //On retri les cartes
-            st.setOnFinished(event -> {
+            pt.setOnFinished(event -> {
                 gap.forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
                 Controller.playAnimation(getPlayerView(0).getSortAnimation());
             });
 
-            Controller.playAnimation(st);
+            Controller.playAnimation(pt);
 
         });
     }
@@ -424,7 +350,6 @@ public class BoardView extends Group {
         background.setFitHeight(Controller.SCREEN_HEIGHT);
         getChildren().add(background);
     }
-
 
     public DeckView getDeckView() {
         return deckView;

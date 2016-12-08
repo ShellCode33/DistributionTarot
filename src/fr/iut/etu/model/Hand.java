@@ -56,12 +56,11 @@ public class Hand extends Observable{
             throw new InvalidObjectException("Source hand doesn't contain this card !");
 
         hand.cards.add(card);
-        lastCardTransfered = card;
+        hand.lastCardTransfered = card;
         cards.remove(card);
 
 
-        setChanged();
-        notifyObservers(Notifications.CARD_TRANSFERED);
-
+        hand.setChanged();
+        hand.notifyObservers(Notifications.CARD_TRANSFERED);
     }
 }

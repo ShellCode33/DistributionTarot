@@ -4,17 +4,12 @@ import fr.iut.etu.Controller;
 import fr.iut.etu.model.Hand;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * Created by Sylvain DUPOUY on 11/18/16.
@@ -23,7 +18,6 @@ public abstract class HandView extends Group implements Observer {
     protected final Hand hand;
     protected final ArrayList<CardView> cardViews = new ArrayList<>();
     private final LinkedList<CardView> cardViewsWaitingToBeDealt = new LinkedList<>();
-    private final LinkedList<CardView> cardViewsWaitingToBeTransfered = new LinkedList<>();
 
     static final int GAP_BETWEEN_CARDS = (int) (40 * Controller.SCALE_COEFF);
 
@@ -32,104 +26,68 @@ public abstract class HandView extends Group implements Observer {
 
         this.hand = hand;
         this.hand.addObserver(this);
-
     }
-
-    public Animation getFlipAllCardViewsAnimation() {
-        ParallelTransition pt = new ParallelTransition();
-
-        Parent parent = getParent();
-
-        for (CardView cardView : cardViews) {
-            pt.getChildren().add(cardView.getFlipAnimation());
-
-            if(parent instanceof BoardView)
-                ((BoardView) parent).addParticlesToCard(cardView);
-
-            cardView.setMoving(true);
-        }
-
-        pt.setOnFinished(event2 -> {
-            if(parent instanceof BoardView)
-                cardViews.forEach(((BoardView) parent)::removeParticlesOfCard);
-
-            cardViews.forEach(cardView -> cardView.setMoving(false));
-        });
-
-
-        return pt;
-    }
-
+    //L'animation d'étalement et de retournement des cartes seront différentes
+    // suivant s'il s'agit d'une playerView ou d'une dogView
     public abstract Animation getDispatchAnimation();
+    public abstract Animation getFlipAllCardViewsAnimation();
 
     @Override
     public void update(Observable observable, Object o) {
         if(o == Notifications.CARD_ADDED) {
-            cardViewsWaitingToBeDealt.push(new CardView(hand.getLastCardAdded()));
+            //Si une carte a été distribuée dans le model alors on sait qu'une cardView qui y correspond
+            //peut être amenée à être distribuée dans la view
+            CardView cardView = new CardView(hand.getLastCardAdded());
+            cardViewsWaitingToBeDealt.push(cardView);
+            CardView.getAllCardViewsDealt().add(cardView);
         }
         else if(o == Notifications.CARD_TRANSFERED){
-
+            //Si on a transféré une carte depuis la main correspondant à cette vue alors on sait que
+            //la cardView y correspondant peut être amenée à être transférée dans cette view aussi
             CardView cardView = null;
-            for (CardView cv : cardViews) {
+            for (CardView cv : CardView.getAllCardViewsDealt()) {
                 if(cv.getCard() == hand.getLastCardTransfered()){
                     cardView = cv;
                     break;
                 }
             }
 
-            cardViewsWaitingToBeTransfered.push(cardView);
+            cardViewsWaitingToBeDealt.push(cardView);
         }
         else if(o == Notifications.CARD_DELETED){
+            //Si une carte a été supprimée dans le model alors on peut directement la supprimer
+            //dans la view
+            CardView cardView = null;
 
-            CardView relatedImageView = null;
+            for (CardView c : cardViews) {
+                if (c.getCard() == hand.getLastCardRemoved()) {
+                    cardView = c;
+                    break;
+                }
+            }
 
-            for (CardView cardView : cardViews)
-                if (cardView.getCard() == hand.getLastCardRemoved())
-                    relatedImageView = cardView;
-
-            cardViews.remove(relatedImageView);
-            getChildren().remove(relatedImageView);
+            CardView.getAllCardViewsDealt().remove(cardView);
+            cardViews.remove(cardView);
+            getChildren().remove(cardView);
         }
     }
 
-    public Animation getSortAnimation() {
-
-        ParallelTransition pt = new ParallelTransition();
-
-        cardViews.sort(CardView::compareTo);
-
-        for (int i = 0; i < cardViews.size(); i++) {
-            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), cardViews.get(i));
-            translateTransition.setToX(i*GAP_BETWEEN_CARDS -  cardViews.size()*GAP_BETWEEN_CARDS/2);
-            translateTransition.setToZ(-1-i* CardView.CARD_THICK);
-            translateTransition.setCycleCount(1);
-            pt.getChildren().add(translateTransition);
-        }
-
-
-        return pt;
-    }
-
-    public void addCardView(CardView cardView) {
-        getChildren().add(cardView);
-        cardViews.add(cardView);
-    }
-
-    public ArrayList<CardView> getCardViews() {
-        return cardViews;
-    }
-
+    //Animation de transfer d'une carte d'une handView à une autre
     public Animation transferCardViewTo(HandView handView) {
+
+        if(handView.cardViewsWaitingToBeDealt.isEmpty())
+            throw new UnsupportedOperationException("No card was transfered to the model of this handview in the model");
 
         ParallelTransition pt = new ParallelTransition();
         Parent parent = getParent();
 
-        CardView cardView = cardViewsWaitingToBeTransfered.poll();
+        CardView cardView = handView.cardViewsWaitingToBeDealt.poll();
         TranslateTransition tt = new TranslateTransition(Duration.seconds(2), cardView);
 
+        //Cette animation ne sert qu'à avoir un événement onStart
         Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
         firstAnimation.setOnFinished(event -> {
-
+            //Ajout des particules
             handView.addCardView(cardView);
             cardViews.remove(cardView);
 
@@ -151,6 +109,7 @@ public abstract class HandView extends Group implements Observer {
         pt.getChildren().add(tt);
 
         tt.setOnFinished(actionEvent -> {
+            //On enlève les partiicules à la fin
             if(parent instanceof BoardView)
                 ((BoardView) parent).removeParticlesOfCard(cardView);
 
@@ -161,6 +120,15 @@ public abstract class HandView extends Group implements Observer {
         st.getChildren().addAll(firstAnimation, tt);
 
         return st;
+    }
+
+    public void addCardView(CardView cardView) {
+        getChildren().add(cardView);
+        cardViews.add(cardView);
+    }
+
+    public ArrayList<CardView> getCardViews() {
+        return cardViews;
     }
 
     public LinkedList<CardView> getCardViewsWaitingToBeDealt() {

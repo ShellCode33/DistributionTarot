@@ -7,6 +7,7 @@ import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,9 +23,9 @@ import java.util.Observable;
  */
 public class PlayerView extends HandView {
 
-    HBox header;
-    Label usernameLabel;
-    Player player;
+    final HBox header;
+    final Label usernameLabel;
+    final Player player;
 
     public PlayerView(Player player) {
         super(player);
@@ -47,6 +48,32 @@ public class PlayerView extends HandView {
     }
 
     @Override
+    public Animation getFlipAllCardViewsAnimation() {
+        ParallelTransition pt = new ParallelTransition();
+
+        Parent parent = getParent();
+        //Pour toutes les cardViews on ajoute des particules
+        for (CardView cardView : cardViews) {
+            pt.getChildren().add(cardView.getFlipAnimation());
+
+            if(parent instanceof BoardView)
+                ((BoardView) parent).addParticlesToCard(cardView);
+
+            cardView.setMoving(true);
+        }
+        //A la fin de l'animation, il faut penser à supprimer les particules des cardViews
+        pt.setOnFinished(event2 -> {
+            if(parent instanceof BoardView)
+                cardViews.forEach(((BoardView) parent)::removeParticlesOfCard);
+
+            cardViews.forEach(cardView -> cardView.setMoving(false));
+        });
+
+
+        return pt;
+    }
+
+    @Override
     public Animation getDispatchAnimation() {
 
         ParallelTransition pt = new ParallelTransition();
@@ -60,6 +87,24 @@ public class PlayerView extends HandView {
 
             pt.getChildren().add(translateTransition);
         }
+
+        return pt;
+    }
+
+    public Animation getSortAnimation() {
+
+        ParallelTransition pt = new ParallelTransition();
+
+        cardViews.sort(CardView::compareTo);
+
+        for (int i = 0; i < cardViews.size(); i++) {
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(1), cardViews.get(i));
+            translateTransition.setToX(i*GAP_BETWEEN_CARDS -  cardViews.size()*GAP_BETWEEN_CARDS/2);
+            translateTransition.setToZ(-1-i* CardView.CARD_THICK);
+            translateTransition.setCycleCount(1);
+            pt.getChildren().add(translateTransition);
+        }
+
 
         return pt;
     }

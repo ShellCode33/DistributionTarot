@@ -22,12 +22,12 @@ import java.io.IOException;
  */
 class UserInput extends StackPane {
 
-    private TextField userInput;
+    private final TextField userInput;
     private ImageView selectedImage = null;
 
-    private Controller controller;
+    private final Controller controller;
 
-    public UserInput(Controller controller) throws IOException {
+    public UserInput(Controller controller) {
         this.controller = controller;
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");

@@ -15,15 +15,15 @@ import javafx.scene.shape.Circle;
  */
 public class ParticleView extends Region {
 
-    Vector2D location;
-    Vector2D velocity;
+    final Vector2D location;
+    final Vector2D velocity;
 
-    double maxSpeed = 5;
+    final double maxSpeed = 5;
 
-    static int width = 4;
-    static int height = 4;
+    static final int width = 4;
+    static final int height = 4;
 
-    static int lifeSpanMax = 30;
+    static final int lifeSpanMax = 30;
     int lifeSpan = lifeSpanMax;
 
     static Image particleImages[] = null;

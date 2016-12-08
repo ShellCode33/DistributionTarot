@@ -84,6 +84,7 @@ public class DogView extends HandView {
         return pt;
     }
 
+    //Animation d'explosion
     public Animation createExplodeAnimation() {
 
         ParallelTransition pt = new ParallelTransition();

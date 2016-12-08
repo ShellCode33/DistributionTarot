@@ -2,7 +2,6 @@ package fr.iut.etu.layouts;
 
 import fr.iut.etu.Controller;
 import fr.iut.etu.view.CardView;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,25 +9,22 @@ import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by shellcode on 11/19/16.
  */
 public class Settings extends StackPane {
 
-    private static ImageView selectedBackground = new ImageView(new Image("file:./res/cards/back0.jpg"));;
+    private static ImageView selectedBackground = new ImageView(new Image("file:./res/cards/back0.jpg"));
     private static ImageView selectedBackCard = new ImageView(new Image("file:./res/cards/back0.jpg"));
     private static Color particleColor = Color.YELLOW;
-    private static int volume = 50;
 
-    public Settings(Controller controller) throws IOException {
+    public Settings(Controller controller) {
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -185,6 +181,7 @@ public class Settings extends StackPane {
     }
 
     public static int getVolume() {
+        int volume = 50;
         return volume;
     }
 

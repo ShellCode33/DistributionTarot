@@ -1,12 +1,10 @@
 package fr.iut.etu.model;
 
-import java.util.Observable;
-
 /**
  * Created by shellcode on 9/27/16.
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class Card extends Observable implements Comparable<Card> {
+public class Card implements Comparable<Card> {
 
     public enum Type {
         HEART,

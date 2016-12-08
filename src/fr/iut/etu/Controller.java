@@ -10,7 +10,6 @@ import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.image.Image;
@@ -60,7 +59,7 @@ public class Controller extends Application {
 
     private PerspectiveCamera camera;
 
-    private static ArrayList<Animation> animationsUsed = new ArrayList<>();
+    private static final ArrayList<Animation> animationsUsed = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -159,7 +158,6 @@ public class Controller extends Application {
         boardView = new BoardView(board);
         boardView.setDepthTest(DepthTest.ENABLE);
     }
-
     //Reset de la partie si le joueur fait "ECHAP"
     private void resetModelAndView() {
 
@@ -250,7 +248,7 @@ public class Controller extends Application {
         while(board.getDeck().size() > 0){
 
             board.getDeck().deal(board.getPlayer(currentPlayerIndex));
-            Animation animation = boardView.getDealACardAnimation(boardView.getPlayerView(currentPlayerIndex));
+            Animation animation = boardView.getDeckView().getDealACardAnimation(boardView.getPlayerView(currentPlayerIndex));
             animation.setDelay(Duration.millis(cardDealtCount*100));
             dealSequence.getChildren().add(animation);
             cardDealtCount++;
@@ -267,7 +265,7 @@ public class Controller extends Application {
                         && (Math.random() < 0.25 || board.getDeck().size() - 3 == 6 - board.getDog().getCardCount())){
 
                     board.getDeck().deal(board.getDog());
-                    animation = boardView.getDealACardAnimation(boardView.getDogView());
+                    animation = boardView.getDeckView().getDealACardAnimation(boardView.getDogView());
                     animation.setDelay(Duration.millis(cardDealtCount*100));
                     dealSequence.getChildren().add(animation);
                     cardDealtCount++;

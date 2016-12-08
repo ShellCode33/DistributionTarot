@@ -16,7 +16,7 @@ public class Menu extends StackPane {
 
     private Button playButton, settingsButton, exitButton;
 
-    private Controller controller;
+    private final Controller controller;
 
     private Settings settings = null;
     private UserInput userInput = null;

@@ -5,8 +5,11 @@ import fr.iut.etu.model.Deck;
 import fr.iut.etu.model.Notifications;
 import javafx.animation.*;
 import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
@@ -124,6 +127,80 @@ public class DeckView extends Group implements Observer {
         //On supprime celle tout en haut
         getChildren().remove(imageViewsSorted.get(0));
         Tooltip.install(this, new Tooltip(getChildren().size() + " cards!"));
+    }
+    //Animation de distribution d'une carte du deck vers une PlayerView ou DogView
+    public Animation getDealACardAnimation(HandView handView) {
+        //Il faut qu'une carte ait été distribué dans le model
+        if(handView.getCardViewsWaitingToBeDealt().isEmpty())
+            throw new UnsupportedOperationException("No card was dealt in the model to the hand of this handview");
+
+        CardView cardView = handView.getCardViewsWaitingToBeDealt().poll();
+
+        //Translation jusqu'à la handview
+        TranslateTransition translateTransition1 = new TranslateTransition(Duration.seconds(0.5), cardView);
+        //Rotation pour être dans le même sens que la handView
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.5), cardView);
+        //Ajustement de la hauteur à laquelle doit se trouver la cardView
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(0.3), cardView);
+
+        final Parent parent = getParent();
+
+        //Cette animation "vide" sert uniquement à avoir un evenement onStart
+        Transition firstAnimation = new Transition() {@Override protected void interpolate(double frac) {}};
+        firstAnimation.setOnFinished(event -> {
+            //Ajout des particules
+            if(parent instanceof BoardView)
+                ((BoardView) parent).addParticlesToCard(cardView);
+            cardView.setMoving(true);
+
+            //Ajout de la cardView dans la handView et réduction de la deckView
+            handView.addCardView(cardView);
+            removeImageViewOnTop();
+
+            //On récupère l'angle de rotation de la handView
+            //ainsi que les bounds de la deckView dans le référentiel de la handView
+            Rotate handViewRotate = (Rotate) handView.getTransforms().get(1);
+            Bounds deckViewBoundsInHandView = handView.parentToLocal(getBoundsInParent());
+            //On détermine la position d'arrivée de la cardView
+            Point3D destination = new Point3D(0,0,-handView.getCardViews().size()*CardView.CARD_THICK-1);
+
+            //On peut maintenant définir les différentes animations
+            cardView.setRotationAxis(Rotate.Z_AXIS);
+            cardView.setRotate(270 - handViewRotate.getAngle());
+
+            translateTransition1.setFromX(deckViewBoundsInHandView.getMinX());
+            translateTransition1.setFromY(deckViewBoundsInHandView.getMinY());
+            translateTransition1.setFromZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition1.setToX(destination.getX());
+            translateTransition1.setToY(destination.getY());
+            translateTransition1.setToZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition1.setCycleCount(1);
+
+            rotateTransition.setAxis(Rotate.Z_AXIS);
+            rotateTransition.setFromAngle(handViewRotate.getAngle() - 270);
+            rotateTransition.setByAngle((handViewRotate.getAngle() - 270)%180);
+            rotateTransition.setCycleCount(1);
+
+            translateTransition2.setFromZ(deckViewBoundsInHandView.getMinZ());
+            translateTransition2.setToZ(destination.getZ());
+            translateTransition2.setCycleCount(1);
+        });
+
+        //Séquençage des animations
+        ParallelTransition parallelTransition = new ParallelTransition();
+        parallelTransition.getChildren().addAll(translateTransition1, rotateTransition);
+
+        SequentialTransition sequentialTransition = new SequentialTransition();
+        sequentialTransition.getChildren().addAll(firstAnimation, parallelTransition, translateTransition2);
+
+        //A la fin de l'animation on enlève les particules sur la carte
+        sequentialTransition.setOnFinished(actionEvent -> {
+            if(parent instanceof BoardView)
+                ((BoardView) parent).removeParticlesOfCard(cardView);
+            cardView.setMoving(false);
+        });
+
+        return sequentialTransition;
     }
 
     @Override

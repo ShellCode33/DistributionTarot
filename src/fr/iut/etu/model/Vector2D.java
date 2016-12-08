@@ -57,7 +57,7 @@ public class Vector2D {
     }
 
     public double angle() {
-        double angle = (double) Math.atan2(-y, x);
+        double angle = Math.atan2(-y, x);
         return -1 * angle;
     }
 

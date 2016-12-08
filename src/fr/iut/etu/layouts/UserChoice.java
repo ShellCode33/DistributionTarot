@@ -13,12 +13,12 @@ import javafx.scene.layout.VBox;
  */
 public class UserChoice extends VBox {
 
-    private Controller controller;
+    private final Controller controller;
 
-    Button button1 = new Button("Take");
-    Button button2 = new Button("Guard");
-    Button button3 = new Button("Guard without the dog");
-    Button button4 = new Button("Guard against the dog");
+    private final Button button1 = new Button("Take");
+    private final Button button2 = new Button("Guard");
+    private final Button button3 = new Button("Guard without the dog");
+    private final Button button4 = new Button("Guard against the dog");
 
     public UserChoice(Controller controller) {
         this.controller = controller;
@@ -100,7 +100,7 @@ public class UserChoice extends VBox {
         else if(button == button4)
             choice = Player.UserChoice.KEEP_AGAINST_DOG;
 
-        System.out.println("User choose: " + choice.toString());
+        System.out.println("User choose: " + (choice != null ? choice.toString() : null));
         controller.processUserChoice(choice);
     }
 }
