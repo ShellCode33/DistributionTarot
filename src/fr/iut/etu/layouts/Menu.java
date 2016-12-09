@@ -18,7 +18,6 @@ public class Menu extends StackPane {
 
     private Settings settings = null;
     private UserInput userInput = null;
-    private Rules rules = null;
     private About about = new About();
 
     public Menu(Controller controller) {
@@ -26,7 +25,6 @@ public class Menu extends StackPane {
 
         settings = new Settings(controller);
         userInput = new UserInput(controller);
-        rules = new Rules();
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
@@ -95,7 +93,7 @@ public class Menu extends StackPane {
             controller.setLayout(userInput);
 
         else if(button == rulesButton)
-            controller.setLayout(rules);
+            controller.setLayout(new Rules());
 
         else if (button == settingsButton)
             controller.setLayout(settings);
