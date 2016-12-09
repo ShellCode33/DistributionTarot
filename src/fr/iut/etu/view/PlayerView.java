@@ -145,7 +145,7 @@ public class PlayerView extends HandView {
 
         final int[] nbTrumpPlayed = {0};
 
-        parent.setHintText("Choose 6 cards to exclude !");
+        parent.setHintText("Choose 6 cards to exclude !\n" + (nbAllowedTrumps > 0 ? nbAllowedTrumps + " trumps can be excluded" : ""));
         parent.showHint();
 
 
