@@ -12,9 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
-
-import java.io.IOException;
 
 /**
  * Created by shellcode on 11/19/16.

@@ -9,7 +9,10 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by Sylvain DUPOUY on 11/18/16.

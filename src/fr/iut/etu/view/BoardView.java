@@ -31,7 +31,6 @@ public class BoardView extends Group {
 
     private Button doneButton;
     private Label hint;
-    private Board board;
 
     private Canvas particlesCanvas;
     private ArrayList<CardView> cardViewsWithParticles = new ArrayList<>();
@@ -44,9 +43,6 @@ public class BoardView extends Group {
 
     public BoardView(Board board) {
         super();
-
-        this.board = board;
-
 
         deckView = new DeckView(board.getDeck());
         getChildren().add(deckView);
@@ -346,7 +342,6 @@ public class BoardView extends Group {
 
         doneButton = null;
         hint = null;
-        board = null;
 
         particlesLoop.stop();
         cardViewsWithParticles.clear();
