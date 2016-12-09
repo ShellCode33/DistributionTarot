@@ -2,6 +2,7 @@ import fr.iut.etu.model.*;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
@@ -197,5 +198,25 @@ public class TarotTests {
         assertEquals("Wrong deck size !", deck.size(), 78);
         deck.cut(2);
         deck.cut(76);
+    }
+
+    @Test
+    public void canCheckPetitSec() throws Exception {
+        Board board = new Board(3);
+
+        board.getPlayer(0).getCards().add(new Card(Card.Type.HEART, 7));
+        board.getPlayer(0).getCards().add(new Trump(1));
+
+        board.getPlayer(1).getCards().add(new Card(Card.Type.HEART, 3));
+        board.getPlayer(1).getCards().add(new Fool());
+
+        board.getPlayer(2).getCards().add(new Card(Card.Type.SPADE, 3));
+        board.getPlayer(2).getCards().add(new Card(Card.Type.SPADE, 10));
+
+        assertEquals(0, board.checkPetitSec());
+
+        board.getPlayer(0).getCards().clear();
+
+        assertEquals(-1, board.checkPetitSec());
     }
 }

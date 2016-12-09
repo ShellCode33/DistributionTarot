@@ -39,7 +39,6 @@ import java.util.Random;
  *  Le model est totalement indépendant du controller et de la vue
  *
  */
-
 public class Controller extends Application {
 
     public static final int PLAYER_COUNT = 4;
@@ -215,20 +214,13 @@ public class Controller extends Application {
 
             //ensuite on vérifie s'il n'y a pas de petit sec, sinon on demande le contrat au joueur
             st.setOnFinished(event2 -> {
-                if(!board.checkPetitSec()) { //TODO : changer le test du boolean (enlever !)
-
-                    boardView.sayPetitSec(true);
-
-                    Animation petitSecAnimation = boardView.createPetitSecAnimation();
-                    petitSecAnimation.setOnFinished(actionEvent -> {
-                        boardView.sayPetitSec(false);
-                        prepareDeal();
-                    });
-                    playAnimation(petitSecAnimation);
+                int playerWithPetitSec = board.checkPetitSec();
+                if(playerWithPetitSec != -1) {
+                    handlePetitSec(playerWithPetitSec);
                 }
-
-                else
+                else {
                     askUserChoice();
+                }
             });
 
             playAnimation(st);
@@ -252,6 +244,7 @@ public class Controller extends Application {
                 boardView.getDeckView().cut());
         return st;
     }
+
     //La sequence de distribution en elle-même
     private ParallelTransition dealSequence() {
         int currentPlayerIndex = 0;
@@ -287,6 +280,25 @@ public class Controller extends Application {
         }
         return dealSequence;
     }
+    //Si il y a le petit sec
+    private void handlePetitSec(int playerWhoHasPetitSec) {
+
+        boardView.setHintText(board.getPlayer(playerWhoHasPetitSec).getName() + " has petit sec ! Redealing ...");
+        boardView.showHint();
+
+        Animation petitSecAnimation = boardView.createPetitSecAnimation();
+        petitSecAnimation.setOnFinished(actionEvent -> {
+            boardView.hideHint();
+            //On sauvegarde le nom et l'avatar du player
+            String myPlayerUsername = board.getPlayer(0).getName();
+            Image selectedImage = boardView.getPlayerView(0).getAvatar().getImage();
+            //On réinitialise tout
+            resetModelAndView();
+            initPlayersModelAndView(myPlayerUsername, selectedImage);
+            prepareDeal();
+        });
+        playAnimation(petitSecAnimation);
+    }
 
     //Demande du contrat du joueur
     public void askUserChoice() {
@@ -304,7 +316,7 @@ public class Controller extends Application {
         }
         else {
             playAnimation(boardView.getDogView().explode());
-            boardView.getHint().setText("Press esc to go back to main menu");
+            boardView.setHintText("Press esc to go back to main menu");
             boardView.showHint();
         }
     }
@@ -341,7 +353,7 @@ public class Controller extends Application {
     public void gapIsDone() {
         boardView.getPlayerView(0).getGap().forEach(cardView -> board.getPlayer(0).removeCard(cardView.getCard()));
         Controller.playAnimation(boardView.getPlayerView(0).sortCardViews());
-        boardView.getHint().setText("Press esc to go back to main menu");
+        boardView.setHintText("Press esc to go back to main menu");
         boardView.showHint();
     }
 
@@ -366,9 +378,5 @@ public class Controller extends Application {
     public static void playAnimation(Animation animation) {
         animationsUsed.add(animation);
         animation.play();
-    }
-
-    public void setMyPlayerInformation(String username, Image image) {
-
     }
 }

@@ -31,7 +31,6 @@ public class BoardView extends Group {
 
     private Button doneButton;
     private Label hint;
-    private Label petitSecLabel;
     private Board board;
 
     private Canvas particlesCanvas;
@@ -118,20 +117,11 @@ public class BoardView extends Group {
     }
     //Initialisation du label d'incation pour l'utilisateur
     private void initLabels() {
-        hint = new Label("Please choose 6 cards to exclude");
+        hint = new Label();
         hint.setFont(new Font(30* Controller.SCALE_COEFF));
         hint.setTextFill(Color.WHITE);
-        FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
-        hint.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
         hint.setTranslateY((Controller.SCREEN_HEIGHT - hint.getHeight()) / 2);
-        hint.setTranslateZ(-1);
-
-        petitSecLabel = new Label("Petit Sec ! Dealing again...");
-        petitSecLabel.setTextFill(Color.WHITE);
-        petitSecLabel.setFont(new Font(30 * Controller.SCALE_COEFF));
-        petitSecLabel.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(petitSecLabel.getText(), petitSecLabel.getFont())) / 2);
-        petitSecLabel.setTranslateY(3 * Controller.SCREEN_HEIGHT / 4 - petitSecLabel.getHeight() / 2);
-        petitSecLabel.setTranslateZ(-1);
+        hint.setTranslateZ(-20);
     }
     //Initialisation du boutton de fin de constituion de l'écart
     private void initDoneButton() {
@@ -249,16 +239,18 @@ public class BoardView extends Group {
         cardViewsWithParticles.remove(cardView);
     }
 
+    public void setHintText(String text){
+        hint.setText(text);
+        FontLoader fontLoader = Toolkit.getToolkit().getFontLoader(); //Utilisé pour déterminer la taille du label
+        hint.setTranslateX((Controller.SCREEN_WIDTH - fontLoader.computeStringWidth(hint.getText(), hint.getFont())) / 2);
+    }
+
     public void showHint(){
         getChildren().add(hint);
     }
 
     public void hideHint(){
         getChildren().remove(hint);
-    }
-
-    public Label getHint() {
-        return hint;
     }
 
     public void showDoneButton(){
@@ -358,12 +350,5 @@ public class BoardView extends Group {
         particlesCanvas.getGraphicsContext2D().clearRect(0, 0, Controller.SCREEN_WIDTH, Controller.SCREEN_HEIGHT);
         particlesCanvas = null;
         background = null;
-    }
-
-    public void sayPetitSec(boolean value) {
-        if(value)
-            getChildren().add(petitSecLabel);
-        else
-            getChildren().remove(petitSecLabel);
     }
 }

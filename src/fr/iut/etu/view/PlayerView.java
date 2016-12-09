@@ -28,6 +28,7 @@ import java.util.Observable;
 public class PlayerView extends HandView {
 
     private final HBox header;
+    private ImageView avatar;
     private final Label usernameLabel;
     private final Player player;
     private final ArrayList<CardView> gap = new ArrayList<>(6);
@@ -115,7 +116,7 @@ public class PlayerView extends HandView {
     }
 
     public void setAvatar(Image img) {
-        ImageView avatar = new ImageView(img);
+        avatar = new ImageView(img);
         avatar.setFitHeight(50 * Controller.SCALE_COEFF);
         avatar.setFitWidth(50 * Controller.SCALE_COEFF);
         header.getChildren().setAll(avatar, usernameLabel);
@@ -135,6 +136,10 @@ public class PlayerView extends HandView {
         int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
 
         final int[] nbTrumpPlayed = {0};
+
+        parent.setHintText("Choos 6 cards to exclude !");
+        parent.showHint();
+
         //Pour toutes les cartes autorisées il faut définir onMouseClicked
         for (CardView cardView : allowedCards) {
             cardView.setOnMouseClicked(mouseEvent -> {
@@ -142,7 +147,6 @@ public class PlayerView extends HandView {
                 if (cardView.isSelected()) {
                     if(gap.size() == 6) {
                         parent.hideDoneButton();
-                        parent.showHint();
                     }
                     if(cardView.getCard() instanceof Trump) {
                         nbTrumpPlayed[0]--;
@@ -230,5 +234,9 @@ public class PlayerView extends HandView {
 
     public ArrayList<CardView> getGap() {
         return gap;
+    }
+
+    public ImageView getAvatar() {
+        return avatar;
     }
 }

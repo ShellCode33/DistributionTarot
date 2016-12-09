@@ -49,21 +49,21 @@ public class Board {
     }
 
     //Retourne true si il y a petit sec
-    public boolean checkPetitSec() {
+    public int checkPetitSec() {
 
         int sum = 0;
 
-        for(Player player : players) {
-            for (Card card : player.getCards())
+        for(int i = 0; i< players.size(); i++) {
+            for (Card card : players.get(i).getCards())
                 if (card instanceof Trump || card instanceof Fool)
                     sum += card.getValue();
 
             if(sum == 1) //petit sec
-                return true;
+                return i;
 
             sum = 0;
         }
 
-        return false;
+        return -1;
     }
 }
