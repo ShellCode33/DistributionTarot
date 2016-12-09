@@ -5,21 +5,26 @@ import fr.iut.etu.model.Fool;
 import fr.iut.etu.model.Notifications;
 import fr.iut.etu.model.Player;
 import fr.iut.etu.model.Trump;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import javax.management.Notification;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -33,6 +38,8 @@ public class PlayerView extends HandView {
     private final Label usernameLabel;
     private final Player player;
     private final ArrayList<CardView> gap = new ArrayList<>(6);
+    private StackPane notif;
+
 
     public PlayerView(Player player) {
         super(player);
@@ -52,6 +59,25 @@ public class PlayerView extends HandView {
         header.setTranslateX(-50 * Controller.SCALE_COEFF / 2);
         getChildren().add(header);
 
+        initNotification();
+    }
+
+    private void initNotification() {
+        Text text = new Text("You can't exlude this card !");
+        text.setFill(Color.WHITE);
+        text.setFont(new Font(12 * Controller.SCALE_COEFF));
+
+        Rectangle background = new Rectangle(200 * Controller.SCALE_COEFF, 60 * Controller.SCALE_COEFF);
+        background.setFill(new Color(0.137, 0.137, 0.137, 1));
+        background.setArcHeight(15);
+        background.setArcWidth(15);
+        background.setStroke(Color.BLACK);
+        background.setStrokeWidth(3);
+
+        notif = new StackPane();
+        notif.getChildren().addAll(background, text);
+        notif.setTranslateZ(-100);
+        notif.setTranslateY(-70 * Controller.SCALE_COEFF);
     }
 
     @Override
@@ -140,7 +166,16 @@ public class PlayerView extends HandView {
         notAllowedCards.removeAll(allowedCards);
 
         notAllowedCards.forEach(cardView -> {
-            Tooltip.install(cardView, new Tooltip("You can't exclude this card"));
+            cardView.setOnMouseClicked(mouseEvent -> {
+                getChildren().remove(notif); //On essaye de la remove juste histoire de pas avoir de duplication de children
+                notif.setTranslateX(cardView.getTranslateX() - 200 * Controller.SCALE_COEFF / 2);
+                notif.setTranslateZ(-100);
+                getChildren().add(notif);
+            });
+
+            cardView.setOnMouseExited(mouseEvent -> {
+                getChildren().remove(notif);
+            });
         });
 
         final int[] nbTrumpPlayed = {0};
@@ -192,11 +227,25 @@ public class PlayerView extends HandView {
                     pt.getChildren().add(tt);
                 }
 
+                //onStart
+                Transition onStart = new Transition() {@Override protected void interpolate(double frac) {}};
+                onStart.setDelay(Duration.seconds(1));
+
+                onStart.setOnFinished(actionEvent -> {//onStart du flipAnimation
+                    parent.addParticlesToCard(cardView);
+                    cardView.setMoving(true);
+                });
+
+
                 //Les cardView disparaisse petit à petit
-                FadeTransition ft = new FadeTransition(Duration.seconds(1), cardView);
-                ft.setDelay(Duration.seconds(1));
-                ft.setToValue(0);
+                TranslateTransition ft = new TranslateTransition(Duration.seconds(1), cardView);
+                ft.setToY(CardView.CARD_HEIGHT);
                 pt.getChildren().add(ft);
+
+                ft.setOnFinished(actionEvent -> {
+                    cardView.setMoving(false);
+                    parent.removeParticlesOfCard(cardView);
+                });
             }
 
             //On supprime les cartes du model
@@ -206,6 +255,10 @@ public class PlayerView extends HandView {
             });
 
             Controller.playAnimation(pt);
+            gap.parallelStream().forEach(cardView -> {
+                cardView.setMoving(true);
+                parent.addParticlesToCard(cardView);
+            });
 
         });
     }

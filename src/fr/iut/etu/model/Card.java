@@ -50,11 +50,11 @@ public class Card implements Comparable<Card> {
 
     @Override
     public int compareTo(Card card) {
-        int value_other = card.getValue();
+        int value_other = card.getValue(); //On attribue un score total aux deux cartes afin de déterminer l'ordre de tri
         Type other_type = card.getType();
 
         if(other_type == Type.HEART)
-            value_other += 14;
+            value_other += 14; //Il y a 14 coeurs alors on attribue un score de base de 14 + card.getValue()
 
         else if(other_type == Type.TRUMP || other_type == Type.FOOL)
             value_other += 28;
@@ -80,6 +80,6 @@ public class Card implements Comparable<Card> {
         else if(my_type == Type.CLUB)
             my_value += 64;
 
-        return my_value-value_other;
+        return my_value-value_other; //On renvoit la difference du score des deux valeur afin de déterminer laquelle est "supérieure" à l'autre
     }
 }
