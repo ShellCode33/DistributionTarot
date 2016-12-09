@@ -166,6 +166,7 @@ public class PlayerView extends HandView {
         notAllowedCards.removeAll(allowedCards);
 
         notAllowedCards.forEach(cardView -> {
+
             cardView.setOnMouseClicked(mouseEvent -> {
                 getChildren().remove(notif); //On essaye de la remove juste histoire de pas avoir de duplication de children
                 notif.setTranslateX(cardView.getTranslateX() - 200 * Controller.SCALE_COEFF / 2);
@@ -186,6 +187,12 @@ public class PlayerView extends HandView {
 
         //Pour toutes les cartes autorisées il faut définir onMouseClicked
         for (CardView cardView : allowedCards) {
+
+            cardView.setOnMouseEntered(mouseEvent -> {
+                if(!cardView.isSelected())
+                    cardView.setTranslateY(-20);
+            });
+
             cardView.setOnMouseClicked(mouseEvent -> {
                 //Si la carte était déjà sélectionnée
                 if (cardView.isSelected()) {
@@ -211,6 +218,11 @@ public class PlayerView extends HandView {
                         }
                     }
                 }
+            });
+
+            cardView.setOnMouseExited(mouseEvent -> {
+                if(!cardView.isSelected())
+                    cardView.setTranslateY(0);
             });
         }
         //Une fois que l'on a cliqué sur le bouton

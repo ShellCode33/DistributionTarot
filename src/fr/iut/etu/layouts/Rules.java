@@ -17,13 +17,10 @@ public class Rules extends Region {
     final WebView browser = new WebView();
     final WebEngine webEngine = browser.getEngine();
 
-    public Rules(Controller controller) {
+    public Rules() {
         browser.setPrefWidth(Controller.SCREEN_WIDTH);
         browser.setPrefHeight(Controller.SCREEN_HEIGHT);
-        File file = new File("res/rules.html");
-        System.out.println(file);
-        browser.getEngine().load(String.valueOf(file.toURI()));
-        //add the web view to the scene
+        browser.getEngine().load(String.valueOf(new File("res/rules.html").toURI()));
         getChildren().add(browser);
     }
 

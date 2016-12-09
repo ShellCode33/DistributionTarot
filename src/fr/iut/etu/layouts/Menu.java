@@ -28,7 +28,7 @@ public class Menu extends StackPane {
 
         settings = new Settings(controller);
         userInput = new UserInput(controller);
-        rules = new Rules(controller);
+        rules = new Rules();
 
         setAlignment(Pos.CENTER);
         getStylesheets().add("file:res/style.css");
