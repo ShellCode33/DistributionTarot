@@ -19,8 +19,8 @@ import java.util.Random;
  */
 public class About extends VBox {
 
-    Random random = new Random();
-    AnimationTimer backgroundPsychedelic;
+    private Random random = new Random();
+    private AnimationTimer backgroundPsychedelic;
 
     public About() {
         setAlignment(Pos.CENTER);

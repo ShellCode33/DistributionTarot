@@ -193,11 +193,6 @@ public class Settings extends StackPane {
         return selectedBackCard.getImage();
     }
 
-    public static int getVolume() {
-        int volume = 50;
-        return volume;
-    }
-
     public static Color getParticleColor() {
         return particleColor;
     }

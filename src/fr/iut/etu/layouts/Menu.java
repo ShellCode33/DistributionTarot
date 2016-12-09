@@ -7,8 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
-
 /**
  * Created by shellcode on 11/7/16.
  */
@@ -23,7 +21,7 @@ public class Menu extends StackPane {
     private Rules rules = null;
     private About about = new About();
 
-    public Menu(Controller controller) throws IOException {
+    public Menu(Controller controller) {
         this.controller = controller;
 
         settings = new Settings(controller);
