@@ -12,6 +12,7 @@ import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -130,15 +131,23 @@ public class PlayerView extends HandView {
         parent.showHint();
 
         //Il faut d'abord définir les cartes que l'on peut jeter
-        ArrayList<CardView> allowedTrumps = new ArrayList<>();
         ArrayList<CardView> allowedCards = new ArrayList<>();
+        ArrayList<CardView> notAllowedCards = new ArrayList<>();
 
-        int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedTrumps, allowedCards);
+        int nbAllowedTrumps = defineCardsWichCanBeExcluded(allowedCards);
+
+        notAllowedCards.addAll(cardViews);
+        notAllowedCards.removeAll(allowedCards);
+
+        notAllowedCards.forEach(cardView -> {
+            Tooltip.install(cardView, new Tooltip("You can't exclude this card"));
+        });
 
         final int[] nbTrumpPlayed = {0};
 
-        parent.setHintText("Choos 6 cards to exclude !");
+        parent.setHintText("Choose 6 cards to exclude !");
         parent.showHint();
+
 
         //Pour toutes les cartes autorisées il faut définir onMouseClicked
         for (CardView cardView : allowedCards) {
@@ -201,9 +210,13 @@ public class PlayerView extends HandView {
         });
     }
     //Définition des cartes qu'il est possible d'écarter
-    private int defineCardsWichCanBeExcluded(ArrayList<CardView> allowedTrumps, ArrayList<CardView> allowedCards) {
+    private int defineCardsWichCanBeExcluded(ArrayList<CardView> allowedCards) {
+
+
         //On récupère les atouts qui ne sont pas les bouts
         //exclut les rois, les atouts et l'excuse des cartes qui sont autorisées à écarter
+
+        ArrayList<CardView> allowedTrumps = new ArrayList<>();
         for (CardView cardView : cardViews) {
             if (cardView.getCard() instanceof Trump && cardView.getCard().getValue() != 1 && cardView.getCard().getValue() != 21) {
                 allowedTrumps.add(cardView);

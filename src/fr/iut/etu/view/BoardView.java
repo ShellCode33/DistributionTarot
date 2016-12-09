@@ -158,8 +158,8 @@ public class BoardView extends Group {
         playerView.getTransforms().addAll(
                 new Translate(
                         (Controller.SCREEN_WIDTH - CardView.CARD_WIDTH)/2,
-                    Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
-                    -1),
+                        Controller.SCREEN_HEIGHT - CardView.CARD_HEIGHT/2,
+                        -1),
                 new Rotate(
                         0,
                         Rotate.Z_AXIS
@@ -246,19 +246,23 @@ public class BoardView extends Group {
     }
 
     public void showHint(){
-        getChildren().add(hint);
+        if(!getChildren().contains(hint))
+            getChildren().add(hint);
     }
 
     public void hideHint(){
-        getChildren().remove(hint);
+        if(getChildren().contains(hint))
+            getChildren().remove(hint);
     }
 
     public void showDoneButton(){
-        getChildren().add(doneButton);
+        if(!getChildren().contains(doneButton))
+            getChildren().add(doneButton);
     }
 
     public void hideDoneButton(){
-        getChildren().remove(doneButton);
+        if(getChildren().contains(doneButton))
+            getChildren().remove(doneButton);
     }
 
     public Button getDoneButton() {
