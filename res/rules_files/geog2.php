@@ -1,1 +1,0 @@
-document.write("<a href=\"http:\/\/i-p-c-s.org\/\" target=\"_blank\" rel=\"nofollow\">International Playing-Card Society<\/a>")
