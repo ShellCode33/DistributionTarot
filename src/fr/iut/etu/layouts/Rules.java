@@ -1,6 +1,5 @@
 package fr.iut.etu.layouts;
 
-import fr.iut.etu.Controller;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
@@ -13,9 +12,8 @@ import java.io.File;
  */
 public class Rules extends Region {
 
-    final WebView browser = new WebView();
-
     public Rules() {
+        WebView browser = new WebView();
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
         browser.setPrefWidth(bounds.getWidth());
