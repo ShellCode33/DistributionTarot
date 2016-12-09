@@ -12,10 +12,8 @@ import javafx.scene.layout.VBox;
  */
 public class Menu extends StackPane {
 
-    private Button playButton, rulesButton, settingsButton, aboutButton, exitButton;
-
     private final Controller controller;
-
+    private Button playButton, rulesButton, settingsButton, aboutButton, exitButton;
     private Settings settings = null;
     private UserInput userInput = null;
     private Rules rules = null;
@@ -89,7 +87,8 @@ public class Menu extends StackPane {
     private void buttonClicked(ActionEvent e) {
         Button button = (Button)e.getSource();
 
-        about.getBackgroundPsychedelic().stop(); //On stop l'animation quoi qu'il arrive si jamais elle est encore lancée après être allé dans le about
+        //On stop l'animation quoi qu'il arrive si jamais elle est encore lancée après être allé dans le about
+        about.getBackgroundPsychedelic().stop();
 
         if (button == playButton)
             controller.setLayout(userInput);
